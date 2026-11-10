@@ -64,7 +64,7 @@
             return { repetitions: reps, interval, easeFactor: ease, nextReviewDate: nextDate.getTime() };
         };
 
-        // --- Локальне сховище (LocalStorage) - ВИПРАВЛЕНО ---
+        // --- Локальне сховище (LocalStorage) ---
         const useLocalStorage = (key, initialValue) => {
             const [storedValue, setStoredValue] = useState(() => {
                 try {
@@ -100,7 +100,6 @@
             const [toastMessage, setToastMessage] = useState(null);
             const toastTimeoutRef = useRef(null);
 
-            // ВИПРАВЛЕНО: Очищення таймера Toast
             const showToast = (msg) => {
                 setToastMessage(msg);
                 if (toastTimeoutRef.current) {
@@ -112,7 +111,6 @@
                 }, 3000);
             };
 
-            // Очищення таймера при анмаунті
             useEffect(() => {
                 return () => {
                     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
@@ -277,6 +275,7 @@
         // --- Компонент Нотаток ---
         function NotesPanel({ notes, setNotes, showToast }) {
             const [activeNote, setActiveNote] = useState(null);
+            const [isCreating, setIsCreating] = useState(false);
             const [searchQuery, setSearchQuery] = useState('');
             const [title, setTitle] = useState('');
             const [content, setContent] = useState('');
@@ -285,6 +284,7 @@
 
             const openNote = (note) => {
                 setActiveNote(note);
+                setIsCreating(false);
                 setTitle(note.title);
                 setContent(note.content);
             };
@@ -298,23 +298,41 @@
                     const newNote = { id: Date.now().toString(), title: title || 'Без назви', content, updatedAt: Date.now() };
                     setNotes(prev => [newNote, ...prev]);
                     setActiveNote(newNote);
+                    setIsCreating(false);
                 }
                 showToast("Нотатку збережено");
             };
 
             const deleteNote = (id) => {
                 setNotes(prev => prev.filter(n => n.id !== id));
-                if (activeNote?.id === id) setActiveNote(null);
+                if (activeNote?.id === id) {
+                    setActiveNote(null);
+                    setIsCreating(false);
+                }
                 showToast("Видалено");
             };
 
             return (
                 <div className="flex h-full">
-                    <div className={`w-full md:w-1/3 border-r flex flex-col bg-stone-50 ${activeNote ? 'hidden md:flex' : 'flex'}`}>
+                    <div className={`w-full md:w-1/3 border-r flex flex-col bg-stone-50 ${(activeNote || isCreating) ? 'hidden md:flex' : 'flex'}`}>
                         <div className="p-4 border-b">
-                            <button onClick={() => {setActiveNote(null); setTitle(''); setContent('');}} className="w-full flex items-center justify-center gap-2 bg-white border hover:border-indigo-400 py-2 rounded-xl text-sm font-medium">
+                            <button 
+                                onClick={() => {
+                                    setActiveNote(null);
+                                    setTitle('');
+                                    setContent('');
+                                    setIsCreating(true);
+                                }} 
+                                className="w-full flex items-center justify-center gap-2 bg-white border hover:border-indigo-400 py-2 rounded-xl text-sm font-medium shadow-sm transition-all"
+                            >
                                 <Icon name="plus" /> Створити нотатку
                             </button>
+                        </div>
+                        <div className="p-3 border-b border-stone-200 bg-white">
+                            <div className="relative">
+                                <span className="absolute left-3 top-2.5 text-stone-400"><Icon name="search" size={16} /></span>
+                                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Пошук нотаток..." className="w-full pl-9 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-sm outline-none focus:border-indigo-400" />
+                            </div>
                         </div>
                         <div className="flex-1 overflow-y-auto p-2 space-y-1">
                             {filteredNotes.map(note => (
@@ -326,21 +344,24 @@
                         </div>
                     </div>
 
-                    <div className={`w-full md:w-2/3 flex flex-col bg-white ${!activeNote && notes.length > 0 ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
-                        {(!activeNote && title === '' && content === '') ? (
-                            <div className="text-center text-stone-400">Оберіть нотатку або створіть нову</div>
+                    <div className={`w-full md:w-2/3 flex flex-col bg-white ${!activeNote && !isCreating && notes.length > 0 ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
+                        {(!activeNote && !isCreating && title === '' && content === '') ? (
+                            <div className="text-center text-stone-400 flex flex-col items-center gap-3">
+                                <Icon name="pen" size={48} className="opacity-20" />
+                                <p>Оберіть нотатку або створіть нову</p>
+                            </div>
                         ) : (
                             <>
                                 <div className="flex items-center justify-between p-4 border-b">
-                                    <button onClick={() => setActiveNote(null)} className="md:hidden text-stone-500"><Icon name="splitClose" className="rotate-180" /></button>
+                                    <button onClick={() => { setActiveNote(null); setIsCreating(false); }} className="md:hidden text-stone-500"><Icon name="splitClose" className="rotate-180" /></button>
                                     <div className="flex gap-2 ml-auto">
-                                        {activeNote && <button onClick={() => deleteNote(activeNote.id)} className="p-2 text-stone-400 hover:text-red-600"><Icon name="trash" /></button>}
-                                        <button onClick={saveNote} className="flex gap-2 bg-stone-800 text-white px-4 py-2 rounded-lg text-sm"><Icon name="save" /> Зберегти</button>
+                                        {activeNote && <button onClick={() => deleteNote(activeNote.id)} className="p-2 text-stone-400 hover:text-red-600 rounded-lg transition-colors"><Icon name="trash" /></button>}
+                                        <button onClick={saveNote} className="flex gap-2 bg-stone-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-stone-900 transition-colors"><Icon name="save" /> Зберегти</button>
                                     </div>
                                 </div>
                                 <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-                                    <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Назва нотатки..." className="text-2xl font-bold border-none outline-none mb-4" />
-                                    <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Пишіть тут..." className="flex-1 w-full resize-none border-none outline-none" />
+                                    <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Назва нотатки..." className="text-2xl font-bold border-none outline-none mb-4 placeholder:text-stone-300" />
+                                    <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Почніть писати тут..." className="flex-1 w-full resize-none border-none outline-none text-stone-700 leading-relaxed" />
                                 </div>
                             </>
                         )}
@@ -349,7 +370,7 @@
             );
         }
 
-        // --- Компонент Повторення (Картки) - ВИПРАВЛЕНО ---
+        // --- Компонент Повторення (Картки) ---
         function RevisionPanel({ words, setWords }) {
             const [currentWord, setCurrentWord] = useState(null);
             const [showAnswer, setShowAnswer] = useState(false);
@@ -360,10 +381,8 @@
                             .sort((a, b) => (a.nextReviewDate || 0) - (b.nextReviewDate || 0));
             }, [words]);
 
-            // Безпечне оновлення currentWord з урахуванням масиву залежностей
             useEffect(() => {
                 if (dueWords.length > 0) {
-                    // Якщо слова немає, або поточне слово вже не в dueWords (наприклад, воно щойно оновилося)
                     if (!currentWord || !dueWords.find(w => w.id === currentWord.id)) {
                         setCurrentWord(dueWords[0]);
                         setShowAnswer(false);
@@ -374,19 +393,16 @@
             }, [dueWords, currentWord]);
 
             const handleRating = (quality) => {
-                // Перевірка на null
                 if (!currentWord) return;
 
                 const { repetitions, interval, easeFactor, nextReviewDate } = calculateNextReview(
                     quality, currentWord.repetitions, currentWord.interval, currentWord.easeFactor
                 );
 
-                // Оновлюємо масив слів через callback
                 setWords(prev => prev.map(w => 
                     w.id === currentWord.id ? { ...w, repetitions, interval, easeFactor, nextReviewDate } : w
                 ));
                 
-                // Скидаємо поточне слово, щоб useEffect підтягнув наступне з нового dueWords
                 setCurrentWord(null); 
                 setShowAnswer(false);
             };
@@ -406,7 +422,7 @@
                             <div className="w-full max-w-xl bg-white rounded-3xl border p-10 text-center shadow-lg">
                                 <h2 className="text-5xl font-bold mb-8">{currentWord.en}</h2>
                                 {!showAnswer ? (
-                                    <button onClick={() => setShowAnswer(true)} className="w-full py-4 bg-stone-100 rounded-xl font-semibold hover:bg-stone-200">Показати переклад</button>
+                                    <button onClick={() => setShowAnswer(true)} className="w-full py-4 bg-stone-100 rounded-xl font-semibold hover:bg-stone-200 transition-colors">Показати переклад</button>
                                 ) : (
                                     <div className="border-t pt-8 animate-in fade-in">
                                         <h3 className="text-3xl font-bold text-indigo-700 mb-6">{currentWord.uk}</h3>
