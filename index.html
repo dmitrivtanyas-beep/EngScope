@@ -60,7 +60,8 @@
                 info: '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/>',
                 check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
                 users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-                logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>'
+                logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+                user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
             };
             return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: paths[name] || '' }} />;
         };
@@ -143,6 +144,7 @@
             const logout = async () => {
                 if (!fb) return;
                 await fb.signOut(fb.auth);
+                setUser(null);
                 setActiveWorkspace(null);
             };
 
@@ -251,8 +253,8 @@
                             )}
 
                             {!isSplitScreen && activeTab === 'settings' && (
-                                <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden p-8">
-                                    <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} />
+                                <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden p-8 overflow-y-auto">
+                                    <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} />
                                 </div>
                             )}
                         </div>
@@ -470,7 +472,6 @@
                 try {
                     if (activeNote) {
                         if (activeNote.isShared !== isShared) {
-                            // Зміна типу нотатки (з особистої на спільну або навпаки)
                             const oldPath = activeNote.isShared 
                                 ? fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes', activeNote.id)
                                 : fb.doc(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes', activeNote.id);
@@ -645,8 +646,8 @@
             );
         }
 
-        // --- Налаштування простору ---
-        function SettingsPanel({ user, fb, workspace, showToast }) {
+        // --- Налаштування простору та профіль користувача ---
+        function SettingsPanel({ user, fb, workspace, showToast, logout }) {
             const handleLeave = async () => {
                 if (window.confirm("Ви впевнені, що хочете покинути цей простір?")) {
                     try {
@@ -661,9 +662,28 @@
             };
 
             return (
-                <div className="max-w-2xl mx-auto w-full">
-                    <h2 className="text-2xl font-bold mb-8 flex items-center gap-2"><Icon name="settings" /> Налаштування простору</h2>
-                    <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-6 shadow-sm">
+                <div className="max-w-2xl mx-auto w-full space-y-6">
+                    <h2 className="text-2xl font-bold flex items-center gap-2"><Icon name="settings" /> Налаштування та профіль</h2>
+                    
+                    {/* Блок з даними облікового запису */}
+                    <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Icon name="user" className="text-indigo-600" /> Дані облікового запису Google</h3>
+                        <div className="space-y-3 text-sm">
+                            <div className="flex items-center gap-3">
+                                {user.photoURL && <img src={user.photoURL} alt="Avatar" className="w-12 h-12 rounded-full border border-stone-200 shadow-sm" />}
+                                <div>
+                                    <p className="font-semibold text-stone-900 text-base">{user.displayName || "Користувач"}</p>
+                                    <p className="text-stone-500">{user.email}</p>
+                                </div>
+                            </div>
+                            <div className="pt-3 border-t border-stone-100 flex flex-col gap-1">
+                                <span className="text-stone-400 text-xs uppercase tracking-wider">Унікальний ID користувача в базі:</span>
+                                <code className="bg-stone-100 px-3 py-1.5 rounded-lg text-xs font-mono text-stone-700 select-all">{user.uid}</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
                         <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><Icon name="users" className="text-indigo-500" /> Код запрошення для партнера</h3>
                         <p className="text-sm text-stone-500 mb-4">Поділіться цим кодом, щоб підключити другу людину до вашого словника та спільних нотаток у реальному часі.</p>
                         <div className="flex items-center gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200">
@@ -671,6 +691,17 @@
                             <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full ml-auto">Учасників: {workspace.members?.length || 0}/2</span>
                         </div>
                     </div>
+
+                    <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 className="text-lg font-semibold mb-1 text-stone-800">Вихід із системи</h3>
+                            <p className="text-sm text-stone-500">Завершити поточну сесію та вийти з аккаунта Google.</p>
+                        </div>
+                        <button onClick={logout} className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition-colors font-medium flex items-center gap-2 shrink-0">
+                            <Icon name="logout" size={16} /> Вийти з аккаунта
+                        </button>
+                    </div>
+
                     <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
                         <h3 className="text-lg font-semibold mb-2 text-red-600">Небезпечна зона</h3>
                         <p className="text-sm text-stone-500 mb-4">Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
