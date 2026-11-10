@@ -22,6 +22,7 @@
 <body class="bg-stone-50 text-stone-800">
   <div id="root"></div>
 
+  <!-- Важливо: data-type="module" і type="text/babel" -->
   <script type="text/babel" data-type="module">
     import React, { useState, useEffect, useRef, useMemo } from 'react';
     import { createRoot } from 'react-dom/client';
@@ -33,8 +34,8 @@
       Search, Plus, Trash2, Save, Users, Lock, ChevronRight, LogOut, Info 
     } from 'lucide-react';
 
-    // --- Вставте сюди ваші ключі з Firebase Console ---
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+    // ВАШІ КЛЮЧІ FIREBASE (Замініть пустий об'єкт на ваші реальні ключі)
+    const firebaseConfig = {
       // apiKey: "ВАШ_API_KEY",
       // authDomain: "ваш-проєкт.firebaseapp.com",
       // projectId: "ваш-проєкт",
@@ -46,7 +47,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'engspace-default-id';
+    const appId = 'engspace-default-id';
 
     const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -89,11 +90,7 @@
       useEffect(() => {
         const initAuth = async () => {
           try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-              await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-              await signInAnonymously(auth);
-            }
+            await signInAnonymously(auth);
           } catch (error) {
             console.error("Auth Error:", error);
           }
@@ -646,4 +643,61 @@
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <button onClick={() => handleRating(0)} className="py-3 px-2 rounded-xl font-medium bg-red-100 text-red-700">Не пам'ятаю</button>
                       <button onClick={() => handleRating(3)} className="py-3 px-2 rounded-xl font-medium bg-orange-100 text-orange-700">Важко</button>
-                      <button onClick={() => handleRating(4)} className="py-3 px-2 rounded-xl font
+                      <button onClick={() => handleRating(4)} className="py-3 px-2 rounded-xl font-medium bg-blue-100 text-blue-700">Добре</button>
+                      <button onClick={() => handleRating(5)} className="py-3 px-2 rounded-xl font-medium bg-green-100 text-green-700">Легко</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function SettingsPanel({ user, workspace }) {
+      const handleLeave = async () => {
+        if(confirm("Ви впевнені, що хочете покинути цей простір?")) {
+          const wsRef = doc(db, 'artifacts', appId, 'public', 'data', 'workspaces', workspace.id);
+          const newMembers = workspace.members.filter(m => m !== user.uid);
+          await updateDoc(wsRef, { members: newMembers });
+        }
+      };
+
+      return (
+        <div className="max-w-2xl mx-auto w-full">
+          <h2 className="text-2xl font-bold text-stone-800 mb-8 flex items-center gap-2">
+            <Settings className="text-stone-400" /> Налаштування простору
+          </h2>
+
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm mb-6">
+            <h3 className="text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2">
+              <Users className="text-indigo-500" size={20}/> Код запрошення
+            </h3>
+            <p className="text-stone-500 text-sm mb-4">Поділіться цим кодом з партнером, щоб він міг приєднатися.</p>
+            
+            <div className="flex items-center gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200">
+              <div className="text-3xl font-mono font-bold tracking-widest text-indigo-700 bg-white px-6 py-2 rounded-lg border border-indigo-100 shadow-sm">
+                {workspace.inviteCode}
+              </div>
+              <div className="flex-1"></div>
+              <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
+                Учасників: {workspace.members?.length || 0}/2
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+            <button onClick={handleLeave} className="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-6 py-3 rounded-xl border border-red-200">
+              Покинути простір
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
