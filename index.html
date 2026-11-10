@@ -18,7 +18,14 @@
     <!-- Firebase SDKs (v10 modular) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            signInWithRedirect, 
+            GoogleAuthProvider, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Конфігурація Firebase з вашого проєкту
@@ -37,7 +44,24 @@
         const db = getFirestore(app);
         const appId = "engspace-main-space";
 
-        window.firebaseApp = { auth, db, appId, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, addDoc, getDoc };
+        window.firebaseApp = { 
+            auth, 
+            db, 
+            appId, 
+            signInWithPopup, 
+            signInWithRedirect, 
+            GoogleAuthProvider, 
+            onAuthStateChanged, 
+            signOut, 
+            collection, 
+            onSnapshot, 
+            doc, 
+            setDoc, 
+            updateDoc, 
+            deleteDoc, 
+            addDoc, 
+            getDoc 
+        };
         window.dispatchEvent(new Event('firebase-ready'));
     </script>
 
@@ -131,13 +155,38 @@
             }, []);
 
             const loginWithGoogle = async () => {
-                if (!fb) return;
+                if (!fb) {
+                    showToast("Firebase ще завантажується. Спробуйте ще раз.");
+                    return;
+                }
+
+                const provider = new fb.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: "select_account" });
+
                 try {
-                    const provider = new fb.GoogleAuthProvider();
                     await fb.signInWithPopup(fb.auth, provider);
                 } catch (err) {
                     console.error("Auth error:", err);
-                    showToast("Помилка входу через Google");
+
+                    if (
+                        ["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"]
+                            .includes(err.code)
+                    ) {
+                        try {
+                            await fb.signInWithRedirect(fb.auth, provider);
+                            return;
+                        } catch (redirectError) {
+                            console.error("Redirect auth error:", redirectError);
+                            showToast("Не вдалося відкрити вхід Google. Перевірте налаштування Firebase.");
+                            return;
+                        }
+                    }
+
+                    showToast(
+                        err.code === "auth/unauthorized-domain"
+                            ? "Домен сайту не дозволений у Firebase Authentication."
+                            : "Помилка входу через Google. Перевірте консоль браузера."
+                    );
                 }
             };
 
