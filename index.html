@@ -1,990 +1,423 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  signInAnonymously, 
-  signInWithCustomToken, 
-  onAuthStateChanged 
-} from 'firebase/auth';
-import { 
-  getFirestore, 
-  collection, 
-  onSnapshot, 
-  doc, 
-  setDoc, 
-  updateDoc, 
-  deleteDoc, 
-  addDoc 
-} from 'firebase/firestore';
-import { 
-  BookA, 
-  NotebookPen, 
-  BrainCircuit, 
-  Settings, 
-  Columns, 
-  PanelLeftClose,
-  Search, 
-  Plus, 
-  Trash2, 
-  Save, 
-  Users, 
-  Lock, 
-  Unlock, 
-  ChevronRight,
-  LogOut,
-  RefreshCw,
-  Info
-} from 'lucide-react';
-
-// --- Firebase Initialization ---
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'engspace-default-id';
-
-// --- Helper Functions ---
-const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-
-const calculateNextReview = (quality, currentReps = 0, currentInterval = 0, currentEase = 2.5) => {
-  let reps = currentReps;
-  let interval = currentInterval;
-  let ease = currentEase;
-
-  if (quality < 3) {
-    reps = 0;
-    interval = 1;
-  } else {
-    reps += 1;
-    if (reps === 1) interval = 1;
-    else if (reps === 2) interval = 6;
-    else interval = Math.round(interval * ease);
-  }
-
-  ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  if (ease < 1.3) ease = 1.3;
-
-  const nextDate = new Date();
-  nextDate.setDate(nextDate.getDate() + interval);
-
-  return { 
-    repetitions: reps, 
-    interval, 
-    easeFactor: ease, 
-    nextReviewDate: nextDate.getTime() 
-  };
-};
-
-// --- Main Application Component ---
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  
-  const [workspaces, setWorkspaces] = useState([]);
-  const [activeWorkspace, setActiveWorkspace] = useState(null);
-  
-  const [words, setWords] = useState([]);
-  const [publicNotes, setPublicNotes] = useState([]);
-  const [privateNotes, setPrivateNotes] = useState([]);
-  
-  const [activeTab, setActiveTab] = useState('dictionary');
-  const [isSplitScreen, setIsSplitScreen] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);
-
-  // 1. Auth Initialization
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (error) {
-        console.error("Auth Error:", error);
-      }
-    };
-    initAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setAuthLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // 2. Fetch Workspaces (Public Data, filtered in memory)
-  useEffect(() => {
-    if (!user) return;
-    const wRef = collection(db, 'artifacts', appId, 'public', 'data', 'workspaces');
-    const unsub = onSnapshot(wRef, (snap) => {
-      const allWs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      setWorkspaces(allWs);
-      const myWs = allWs.find(ws => ws.members && ws.members.includes(user.uid));
-      setActiveWorkspace(myWs || null);
-    }, (err) => console.error("Workspaces fetch error:", err));
-    return () => unsub();
-  }, [user]);
-
-  // 3. Fetch Vocabulary & Notes when workspace is active
-  useEffect(() => {
-    if (!user || !activeWorkspace) return;
-    
-    // Fetch Vocabulary
-    const vRef = collection(db, 'artifacts', appId, 'public', 'data', 'vocabulary');
-    const unsubV = onSnapshot(vRef, (snap) => {
-      const allWords = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const workspaceWords = allWords.filter(w => w.workspaceId === activeWorkspace.id);
-      setWords(workspaceWords.sort((a, b) => b.createdAt - a.createdAt));
-    }, (err) => console.error("Vocabulary error:", err));
-
-    // Fetch Shared Notes
-    const nRef = collection(db, 'artifacts', appId, 'public', 'data', 'notes');
-    const unsubN = onSnapshot(nRef, (snap) => {
-      const allNotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      setPublicNotes(allNotes.filter(n => n.workspaceId === activeWorkspace.id));
-    }, (err) => console.error("Public notes error:", err));
-
-    // Fetch Private Notes
-    const pRef = collection(db, 'artifacts', appId, 'users', user.uid, 'notes');
-    const unsubP = onSnapshot(pRef, (snap) => {
-      setPrivateNotes(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    }, (err) => console.error("Private notes error:", err));
-
-    return () => { unsubV(); unsubN(); unsubP(); };
-  }, [user, activeWorkspace]);
-
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  if (authLoading) {
-    return <div className="flex h-screen items-center justify-center bg-stone-50 text-stone-500">Завантаження...</div>;
-  }
-
-  if (!activeWorkspace) {
-    return <WorkspaceSetup user={user} workspaces={workspaces} />;
-  }
-
-  // --- Render ---
-  return (
-    <div className="flex flex-col h-screen bg-stone-50 text-stone-800 font-sans overflow-hidden">
-      {/* Top Navigation */}
-      <header className="flex-none flex items-center justify-between px-6 py-4 bg-white border-b border-stone-200 shadow-sm z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md">E</div>
-          <span className="font-semibold text-lg tracking-tight hidden sm:block">EngSpace</span>
-        </div>
-
-        <nav className="flex items-center gap-1 sm:gap-2 bg-stone-100 p-1 rounded-xl">
-          <NavBtn icon={<BookA size={18}/>} label="Словник" active={activeTab === 'dictionary'} onClick={() => {setActiveTab('dictionary'); setIsSplitScreen(false);}} />
-          <NavBtn icon={<NotebookPen size={18}/>} label="Нотатки" active={activeTab === 'notes'} onClick={() => {setActiveTab('notes'); setIsSplitScreen(false);}} />
-          <NavBtn icon={<BrainCircuit size={18}/>} label="Повторення" active={activeTab === 'revision'} onClick={() => {setActiveTab('revision'); setIsSplitScreen(false);}} />
-          <NavBtn icon={<Settings size={18}/>} label="Налаштування" active={activeTab === 'settings'} onClick={() => {setActiveTab('settings'); setIsSplitScreen(false);}} />
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsSplitScreen(!isSplitScreen)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${isSplitScreen ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-stone-100 text-stone-600'}`}
-            title="Розділений екран (Словник + Нотатки)"
-          >
-            {isSplitScreen ? <PanelLeftClose size={20} /> : <Columns size={20} />}
-            <span className="hidden md:block text-sm">{isSplitScreen ? 'Закрити спліт' : 'Спліт-екран'}</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden p-4 sm:p-6">
-        <div className="flex flex-col lg:flex-row gap-6 h-full">
-          
-          {/* Dictionary Panel (Visible if active tab OR split screen) */}
-          <div className={`flex-1 flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden
-            ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}
-          `}>
-            <DictionaryPanel 
-              user={user} 
-              workspaceId={activeWorkspace.id} 
-              words={words} 
-              showToast={showToast}
-              autoFocus={activeTab === 'dictionary' || isSplitScreen}
-            />
-          </div>
-
-          {/* Notes Panel (Visible if active tab OR split screen) */}
-          <div className={`flex-1 flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden
-            ${(activeTab === 'notes' || isSplitScreen) ? 'flex' : 'hidden'}
-          `}>
-            <NotesPanel 
-              user={user} 
-              workspaceId={activeWorkspace.id} 
-              publicNotes={publicNotes} 
-              privateNotes={privateNotes} 
-              showToast={showToast} 
-            />
-          </div>
-
-          {/* Revision Panel */}
-          {!isSplitScreen && activeTab === 'revision' && (
-            <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-              <RevisionPanel words={words} workspaceId={activeWorkspace.id} />
-            </div>
-          )}
-
-          {/* Settings Panel */}
-          {!isSplitScreen && activeTab === 'settings' && (
-            <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden p-8">
-              <SettingsPanel user={user} workspace={activeWorkspace} />
-            </div>
-          )}
-
-        </div>
-      </main>
-
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 bg-stone-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4 z-50">
-          <Info size={18} className="text-indigo-400" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// --- Navigation Button Component ---
-const NavBtn = ({ icon, label, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-      active 
-        ? 'bg-white text-indigo-700 shadow-sm font-medium' 
-        : 'text-stone-500 hover:text-stone-800 hover:bg-stone-200/50'
-    }`}
-  >
-    {icon}
-    <span className="hidden md:block text-sm">{label}</span>
-  </button>
-);
-
-
-// ==========================================
-// WORKSPACE SETUP (Create / Join)
-// ==========================================
-function WorkspaceSetup({ user, workspaces }) {
-  const [joinCode, setJoinCode] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleCreate = async () => {
-    setLoading(true);
-    try {
-      const code = generateInviteCode();
-      const wsRef = collection(db, 'artifacts', appId, 'public', 'data', 'workspaces');
-      await addDoc(wsRef, {
-        inviteCode: code,
-        members: [user.uid],
-        createdAt: Date.now()
-      });
-    } catch (err) {
-      setError("Помилка створення робочого простору");
-    }
-    setLoading(false);
-  };
-
-  const handleJoin = async (e) => {
-    e.preventDefault();
-    if (!joinCode.trim()) return;
-    setLoading(true);
-    setError('');
-    
-    try {
-      const wsToJoin = workspaces.find(w => w.inviteCode.toUpperCase() === joinCode.toUpperCase().trim());
-      
-      if (!wsToJoin) {
-        setError("Код не знайдено");
-      } else if (wsToJoin.members.length >= 2 && !wsToJoin.members.includes(user.uid)) {
-        setError("Робочий простір вже має двох учасників");
-      } else {
-        const wsRef = doc(db, 'artifacts', appId, 'public', 'data', 'workspaces', wsToJoin.id);
-        const updatedMembers = wsToJoin.members.includes(user.uid) 
-          ? wsToJoin.members 
-          : [...wsToJoin.members, user.uid];
-          
-        await updateDoc(wsRef, { members: updatedMembers });
-      }
-    } catch (err) {
-      setError("Помилка приєднання");
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="flex h-screen items-center justify-center bg-stone-50 p-4">
-      <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-200 max-w-md w-full">
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
-        </div>
-        <h1 className="text-2xl font-bold text-center text-stone-800 mb-2">Ласкаво просимо до EngSpace</h1>
-        <p className="text-center text-stone-500 mb-8">Парний простір для вивчення англійської</p>
-
-        <button 
-          onClick={handleCreate}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-medium transition-colors mb-6 shadow-sm"
-        >
-          <Plus size={20} /> Створити новий простір
-        </button>
-
-        <div className="relative flex py-4 items-center">
-          <div className="flex-grow border-t border-stone-200"></div>
-          <span className="flex-shrink-0 mx-4 text-stone-400 text-sm">або</span>
-          <div className="flex-grow border-t border-stone-200"></div>
-        </div>
-
-        <form onSubmit={handleJoin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Маєте код запрошення?</label>
-            <input 
-              type="text" 
-              value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value)}
-              placeholder="Введіть код"
-              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none uppercase text-center tracking-widest text-lg"
-              maxLength={6}
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button 
-            type="submit"
-            disabled={loading || !joinCode.trim()}
-            className="w-full bg-stone-800 hover:bg-stone-900 text-white py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
-          >
-            Приєднатися
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-
-// ==========================================
-// DICTIONARY PANEL
-// ==========================================
-function DictionaryPanel({ user, workspaceId, words, showToast, autoFocus }) {
-  const [search, setSearch] = useState('');
-  const [isAdvancedForm, setIsAdvancedForm] = useState(false);
-  const enInputRef = useRef(null);
-
-  // Form State
-  const [formData, setFormData] = useState({
-    en: '', uk: '', example: '', pronunciation: '', pos: '', tags: ''
-  });
-
-  // Auto-focus English input when panel becomes active
-  useEffect(() => {
-    if (autoFocus && enInputRef.current) {
-      enInputRef.current.focus();
-    }
-  }, [autoFocus]);
-
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSave = async (e) => {
-    e?.preventDefault();
-    if (!formData.en.trim() || !formData.uk.trim()) return;
-
-    // Duplicate check
-    if (words.some(w => w.en.toLowerCase().trim() === formData.en.toLowerCase().trim())) {
-      showToast("Це слово вже є у словнику!");
-      return;
-    }
-
-    const newWord = {
-      ...formData,
-      workspaceId,
-      addedBy: user.uid,
-      createdAt: Date.now(),
-      nextReviewDate: null,
-      interval: 0,
-      easeFactor: 2.5,
-      repetitions: 0
-    };
-
-    try {
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'vocabulary'), newWord);
-      setFormData({ en: '', uk: '', example: '', pronunciation: '', pos: '', tags: '' });
-      showToast("Слово збережено");
-      enInputRef.current?.focus();
-    } catch (err) {
-      showToast("Помилка збереження");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'vocabulary', id));
-      showToast("Видалено");
-    } catch (err) {
-      showToast("Помилка видалення");
-    }
-  };
-
-  const filteredWords = words.filter(w => {
-    const s = search.toLowerCase();
-    return w.en.toLowerCase().includes(s) || 
-           w.uk.toLowerCase().includes(s) || 
-           (w.tags && w.tags.toLowerCase().includes(s));
-  });
-
-  return (
-    <div className="flex flex-col h-full bg-stone-50">
-      {/* Quick Entry Form */}
-      <div className="flex-none p-4 md:p-6 bg-white border-b border-stone-200">
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-3">
-            <input 
-              ref={enInputRef}
-              name="en"
-              value={formData.en}
-              onChange={handleChange}
-              placeholder="English word / phrase"
-              className="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-medium text-lg placeholder:font-normal"
-              autoComplete="off"
-            />
-            <input 
-              name="uk"
-              value={formData.uk}
-              onChange={handleChange}
-              placeholder="Український переклад"
-              className="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none font-medium text-lg placeholder:font-normal"
-              autoComplete="off"
-            />
-            <button 
-              type="submit"
-              disabled={!formData.en.trim() || !formData.uk.trim()}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors shadow-sm flex items-center justify-center gap-2 shrink-0"
-            >
-              <Save size={18} /> <span className="hidden md:inline">Зберегти</span>
-            </button>
-          </div>
-          
-          {/* Advanced fields toggle */}
-          <div className="flex items-center justify-between px-1">
-            <button 
-              type="button" 
-              onClick={() => setIsAdvancedForm(!isAdvancedForm)}
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
-            >
-              {isAdvancedForm ? 'Сховати деталі' : '+ Додати приклад, вимову...'}
-            </button>
-          </div>
-
-          {/* Advanced fields */}
-          {isAdvancedForm && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 animate-in slide-in-from-top-2">
-              <input name="example" value={formData.example} onChange={handleChange} placeholder="Приклад речення" className="px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-lg outline-none focus:border-indigo-400" />
-              <input name="pronunciation" value={formData.pronunciation} onChange={handleChange} placeholder="Вимова (напр. /tɛst/)" className="px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-lg outline-none focus:border-indigo-400" />
-              <input name="pos" value={formData.pos} onChange={handleChange} placeholder="Частина мови (noun, verb...)" className="px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-lg outline-none focus:border-indigo-400" />
-              <input name="tags" value={formData.tags} onChange={handleChange} placeholder="Теги (через кому)" className="px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-lg outline-none focus:border-indigo-400" />
-            </div>
-          )}
-        </form>
-      </div>
-
-      {/* Dictionary List & Search */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="p-4 flex-none border-b border-stone-200 bg-white/50 backdrop-blur-sm sticky top-0">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
-            <input 
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Пошук слів та перекладів..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400"
-            />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {filteredWords.length === 0 ? (
-            <div className="text-center text-stone-400 mt-10">
-              {search ? 'Нічого не знайдено' : 'Словник порожній. Додайте перше слово!'}
-            </div>
-          ) : (
-            filteredWords.map(word => (
-              <div key={word.id} className="group bg-white p-4 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow relative">
-                <div className="flex justify-between items-start gap-4">
-                  <div>
-                    <div className="flex items-baseline gap-3 flex-wrap">
-                      <span className="font-bold text-lg text-stone-900">{word.en}</span>
-                      {word.pronunciation && <span className="text-sm text-stone-400 font-mono">/{word.pronunciation}/</span>}
-                      <span className="text-stone-300 hidden sm:inline">•</span>
-                      <span className="text-indigo-600 font-medium">{word.uk}</span>
-                    </div>
-                    {word.example && (
-                      <p className="text-stone-600 italic text-sm mt-2 border-l-2 border-indigo-200 pl-3 py-1">
-                        "{word.example}"
-                      </p>
-                    )}
-                    <div className="flex items-center gap-3 mt-3 text-xs text-stone-400">
-                      {word.pos && <span className="bg-stone-100 px-2 py-0.5 rounded-md">{word.pos}</span>}
-                      {word.tags && <span className="text-stone-500">#{word.tags.split(',').join(' #')}</span>}
-                      <span title="Рівень вивчення">
-                        Рівень: {word.easeFactor > 2.5 ? 'Легко' : word.repetitions > 0 ? 'Вивчається' : 'Нове'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    onClick={() => handleDelete(word.id)}
-                    className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-red-50 shrink-0"
-                    title="Видалити"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-// ==========================================
-// NOTES PANEL
-// ==========================================
-function NotesPanel({ user, workspaceId, publicNotes, privateNotes, showToast }) {
-  const [activeNote, setActiveNote] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  
-  // Note Form State
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState('');
-  const [isShared, setIsShared] = useState(true);
-
-  // Combine and sort notes
-  const allNotes = useMemo(() => {
-    return [...publicNotes, ...privateNotes].sort((a, b) => b.updatedAt - a.updatedAt);
-  }, [publicNotes, privateNotes]);
-
-  const filteredNotes = allNotes.filter(n => 
-    n.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    n.content?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const startNewNote = () => {
-    setActiveNote(null);
-    setNoteTitle('');
-    setNoteContent('');
-    setIsShared(true);
-    setIsEditing(true);
-  };
-
-  const openNote = (note) => {
-    setActiveNote(note);
-    setNoteTitle(note.title);
-    setNoteContent(note.content);
-    setIsShared(note.isShared);
-    setIsEditing(true);
-  };
-
-  const saveNote = async () => {
-    if (!noteTitle.trim() && !noteContent.trim()) return;
-
-    const noteData = {
-      title: noteTitle || 'Без назви',
-      content: noteContent,
-      isShared,
-      updatedAt: Date.now()
-    };
-
-    try {
-      if (activeNote) {
-        // Update existing
-        // Check if sharing status changed (requires moving document)
-        if (activeNote.isShared !== isShared) {
-          // Delete old
-          await deleteDoc(doc(db, 'artifacts', appId, activeNote.isShared ? 'public/data/notes' : `users/${user.uid}/notes`, activeNote.id));
-          // Create new
-          const path = isShared ? 'public/data/notes' : `users/${user.uid}/notes`;
-          const coll = isShared ? collection(db, 'artifacts', appId, 'public', 'data', 'notes') : collection(db, 'artifacts', appId, 'users', user.uid, 'notes');
-          const newDoc = await addDoc(coll, { ...noteData, workspaceId, createdAt: activeNote.createdAt || Date.now() });
-          setActiveNote({ id: newDoc.id, ...noteData });
-        } else {
-          // Normal update
-          const path = isShared ? 'public/data/notes' : `users/${user.uid}/notes`;
-          const ref = isShared 
-            ? doc(db, 'artifacts', appId, 'public', 'data', 'notes', activeNote.id)
-            : doc(db, 'artifacts', appId, 'users', user.uid, 'notes', activeNote.id);
-          await updateDoc(ref, noteData);
-          setActiveNote({ ...activeNote, ...noteData });
-        }
-      } else {
-        // Create new
-        const coll = isShared ? collection(db, 'artifacts', appId, 'public', 'data', 'notes') : collection(db, 'artifacts', appId, 'users', user.uid, 'notes');
-        const newDoc = await addDoc(coll, { ...noteData, workspaceId, createdAt: Date.now() });
-        setActiveNote({ id: newDoc.id, ...noteData });
-      }
-      showToast("Нотатку збережено");
-    } catch (err) {
-      showToast("Помилка збереження");
-      console.error(err);
-    }
-  };
-
-  const deleteNote = async (note) => {
-    try {
-      const ref = note.isShared 
-        ? doc(db, 'artifacts', appId, 'public', 'data', 'notes', note.id)
-        : doc(db, 'artifacts', appId, 'users', user.uid, 'notes', note.id);
-      await deleteDoc(ref);
-      showToast("Видалено");
-      if (activeNote?.id === note.id) {
-        setIsEditing(false);
-        setActiveNote(null);
-      }
-    } catch (err) {
-      showToast("Помилка видалення");
-    }
-  };
-
-  return (
-    <div className="flex h-full relative">
-      {/* Sidebar List (hidden on small screens if editing) */}
-      <div className={`w-full md:w-1/3 border-r border-stone-200 flex flex-col bg-stone-50 ${isEditing ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-4 border-b border-stone-200">
-          <button 
-            onClick={startNewNote}
-            className="w-full flex items-center justify-center gap-2 bg-white border border-stone-200 hover:border-indigo-400 hover:text-indigo-600 text-stone-700 py-2 rounded-xl font-medium transition-all shadow-sm"
-          >
-            <Plus size={18} /> Створити нотатку
-          </button>
-        </div>
-        
-        <div className="p-3 border-b border-stone-200 bg-white">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={16} />
-            <input 
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Пошук нотаток..."
-              className="w-full pl-9 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-indigo-400"
-            />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {filteredNotes.map(note => (
-            <div 
-              key={note.id}
-              onClick={() => openNote(note)}
-              className={`p-3 rounded-xl cursor-pointer group flex flex-col gap-1 ${
-                activeNote?.id === note.id ? 'bg-indigo-50 border border-indigo-200' : 'hover:bg-stone-100 border border-transparent'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-stone-800 truncate pr-2">{note.title}</h4>
-                {note.isShared ? <Users size={14} className="text-indigo-400 shrink-0"/> : <Lock size={14} className="text-stone-400 shrink-0"/>}
-              </div>
-              <p className="text-xs text-stone-500 truncate">{note.content || 'Пусто...'}</p>
-            </div>
-          ))}
-          {filteredNotes.length === 0 && (
-            <div className="text-center text-sm text-stone-400 mt-6 px-4">
-              Немає нотаток. Створіть першу!
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Editor Area */}
-      <div className={`w-full md:w-2/3 flex flex-col bg-white ${!isEditing ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
-        {!isEditing ? (
-          <div className="text-center text-stone-400 flex flex-col items-center gap-3">
-            <NotebookPen size={48} className="opacity-20" />
-            <p>Оберіть нотатку або створіть нову</p>
-          </div>
-        ) : (
-          <>
-            {/* Editor Header */}
-            <div className="flex items-center justify-between p-4 border-b border-stone-100">
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setIsEditing(false)}
-                  className="md:hidden p-2 -ml-2 text-stone-500 hover:bg-stone-100 rounded-lg"
-                >
-                  <PanelLeftClose size={20} className="rotate-180" />
-                </button>
-                <div className="flex bg-stone-100 p-1 rounded-lg">
-                  <button 
-                    onClick={() => setIsShared(true)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${isShared ? 'bg-white shadow-sm text-indigo-700' : 'text-stone-500 hover:text-stone-700'}`}
-                  >
-                    <Users size={14}/> Спільна
-                  </button>
-                  <button 
-                    onClick={() => setIsShared(false)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${!isShared ? 'bg-white shadow-sm text-stone-800' : 'text-stone-500 hover:text-stone-700'}`}
-                  >
-                    <Lock size={14}/> Особиста
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {activeNote && (
-                  <button 
-                    onClick={() => deleteNote(activeNote)}
-                    className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Видалити"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                )}
-                <button 
-                  onClick={saveNote}
-                  className="flex items-center gap-2 bg-stone-800 hover:bg-stone-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  <Save size={16} /> Зберегти
-                </button>
-              </div>
-            </div>
-
-            {/* Editor Body */}
-            <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-              <input 
-                type="text"
-                value={noteTitle}
-                onChange={(e) => setNoteTitle(e.target.value)}
-                placeholder="Назва нотатки..."
-                className="text-2xl font-bold text-stone-900 placeholder:text-stone-300 border-none outline-none bg-transparent mb-6"
-              />
-              <textarea 
-                value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
-                placeholder="Почніть писати тут..."
-                className="flex-1 w-full resize-none border-none outline-none bg-transparent text-stone-700 leading-relaxed"
-              />
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
-// ==========================================
-// REVISION PANEL (Flashcards)
-// ==========================================
-function RevisionPanel({ words, workspaceId }) {
-  const [currentWord, setCurrentWord] = useState(null);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [stats, setStats] = useState({ due: 0, learned: 0 });
-
-  const now = Date.now();
-  
-  // Calculate queue based on spaced repetition logic
-  const dueWords = useMemo(() => {
-    return words.filter(w => !w.nextReviewDate || w.nextReviewDate <= now)
-                .sort((a, b) => (a.nextReviewDate || 0) - (b.nextReviewDate || 0));
-  }, [words, now]);
-
-  useEffect(() => {
-    setStats({
-      due: dueWords.length,
-      learned: words.filter(w => w.repetitions > 2).length
-    });
-    
-    if (dueWords.length > 0 && !currentWord) {
-      setCurrentWord(dueWords[0]);
-    } else if (dueWords.length === 0) {
-      setCurrentWord(null);
-    }
-  }, [dueWords, words]);
-
-  const handleRating = async (quality) => {
-    if (!currentWord) return;
-
-    const { repetitions, interval, easeFactor, nextReviewDate } = calculateNextReview(
-      quality, 
-      currentWord.repetitions, 
-      currentWord.interval, 
-      currentWord.easeFactor
-    );
-
-    try {
-      const wRef = doc(db, 'artifacts', appId, 'public', 'data', 'vocabulary', currentWord.id);
-      await updateDoc(wRef, { repetitions, interval, easeFactor, nextReviewDate });
-      
-      setShowAnswer(false);
-      // Move to next word (dueWords will update via subscription, triggering useEffect to set new currentWord)
-      if (dueWords.length > 1) {
-        setCurrentWord(dueWords[1]); // Optimistic local update
-      } else {
-        setCurrentWord(null);
-      }
-    } catch (err) {
-      console.error("Error updating word review", err);
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full bg-stone-50/50 relative overflow-hidden">
-      {/* Decorative background blur */}
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"></div>
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"></div>
-
-      <div className="p-6 flex items-center justify-between z-10">
-        <h2 className="text-xl font-bold text-stone-800 flex items-center gap-2">
-          <BrainCircuit className="text-indigo-600" />
-          Тренування
-        </h2>
-        <div className="flex gap-4 text-sm font-medium text-stone-600 bg-white px-4 py-2 rounded-xl shadow-sm border border-stone-100">
-          <span>Слів на сьогодні: <strong className="text-indigo-600 text-base">{stats.due}</strong></span>
-          <span className="border-l border-stone-200 pl-4">Добре вивчено: <strong className="text-green-600 text-base">{stats.learned}</strong></span>
-        </div>
-      </div>
-
-      <div className="flex-1 flex items-center justify-center p-6 z-10">
-        {!currentWord ? (
-          <div className="text-center bg-white p-10 rounded-3xl shadow-sm border border-stone-200 max-w-sm w-full">
-            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 size={40} />
-            </div>
-            <h3 className="text-2xl font-bold text-stone-800 mb-2">Відмінно!</h3>
-            <p className="text-stone-500 mb-6">Всі слова на сьогодні повторені. Відпочиньте або додайте нові слова у словник.</p>
-          </div>
-        ) : (
-          <div className="w-full max-w-2xl bg-white rounded-[2rem] shadow-lg border border-stone-100 p-8 md:p-12 flex flex-col text-center min-h-[400px] transition-all">
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EngSpace - Словник та Нотатки</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel для компіляції JSX в браузері -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- Іконки (Мінімалістичний SVG-компонент замість Lucide) ---
+        const Icon = ({ name, size = 18, className = "" }) => {
+            const paths = {
+                book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+                pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+                brain: '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>',
+                settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+                columns: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="12" x2="12" y1="3" y2="21"/>',
+                splitClose: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="9" x2="9" y1="3" y2="21"/><path d="m14 9-3 3 3 3"/>',
+                search: '<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/>',
+                plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+                trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+                save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+                info: '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/>',
+                check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+            };
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: paths[name] }} />
+            );
+        };
+
+        // --- Логіка інтервального повторення ---
+        const calculateNextReview = (quality, currentReps = 0, currentInterval = 0, currentEase = 2.5) => {
+            let reps = currentReps;
+            let interval = currentInterval;
+            let ease = currentEase;
+
+            if (quality < 3) {
+                reps = 0;
+                interval = 1;
+            } else {
+                reps += 1;
+                if (reps === 1) interval = 1;
+                else if (reps === 2) interval = 6;
+                else interval = Math.round(interval * ease);
+            }
+
+            ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+            if (ease < 1.3) ease = 1.3;
+
+            const nextDate = new Date();
+            nextDate.setDate(nextDate.getDate() + interval);
+
+            return { repetitions: reps, interval, easeFactor: ease, nextReviewDate: nextDate.getTime() };
+        };
+
+        // --- Локальне сховище (LocalStorage) ---
+        const useLocalStorage = (key, initialValue) => {
+            const [storedValue, setStoredValue] = useState(() => {
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    return initialValue;
+                }
+            });
+
+            const setValue = (value) => {
+                try {
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                } catch (error) {
+                    console.error("Error saving to localStorage", error);
+                }
+            };
+            return [storedValue, setValue];
+        };
+
+        // --- Головний компонент ---
+        function App() {
+            const [words, setWords] = useLocalStorage('engspace_words', []);
+            const [notes, setNotes] = useLocalStorage('engspace_notes', []);
             
-            <div className="flex-1 flex flex-col justify-center mb-8">
-              <span className="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-4">Англійська</span>
-              <h2 className="text-5xl font-bold text-stone-900 mb-4">{currentWord.en}</h2>
-              {currentWord.pronunciation && <p className="text-stone-400 font-mono text-lg">/{currentWord.pronunciation}/</p>}
-            </div>
+            const [activeTab, setActiveTab] = useState('dictionary');
+            const [isSplitScreen, setIsSplitScreen] = useState(false);
+            const [toastMessage, setToastMessage] = useState(null);
 
-            {!showAnswer ? (
-              <button 
-                onClick={() => setShowAnswer(true)}
-                className="w-full py-4 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-2xl font-semibold text-lg transition-colors border border-stone-200"
-              >
-                Показати переклад
-              </button>
-            ) : (
-              <div className="animate-in slide-in-from-bottom-4 fade-in duration-300">
-                <div className="border-t border-stone-100 pt-8 mb-8">
-                   <span className="text-sm font-semibold text-green-500 uppercase tracking-widest mb-2 block">Переклад</span>
-                  <h3 className="text-3xl font-bold text-indigo-700 mb-4">{currentWord.uk}</h3>
-                  {currentWord.example && (
-                    <p className="text-stone-600 italic text-lg bg-stone-50 py-3 px-4 rounded-xl">"{currentWord.example}"</p>
-                  )}
+            const showToast = (msg) => {
+                setToastMessage(msg);
+                setTimeout(() => setToastMessage(null), 3000);
+            };
+
+            return (
+                <div className="flex flex-col h-screen overflow-hidden">
+                    {/* Top Navigation */}
+                    <header className="flex-none flex items-center justify-between px-6 py-4 bg-white border-b border-stone-200 shadow-sm z-10">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md">E</div>
+                            <span className="font-semibold text-lg tracking-tight hidden sm:block">EngSpace</span>
+                        </div>
+
+                        <nav className="flex items-center gap-1 sm:gap-2 bg-stone-100 p-1 rounded-xl">
+                            <NavBtn icon={<Icon name="book" />} label="Словник" active={activeTab === 'dictionary'} onClick={() => {setActiveTab('dictionary'); setIsSplitScreen(false);}} />
+                            <NavBtn icon={<Icon name="pen" />} label="Нотатки" active={activeTab === 'notes'} onClick={() => {setActiveTab('notes'); setIsSplitScreen(false);}} />
+                            <NavBtn icon={<Icon name="brain" />} label="Повторення" active={activeTab === 'revision'} onClick={() => {setActiveTab('revision'); setIsSplitScreen(false);}} />
+                            <NavBtn icon={<Icon name="settings" />} label="Налаштування" active={activeTab === 'settings'} onClick={() => {setActiveTab('settings'); setIsSplitScreen(false);}} />
+                        </nav>
+
+                        <button 
+                            onClick={() => setIsSplitScreen(!isSplitScreen)}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-colors ${isSplitScreen ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-stone-100 text-stone-600'}`}
+                        >
+                            <Icon name={isSplitScreen ? "splitClose" : "columns"} />
+                            <span className="hidden md:block text-sm">{isSplitScreen ? 'Закрити спліт' : 'Спліт-екран'}</span>
+                        </button>
+                    </header>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 overflow-hidden p-4 sm:p-6">
+                        <div className="flex flex-col lg:flex-row gap-6 h-full">
+                            
+                            <div className={`flex-1 flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                <DictionaryPanel words={words} setWords={setWords} showToast={showToast} />
+                            </div>
+
+                            <div className={`flex-1 flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden ${(activeTab === 'notes' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                <NotesPanel notes={notes} setNotes={setNotes} showToast={showToast} />
+                            </div>
+
+                            {!isSplitScreen && activeTab === 'revision' && (
+                                <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                                    <RevisionPanel words={words} setWords={setWords} />
+                                </div>
+                            )}
+
+                            {!isSplitScreen && activeTab === 'settings' && (
+                                <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden p-8">
+                                    <SettingsPanel setWords={setWords} setNotes={setNotes} showToast={showToast} />
+                                </div>
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Toast */}
+                    {toastMessage && (
+                        <div className="fixed bottom-6 right-6 bg-stone-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50">
+                            <Icon name="info" className="text-indigo-400" />
+                            <span>{toastMessage}</span>
+                        </div>
+                    )}
                 </div>
+            );
+        }
 
-                <p className="text-sm text-stone-500 mb-4 font-medium">Як добре ви пам'ятали це слово?</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <RatingBtn label="Не пам'ятаю" color="bg-red-100 text-red-700 hover:bg-red-200" onClick={() => handleRating(0)} />
-                  <RatingBtn label="Важко" color="bg-orange-100 text-orange-700 hover:bg-orange-200" onClick={() => handleRating(3)} />
-                  <RatingBtn label="Добре" color="bg-blue-100 text-blue-700 hover:bg-blue-200" onClick={() => handleRating(4)} />
-                  <RatingBtn label="Легко" color="bg-green-100 text-green-700 hover:bg-green-200" onClick={() => handleRating(5)} />
+        const NavBtn = ({ icon, label, active, onClick }) => (
+            <button
+                onClick={onClick}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+                    active ? 'bg-white text-indigo-700 shadow-sm font-medium' : 'text-stone-500 hover:text-stone-800 hover:bg-stone-200/50'
+                }`}
+            >
+                {icon}
+                <span className="hidden md:block text-sm">{label}</span>
+            </button>
+        );
+
+        // --- Компонент Словника ---
+        function DictionaryPanel({ words, setWords, showToast }) {
+            const [search, setSearch] = useState('');
+            const [formData, setFormData] = useState({ en: '', uk: '', example: '' });
+
+            const handleSave = (e) => {
+                e.preventDefault();
+                if (!formData.en.trim() || !formData.uk.trim()) return;
+
+                const newWord = {
+                    id: Date.now().toString(),
+                    ...formData,
+                    nextReviewDate: null,
+                    interval: 0,
+                    easeFactor: 2.5,
+                    repetitions: 0
+                };
+
+                setWords([newWord, ...words]);
+                setFormData({ en: '', uk: '', example: '' });
+                showToast("Слово збережено");
+            };
+
+            const handleDelete = (id) => {
+                setWords(words.filter(w => w.id !== id));
+                showToast("Видалено");
+            };
+
+            const filteredWords = words.filter(w => 
+                w.en.toLowerCase().includes(search.toLowerCase()) || 
+                w.uk.toLowerCase().includes(search.toLowerCase())
+            );
+
+            return (
+                <div className="flex flex-col h-full bg-stone-50">
+                    <div className="flex-none p-4 md:p-6 bg-white border-b border-stone-200">
+                        <form onSubmit={handleSave} className="space-y-3">
+                            <div className="flex flex-col md:flex-row gap-3">
+                                <input value={formData.en} onChange={e => setFormData({...formData, en: e.target.value})} placeholder="English word" className="flex-1 px-4 py-2 border rounded-lg outline-none focus:border-indigo-500" />
+                                <input value={formData.uk} onChange={e => setFormData({...formData, uk: e.target.value})} placeholder="Переклад" className="flex-1 px-4 py-2 border rounded-lg outline-none focus:border-indigo-500" />
+                                <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex gap-2 justify-center items-center">
+                                    <Icon name="save" /> <span className="hidden md:inline">Зберегти</span>
+                                </button>
+                            </div>
+                            <input value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} placeholder="Приклад речення (необов'язково)" className="w-full px-4 py-2 border rounded-lg outline-none focus:border-indigo-500 text-sm" />
+                        </form>
+                    </div>
+
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="p-4 flex-none border-b border-stone-200 bg-white sticky top-0">
+                            <div className="relative">
+                                <span className="absolute left-3 top-2.5 text-stone-400"><Icon name="search" /></span>
+                                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Пошук..." className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm outline-none focus:border-indigo-400" />
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            {filteredWords.length === 0 ? (
+                                <div className="text-center text-stone-400 mt-10">Словник порожній. Додайте перше слово!</div>
+                            ) : (
+                                filteredWords.map(word => (
+                                    <div key={word.id} className="group bg-white p-4 rounded-xl border shadow-sm flex justify-between items-start gap-4">
+                                        <div>
+                                            <div className="flex items-baseline gap-3">
+                                                <span className="font-bold text-lg text-stone-900">{word.en}</span>
+                                                <span className="text-indigo-600 font-medium">{word.uk}</span>
+                                            </div>
+                                            {word.example && <p className="text-stone-600 italic text-sm mt-1">"{word.example}"</p>}
+                                        </div>
+                                        <button onClick={() => handleDelete(word.id)} className="text-stone-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 shrink-0">
+                                            <Icon name="trash" size={16} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+            );
+        }
 
-const RatingBtn = ({ label, color, onClick }) => (
-  <button 
-    onClick={onClick}
-    className={`py-3 px-2 rounded-xl font-medium transition-colors border border-transparent hover:border-black/5 ${color}`}
-  >
-    {label}
-  </button>
-);
+        // --- Компонент Нотаток ---
+        function NotesPanel({ notes, setNotes, showToast }) {
+            const [activeNote, setActiveNote] = useState(null);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [title, setTitle] = useState('');
+            const [content, setContent] = useState('');
 
-const CheckCircle2 = ({ size }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-);
+            const filteredNotes = notes.filter(n => n.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
+            const openNote = (note) => {
+                setActiveNote(note);
+                setTitle(note.title);
+                setContent(note.content);
+            };
 
-// ==========================================
-// SETTINGS PANEL
-// ==========================================
-function SettingsPanel({ user, workspace }) {
-  
-  const handleLeave = async () => {
-    if(confirm("Ви впевнені, що хочете покинути цей простір?")) {
-      try {
-        const wsRef = doc(db, 'artifacts', appId, 'public', 'data', 'workspaces', workspace.id);
-        const newMembers = workspace.members.filter(m => m !== user.uid);
-        await updateDoc(wsRef, { members: newMembers });
-        // Force reload or let reactive state handle it (App component will revert to Setup screen)
-      } catch (err) {
-        console.error("Error leaving workspace", err);
-      }
-    }
-  };
+            const saveNote = () => {
+                if (!title.trim() && !content.trim()) return;
+                
+                if (activeNote) {
+                    setNotes(notes.map(n => n.id === activeNote.id ? { ...n, title: title || 'Без назви', content, updatedAt: Date.now() } : n));
+                } else {
+                    const newNote = { id: Date.now().toString(), title: title || 'Без назви', content, updatedAt: Date.now() };
+                    setNotes([newNote, ...notes]);
+                    setActiveNote(newNote);
+                }
+                showToast("Нотатку збережено");
+            };
 
-  return (
-    <div className="max-w-2xl mx-auto w-full">
-      <h2 className="text-2xl font-bold text-stone-800 mb-8 flex items-center gap-2">
-        <Settings className="text-stone-400" />
-        Налаштування простору
-      </h2>
+            const deleteNote = (id) => {
+                setNotes(notes.filter(n => n.id !== id));
+                if (activeNote?.id === id) setActiveNote(null);
+                showToast("Видалено");
+            };
 
-      <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm mb-6">
-        <h3 className="text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2">
-          <Users className="text-indigo-500" size={20}/>
-          Код запрошення
-        </h3>
-        <p className="text-stone-500 text-sm mb-4">
-          Поділіться цим кодом з партнером, щоб він міг приєднатися до вашого словника та спільних нотаток.
-        </p>
-        
-        <div className="flex items-center gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200">
-          <div className="text-3xl font-mono font-bold tracking-widest text-indigo-700 bg-white px-6 py-2 rounded-lg border border-indigo-100 shadow-sm">
-            {workspace.inviteCode}
-          </div>
-          <div className="flex-1"></div>
-          <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-            Учасників: {workspace.members?.length || 0}/2
-          </span>
-        </div>
-      </div>
+            return (
+                <div className="flex h-full">
+                    <div className={`w-full md:w-1/3 border-r flex flex-col bg-stone-50 ${activeNote ? 'hidden md:flex' : 'flex'}`}>
+                        <div className="p-4 border-b">
+                            <button onClick={() => {setActiveNote(null); setTitle(''); setContent('');}} className="w-full flex items-center justify-center gap-2 bg-white border hover:border-indigo-400 py-2 rounded-xl text-sm font-medium">
+                                <Icon name="plus" /> Створити нотатку
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                            {filteredNotes.map(note => (
+                                <div key={note.id} onClick={() => openNote(note)} className={`p-3 rounded-xl cursor-pointer ${activeNote?.id === note.id ? 'bg-indigo-50 border-indigo-200 border' : 'hover:bg-stone-100 border border-transparent'}`}>
+                                    <h4 className="font-medium truncate">{note.title}</h4>
+                                    <p className="text-xs text-stone-500 truncate">{note.content || 'Пусто...'}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
-      <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
-         <h3 className="text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2">
-          <LogOut className="text-red-500" size={20}/>
-          Небезпечна зона
-        </h3>
-        <p className="text-stone-500 text-sm mb-4">
-          Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника, доки не приєднаєтесь знову.
-        </p>
-        <button 
-          onClick={handleLeave}
-          className="bg-red-50 hover:bg-red-100 text-red-600 font-medium px-6 py-3 rounded-xl transition-colors border border-red-200"
-        >
-          Покинути простір
-        </button>
-      </div>
+                    <div className={`w-full md:w-2/3 flex flex-col bg-white ${!activeNote && notes.length > 0 ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
+                        {(!activeNote && title === '' && content === '') ? (
+                            <div className="text-center text-stone-400">Оберіть нотатку або створіть нову</div>
+                        ) : (
+                            <>
+                                <div className="flex items-center justify-between p-4 border-b">
+                                    <button onClick={() => setActiveNote(null)} className="md:hidden text-stone-500"><Icon name="splitClose" className="rotate-180" /></button>
+                                    <div className="flex gap-2 ml-auto">
+                                        {activeNote && <button onClick={() => deleteNote(activeNote.id)} className="p-2 text-stone-400 hover:text-red-600"><Icon name="trash" /></button>}
+                                        <button onClick={saveNote} className="flex gap-2 bg-stone-800 text-white px-4 py-2 rounded-lg text-sm"><Icon name="save" /> Зберегти</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                                    <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Назва нотатки..." className="text-2xl font-bold border-none outline-none mb-4" />
+                                    <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Пишіть тут..." className="flex-1 w-full resize-none border-none outline-none" />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        }
 
-      <div className="mt-12 text-center text-sm text-stone-400 flex flex-col items-center justify-center gap-2">
-        <span>Ваш ID: <code className="bg-stone-100 px-2 py-1 rounded text-xs select-all">{user.uid}</code></span>
-        <span>Версія 1.0.0 • EngSpace</span>
-      </div>
-    </div>
-  );
-}
+        // --- Компонент Повторення (Картки) ---
+        function RevisionPanel({ words, setWords }) {
+            const [currentWord, setCurrentWord] = useState(null);
+            const [showAnswer, setShowAnswer] = useState(false);
+
+            const dueWords = useMemo(() => {
+                const now = Date.now();
+                return words.filter(w => !w.nextReviewDate || w.nextReviewDate <= now)
+                            .sort((a, b) => (a.nextReviewDate || 0) - (b.nextReviewDate || 0));
+            }, [words]);
+
+            useEffect(() => {
+                if (dueWords.length > 0 && !currentWord) setCurrentWord(dueWords[0]);
+                else if (dueWords.length === 0) setCurrentWord(null);
+            }, [dueWords]);
+
+            const handleRating = (quality) => {
+                const { repetitions, interval, easeFactor, nextReviewDate } = calculateNextReview(
+                    quality, currentWord.repetitions, currentWord.interval, currentWord.easeFactor
+                );
+
+                setWords(words.map(w => w.id === currentWord.id ? { ...w, repetitions, interval, easeFactor, nextReviewDate } : w));
+                setShowAnswer(false);
+                setCurrentWord(dueWords.length > 1 ? dueWords[1] : null);
+            };
+
+            return (
+                <div className="flex flex-col h-full relative p-6">
+                    <h2 className="text-xl font-bold flex gap-2 mb-6"><Icon name="brain" className="text-indigo-600"/> Тренування ({dueWords.length} слів)</h2>
+                    
+                    <div className="flex-1 flex items-center justify-center">
+                        {!currentWord ? (
+                            <div className="text-center p-10 bg-white rounded-3xl border shadow-sm">
+                                <div className="text-green-500 flex justify-center mb-4"><Icon name="check" size={48}/></div>
+                                <h3 className="text-2xl font-bold mb-2">Відмінно!</h3>
+                                <p className="text-stone-500">Всі слова на сьогодні повторені.</p>
+                            </div>
+                        ) : (
+                            <div className="w-full max-w-xl bg-white rounded-3xl border p-10 text-center shadow-lg">
+                                <h2 className="text-5xl font-bold mb-8">{currentWord.en}</h2>
+                                {!showAnswer ? (
+                                    <button onClick={() => setShowAnswer(true)} className="w-full py-4 bg-stone-100 rounded-xl font-semibold hover:bg-stone-200">Показати переклад</button>
+                                ) : (
+                                    <div className="border-t pt-8">
+                                        <h3 className="text-3xl font-bold text-indigo-700 mb-6">{currentWord.uk}</h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            <button onClick={() => handleRating(0)} className="py-2 bg-red-100 text-red-700 rounded-lg">Збув/ла</button>
+                                            <button onClick={() => handleRating(3)} className="py-2 bg-orange-100 text-orange-700 rounded-lg">Важко</button>
+                                            <button onClick={() => handleRating(4)} className="py-2 bg-blue-100 text-blue-700 rounded-lg">Добре</button>
+                                            <button onClick={() => handleRating(5)} className="py-2 bg-green-100 text-green-700 rounded-lg">Легко</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Налаштування ---
+        function SettingsPanel({ setWords, setNotes, showToast }) {
+            const handleClear = () => {
+                if(window.confirm("УВАГА! Це назавжди видалить усі ваші слова та нотатки з браузера. Продовжити?")) {
+                    setWords([]);
+                    setNotes([]);
+                    showToast("Всі дані очищено");
+                }
+            };
+
+            return (
+                <div className="max-w-2xl mx-auto w-full">
+                    <h2 className="text-2xl font-bold mb-8">Налаштування (Локальна версія)</h2>
+                    <div className="bg-white border rounded-xl p-6 mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Про зберігання даних</h3>
+                        <p className="text-sm text-stone-500 mb-4">Ця версія зберігає ваші дані локально у браузері. Якщо ви очистите кеш браузера або зайдете з іншого пристрою, дані будуть недоступні.</p>
+                        <button onClick={handleClear} className="px-4 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-100">
+                            Очистити всі локальні дані
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
