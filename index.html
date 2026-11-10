@@ -9,7 +9,7 @@
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel для компіляції JSX в браузері -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans">
@@ -18,7 +18,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Іконки (Мінімалістичний SVG-компонент замість Lucide) ---
+        // --- Іконки ---
         const Icon = ({ name, size = 18, className = "" }) => {
             const paths = {
                 book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
@@ -64,7 +64,7 @@
             return { repetitions: reps, interval, easeFactor: ease, nextReviewDate: nextDate.getTime() };
         };
 
-        // --- Локальне сховище (LocalStorage) ---
+        // --- Локальне сховище (LocalStorage) - ВИПРАВЛЕНО ---
         const useLocalStorage = (key, initialValue) => {
             const [storedValue, setStoredValue] = useState(() => {
                 try {
@@ -76,13 +76,15 @@
             });
 
             const setValue = (value) => {
-                try {
-                    const valueToStore = value instanceof Function ? value(storedValue) : value;
-                    setStoredValue(valueToStore);
-                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
-                } catch (error) {
-                    console.error("Error saving to localStorage", error);
-                }
+                setStoredValue(prev => {
+                    const next = value instanceof Function ? value(prev) : value;
+                    try {
+                        window.localStorage.setItem(key, JSON.stringify(next));
+                    } catch (error) {
+                        console.error("Error saving to localStorage", error);
+                    }
+                    return next;
+                });
             };
             return [storedValue, setValue];
         };
@@ -94,12 +96,28 @@
             
             const [activeTab, setActiveTab] = useState('dictionary');
             const [isSplitScreen, setIsSplitScreen] = useState(false);
+            
             const [toastMessage, setToastMessage] = useState(null);
+            const toastTimeoutRef = useRef(null);
 
+            // ВИПРАВЛЕНО: Очищення таймера Toast
             const showToast = (msg) => {
                 setToastMessage(msg);
-                setTimeout(() => setToastMessage(null), 3000);
+                if (toastTimeoutRef.current) {
+                    clearTimeout(toastTimeoutRef.current);
+                }
+                toastTimeoutRef.current = setTimeout(() => {
+                    setToastMessage(null);
+                    toastTimeoutRef.current = null;
+                }, 3000);
             };
+
+            // Очищення таймера при анмаунті
+            useEffect(() => {
+                return () => {
+                    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+                };
+            }, []);
 
             return (
                 <div className="flex flex-col h-screen overflow-hidden">
@@ -154,7 +172,7 @@
 
                     {/* Toast */}
                     {toastMessage && (
-                        <div className="fixed bottom-6 right-6 bg-stone-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50">
+                        <div className="fixed bottom-6 right-6 bg-stone-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50 transition-opacity">
                             <Icon name="info" className="text-indigo-400" />
                             <span>{toastMessage}</span>
                         </div>
@@ -193,13 +211,13 @@
                     repetitions: 0
                 };
 
-                setWords([newWord, ...words]);
+                setWords(prev => [newWord, ...prev]);
                 setFormData({ en: '', uk: '', example: '' });
                 showToast("Слово збережено");
             };
 
             const handleDelete = (id) => {
-                setWords(words.filter(w => w.id !== id));
+                setWords(prev => prev.filter(w => w.id !== id));
                 showToast("Видалено");
             };
 
@@ -215,7 +233,7 @@
                             <div className="flex flex-col md:flex-row gap-3">
                                 <input value={formData.en} onChange={e => setFormData({...formData, en: e.target.value})} placeholder="English word" className="flex-1 px-4 py-2 border rounded-lg outline-none focus:border-indigo-500" />
                                 <input value={formData.uk} onChange={e => setFormData({...formData, uk: e.target.value})} placeholder="Переклад" className="flex-1 px-4 py-2 border rounded-lg outline-none focus:border-indigo-500" />
-                                <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex gap-2 justify-center items-center">
+                                <button type="submit" disabled={!formData.en.trim() || !formData.uk.trim()} className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex gap-2 justify-center items-center">
                                     <Icon name="save" /> <span className="hidden md:inline">Зберегти</span>
                                 </button>
                             </div>
@@ -275,17 +293,17 @@
                 if (!title.trim() && !content.trim()) return;
                 
                 if (activeNote) {
-                    setNotes(notes.map(n => n.id === activeNote.id ? { ...n, title: title || 'Без назви', content, updatedAt: Date.now() } : n));
+                    setNotes(prev => prev.map(n => n.id === activeNote.id ? { ...n, title: title || 'Без назви', content, updatedAt: Date.now() } : n));
                 } else {
                     const newNote = { id: Date.now().toString(), title: title || 'Без назви', content, updatedAt: Date.now() };
-                    setNotes([newNote, ...notes]);
+                    setNotes(prev => [newNote, ...prev]);
                     setActiveNote(newNote);
                 }
                 showToast("Нотатку збережено");
             };
 
             const deleteNote = (id) => {
-                setNotes(notes.filter(n => n.id !== id));
+                setNotes(prev => prev.filter(n => n.id !== id));
                 if (activeNote?.id === id) setActiveNote(null);
                 showToast("Видалено");
             };
@@ -331,7 +349,7 @@
             );
         }
 
-        // --- Компонент Повторення (Картки) ---
+        // --- Компонент Повторення (Картки) - ВИПРАВЛЕНО ---
         function RevisionPanel({ words, setWords }) {
             const [currentWord, setCurrentWord] = useState(null);
             const [showAnswer, setShowAnswer] = useState(false);
@@ -342,19 +360,35 @@
                             .sort((a, b) => (a.nextReviewDate || 0) - (b.nextReviewDate || 0));
             }, [words]);
 
+            // Безпечне оновлення currentWord з урахуванням масиву залежностей
             useEffect(() => {
-                if (dueWords.length > 0 && !currentWord) setCurrentWord(dueWords[0]);
-                else if (dueWords.length === 0) setCurrentWord(null);
-            }, [dueWords]);
+                if (dueWords.length > 0) {
+                    // Якщо слова немає, або поточне слово вже не в dueWords (наприклад, воно щойно оновилося)
+                    if (!currentWord || !dueWords.find(w => w.id === currentWord.id)) {
+                        setCurrentWord(dueWords[0]);
+                        setShowAnswer(false);
+                    }
+                } else {
+                    setCurrentWord(null);
+                }
+            }, [dueWords, currentWord]);
 
             const handleRating = (quality) => {
+                // Перевірка на null
+                if (!currentWord) return;
+
                 const { repetitions, interval, easeFactor, nextReviewDate } = calculateNextReview(
                     quality, currentWord.repetitions, currentWord.interval, currentWord.easeFactor
                 );
 
-                setWords(words.map(w => w.id === currentWord.id ? { ...w, repetitions, interval, easeFactor, nextReviewDate } : w));
+                // Оновлюємо масив слів через callback
+                setWords(prev => prev.map(w => 
+                    w.id === currentWord.id ? { ...w, repetitions, interval, easeFactor, nextReviewDate } : w
+                ));
+                
+                // Скидаємо поточне слово, щоб useEffect підтягнув наступне з нового dueWords
+                setCurrentWord(null); 
                 setShowAnswer(false);
-                setCurrentWord(dueWords.length > 1 ? dueWords[1] : null);
             };
 
             return (
@@ -374,13 +408,13 @@
                                 {!showAnswer ? (
                                     <button onClick={() => setShowAnswer(true)} className="w-full py-4 bg-stone-100 rounded-xl font-semibold hover:bg-stone-200">Показати переклад</button>
                                 ) : (
-                                    <div className="border-t pt-8">
+                                    <div className="border-t pt-8 animate-in fade-in">
                                         <h3 className="text-3xl font-bold text-indigo-700 mb-6">{currentWord.uk}</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <button onClick={() => handleRating(0)} className="py-2 bg-red-100 text-red-700 rounded-lg">Збув/ла</button>
-                                            <button onClick={() => handleRating(3)} className="py-2 bg-orange-100 text-orange-700 rounded-lg">Важко</button>
-                                            <button onClick={() => handleRating(4)} className="py-2 bg-blue-100 text-blue-700 rounded-lg">Добре</button>
-                                            <button onClick={() => handleRating(5)} className="py-2 bg-green-100 text-green-700 rounded-lg">Легко</button>
+                                            <button onClick={() => handleRating(0)} className="py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">Забув/ла</button>
+                                            <button onClick={() => handleRating(3)} className="py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors">Важко</button>
+                                            <button onClick={() => handleRating(4)} className="py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">Добре</button>
+                                            <button onClick={() => handleRating(5)} className="py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">Легко</button>
                                         </div>
                                     </div>
                                 )}
@@ -403,11 +437,11 @@
 
             return (
                 <div className="max-w-2xl mx-auto w-full">
-                    <h2 className="text-2xl font-bold mb-8">Налаштування (Локальна версія)</h2>
-                    <div className="bg-white border rounded-xl p-6 mb-6">
+                    <h2 className="text-2xl font-bold mb-8 flex items-center gap-2"><Icon name="settings" /> Налаштування (Локальна версія)</h2>
+                    <div className="bg-white border rounded-xl p-6 mb-6 shadow-sm">
                         <h3 className="text-lg font-semibold mb-2">Про зберігання даних</h3>
                         <p className="text-sm text-stone-500 mb-4">Ця версія зберігає ваші дані локально у браузері. Якщо ви очистите кеш браузера або зайдете з іншого пристрою, дані будуть недоступні.</p>
-                        <button onClick={handleClear} className="px-4 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-100">
+                        <button onClick={handleClear} className="px-4 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-100 transition-colors font-medium">
                             Очистити всі локальні дані
                         </button>
                     </div>
