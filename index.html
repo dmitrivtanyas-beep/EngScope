@@ -13,22 +13,7 @@
     <!-- Babel -->
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(3deg); }
-        }
-        .animate-float {
-            animation: floatSlow 6s ease-in-out infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-        }
-        .animate-glow {
-            animation: pulseGlow 4s ease-in-out infinite;
-        }
-
-        /* Стилі з шаблону TEAM Blue Ocean (Abyss Ocean Theme) */
+        /* Стилі для теми Abyss Ocean (Glassmorphism) */
         .abyss-bg {
             font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(180deg, 
@@ -194,7 +179,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // Графічний шар для нової теми Abyss Ocean (промені, планктон, медуза, силуети акул)
+        // Графічний шар для теми Abyss Ocean
         const AbyssGlobalLayer = () => {
             const dots = useMemo(() => Array.from({ length: 24 }).map((_, i) => ({
                 id: i,
@@ -293,7 +278,7 @@
             </div>
         );
 
-        // --- Теми оформлення ---
+        // --- Теми оформлення (залишено: Класична, Y2K Pastel, Abyss Ocean) ---
         const themes = {
             default: {
                 id: "default",
@@ -335,57 +320,9 @@
                 globalLayer: null,
                 decorHtml: <div className="absolute bottom-3 right-4 text-pink-300/60 text-xl pointer-events-none select-none">✦</div>
             },
-            darkRed: {
-                id: "darkRed",
-                name: "Exile (Dark Red)",
-                bg: "bg-[#090505] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(185,28,28,0.15),rgba(255,255,255,0))]",
-                text: "text-stone-100",
-                cardBg: "bg-neutral-950/90 backdrop-blur-xl shadow-2xl shadow-red-950/50 rounded-3xl relative overflow-hidden border border-red-900/40",
-                subCardBg: "bg-neutral-900/90",
-                border: "border-red-900/50",
-                primary: "bg-gradient-to-r from-red-700 to-rose-900 hover:from-red-600 hover:to-rose-800 text-white shadow-lg shadow-red-900/40 rounded-2xl font-semibold border border-red-600/30",
-                secondaryBtn: "bg-neutral-900 hover:bg-neutral-800 text-red-500 border border-red-900/60 shadow-md rounded-2xl font-semibold",
-                primaryLight: "bg-red-950/60 text-red-400 border-red-900/50",
-                accentText: "text-red-500 font-bold tracking-wide",
-                navBg: "bg-neutral-950/90 border border-red-900/50 shadow-lg backdrop-blur-md rounded-2xl",
-                inputBg: "bg-neutral-900/80 border-red-900/50 text-stone-200 focus:border-red-600 rounded-2xl placeholder:text-stone-600",
-                shadow: "shadow-2xl shadow-red-950/30",
-                toastBg: "bg-neutral-950 border-2 border-red-800/80 text-red-200 shadow-2xl backdrop-blur-md rounded-2xl",
-                toastIcon: "text-red-500",
-                globalLayer: null,
-                decorHtml: <div className="absolute bottom-3 right-4 text-red-600/40 text-lg pointer-events-none select-none">✦</div>
-            },
-            ocean: {
-                id: "ocean",
-                name: "Blue Ocean",
-                bg: "bg-[#020617] bg-[radial-gradient(circle_at_50%_0%,rgba(14,116,144,0.35)_0%,rgba(3,7,18,0.95)_70%,rgba(2,6,23,1)_100%)]",
-                text: "text-cyan-50",
-                cardBg: "bg-slate-950/90 backdrop-blur-2xl shadow-2xl shadow-cyan-950/80 rounded-3xl relative overflow-hidden border border-cyan-500/40 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.15),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,99,235,0.1),transparent_50%)]",
-                subCardBg: "bg-slate-950/80",
-                border: "border-cyan-500/50",
-                primary: "bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/60 rounded-2xl font-semibold border border-cyan-400/40",
-                secondaryBtn: "bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/60 shadow-md rounded-2xl font-semibold",
-                primaryLight: "bg-cyan-950/70 text-cyan-200 border-cyan-500/60",
-                accentText: "text-cyan-400 font-bold tracking-wide",
-                navBg: "bg-slate-950/90 border border-cyan-500/50 shadow-lg backdrop-blur-md rounded-2xl",
-                inputBg: "bg-slate-900/80 border-cyan-500/50 text-cyan-100 focus:border-cyan-400 rounded-2xl placeholder:text-cyan-700/60",
-                shadow: "shadow-2xl shadow-cyan-950/50",
-                toastBg: "bg-slate-950 border-2 border-cyan-500 text-cyan-100 shadow-2xl backdrop-blur-md rounded-2xl",
-                toastIcon: "text-cyan-400",
-                globalLayer: null,
-                decorHtml: (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                        <div className="absolute -top-20 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-glow"></div>
-                        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl animate-float"></div>
-                        <div className="absolute top-4 right-6 text-cyan-400/30 text-xs font-mono tracking-widest uppercase select-none flex items-center gap-1">
-                            <span>BLUE OCEAN DEEP</span> <span>✦</span>
-                        </div>
-                    </div>
-                )
-            },
             abyssOcean: {
                 id: "abyssOcean",
-                name: "Abyss Ocean (Glassmorphism)",
+                name: "Abyss Ocean",
                 bg: "abyss-bg",
                 text: "text-slate-50 text-glow-abyss",
                 cardBg: "abyss-glass-panel rounded-[28px] relative overflow-hidden",
@@ -464,7 +401,7 @@
             const t = themes[currentTheme];
 
             const toggleTheme = () => {
-                const order = ['default', 'y2k', 'darkRed', 'ocean', 'abyssOcean'];
+                const order = ['default', 'y2k', 'abyssOcean'];
                 const next = order[(order.indexOf(currentTheme) + 1) % order.length];
                 setCurrentTheme(next);
                 localStorage.setItem('engspace_theme', next);
@@ -601,7 +538,7 @@
                             <div className="hidden sm:flex flex-col">
                                 <span className={`font-bold text-lg tracking-tight leading-none ${t.text}`}>EngSpace</span>
                                 {currentTheme === 'abyssOcean' && (
-                                    <span className="text-[9px] uppercase tracking-[0.22em] text-sky-300/75 mt-0.5">Blue Ocean Edition</span>
+                                    <span className="text-[9px] uppercase tracking-[0.22em] text-sky-300/75 mt-0.5">Abyss Ocean Edition</span>
                                 )}
                             </div>
                         </div>
