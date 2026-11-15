@@ -8,6 +8,55 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    .ocean-background {
+      background: linear-gradient(180deg, #010409 0%, #031329 22%, #051d3b 48%, #031226 74%, #020a17 100%);
+      color: #f8fafc;
+    }
+    .ocean-background::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 620px;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 0%, rgba(186,230,253,.28), rgba(56,189,248,.12) 34%, transparent 72%);
+      filter: blur(18px);
+    }
+    .ocean-glass {
+      background: linear-gradient(145deg, rgba(15,42,78,.75), rgba(5,19,38,.78) 58%, rgba(8,28,56,.74));
+      border: 1px solid rgba(147,210,255,.32);
+      box-shadow: 0 18px 45px rgba(0,4,12,.42), 0 0 24px rgba(56,189,248,.1), inset 0 1px rgba(224,242,254,.18);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .ocean-button {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+      box-shadow: 0 5px 20px rgba(2,132,199,.3);
+    }
+    .ocean-button:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); }
+    .ocean-jellyfish {
+      animation: jelly-drift 7s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px rgba(56,189,248,.55));
+    }
+    @keyframes jelly-drift {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-18px) rotate(3deg); }
+    }
+    .ocean-plankton {
+      position: absolute;
+      border-radius: 9999px;
+      background: radial-gradient(circle, rgba(224,242,254,.95), rgba(56,189,248,.3) 60%, transparent);
+      animation: plankton-float 10s ease-in-out infinite;
+    }
+    @keyframes plankton-float {
+      0%, 100% { transform: translateY(0); opacity: .25; }
+      50% { transform: translateY(-28px); opacity: .85; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ocean-jellyfish, .ocean-plankton { animation: none; }
+    }
+  </style>
 </head>
 <body class="font-sans transition-colors duration-300">
   <div id="root"></div>
@@ -17,6 +66,7 @@
 
     const themes = {
       light: {
+        label: 'Світла',
         bg: 'bg-stone-50',
         text: 'text-stone-800',
         cardBg: 'bg-white',
@@ -31,6 +81,7 @@
         toggle: 'bg-white border-stone-200 text-stone-600'
       },
       pink: {
+        label: 'Рожева',
         bg: 'bg-gradient-to-br from-pink-100 via-sky-100 to-pink-50',
         text: 'text-pink-900',
         cardBg: 'bg-white/90 backdrop-blur-md',
@@ -43,8 +94,62 @@
         muted: 'text-stone-500',
         shadow: 'shadow-md shadow-pink-100',
         toggle: 'bg-white/80 border-pink-200 text-stone-600'
+      },
+      ocean: {
+        label: 'Blue Ocean',
+        bg: 'ocean-background',
+        text: 'text-slate-50',
+        cardBg: 'ocean-glass',
+        border: 'border-sky-200/30',
+        primary: 'ocean-button',
+        primaryLight: 'bg-sky-400/15 text-sky-100 border-sky-300/30',
+        accent: 'text-sky-300',
+        navBg: 'bg-slate-950/40 border border-sky-200/25 backdrop-blur-xl',
+        inputBg: 'bg-slate-950/40 border-sky-200/30 text-white placeholder:text-sky-100/45',
+        muted: 'text-sky-100/70',
+        shadow: 'shadow-xl shadow-slate-950/30',
+        toggle: 'bg-slate-950/50 border-sky-200/30 text-sky-100'
       }
     };
+
+    function OceanDecor() {
+      return (
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+          <div className="ocean-plankton left-[8%] top-[22%] h-1 w-1" />
+          <div className="ocean-plankton left-[24%] top-[48%] h-1.5 w-1.5 [animation-delay:1s]" />
+          <div className="ocean-plankton left-[78%] top-[34%] h-1 w-1 [animation-delay:2s]" />
+          <div className="ocean-plankton left-[90%] top-[60%] h-1.5 w-1.5 [animation-delay:3s]" />
+          <div className="ocean-plankton left-[58%] top-[72%] h-1 w-1 [animation-delay:4s]" />
+          <div className="ocean-jellyfish absolute right-[4%] top-32 opacity-70 sm:right-[10%] lg:right-[18%]">
+            <svg className="h-44 w-36 sm:h-56 sm:w-44" viewBox="0 0 220 280" fill="none">
+              <defs>
+                <radialGradient id="jellyBell" cx="45%" cy="30%" r="65%">
+                  <stop offset="0%" stopColor="#fff" stopOpacity=".95" />
+                  <stop offset="38%" stopColor="#7dd3fc" stopOpacity=".72" />
+                  <stop offset="78%" stopColor="#0284c7" stopOpacity=".35" />
+                  <stop offset="100%" stopColor="#0369a1" stopOpacity=".05" />
+                </radialGradient>
+                <linearGradient id="tentacleGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#bae6fd" stopOpacity=".75" />
+                  <stop offset="60%" stopColor="#38bdf8" stopOpacity=".3" />
+                  <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <g transform="rotate(-18 110 110)">
+                <path d="M72 118 Q62 175 84 235 M88 122 Q98 185 82 255 M106 124 Q100 190 118 265 M124 122 Q138 180 122 250 M142 116 Q155 170 140 230" stroke="url(#tentacleGrad)" strokeWidth="3" strokeLinecap="round" />
+                <path d="M52 112 C52 58 168 58 168 112 C168 124 146 128 134 122 C122 128 98 128 86 122 C74 128 52 124 52 112Z" fill="url(#jellyBell)" stroke="#e0f2fe" strokeOpacity=".65" strokeWidth="1.2" />
+                <ellipse cx="110" cy="84" rx="34" ry="15" fill="white" fillOpacity=".35" />
+              </g>
+            </svg>
+          </div>
+          <div className="absolute left-[5%] top-[68%] opacity-25 sm:left-[12%]">
+            <svg className="h-32 w-32 text-sky-200" viewBox="0 0 200 200" fill="none">
+              <path d="M100 14 122 72 184 76 135 114 152 175 100 140 48 175 65 114 16 76 78 72Z" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeOpacity=".65" strokeWidth="2" />
+            </svg>
+          </div>
+        </div>
+      );
+    }
 
     function App() {
       const [themeName, setThemeName] = useState(() => {
@@ -59,47 +164,37 @@
       }, [themeName]);
 
       const switchTheme = () => {
-        setThemeName(prev => prev === 'light' ? 'pink' : 'light');
+        setThemeName(prev => prev === 'light' ? 'pink' : prev === 'pink' ? 'ocean' : 'light');
       };
 
       return (
-        <div className={`min-h-screen ${theme.bg} ${theme.text} transition-all duration-300`}>
+        <div className={`relative min-h-screen overflow-hidden ${theme.bg} ${theme.text} transition-all duration-300`}>
+          {themeName === 'ocean' && <OceanDecor />}
           <header className={`sticky top-0 z-10 border-b ${theme.border} ${theme.cardBg} ${theme.shadow}`}>
             <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-400 to-indigo-600 text-lg font-bold text-white shadow-md">
-                  E
-                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-400 to-indigo-600 text-lg font-bold text-white shadow-md">E</div>
                 <div>
                   <p className="text-lg font-bold">EngSpace</p>
                   <p className={`text-xs ${theme.muted}`}>Парний простір для англійської</p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={switchTheme}
-                  className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${theme.toggle}`}
-                >
-                  {themeName === 'light' ? 'Рожева тема' : 'Світла тема'}
-                </button>
-              </div>
+              <button onClick={switchTheme} className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${theme.toggle}`}>
+                Наступна тема: {themeName === 'light' ? 'Рожева' : themeName === 'pink' ? 'Blue Ocean' : 'Світла'}
+              </button>
             </div>
           </header>
 
-          <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <main className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6">
             <section className="mb-8 grid gap-4 md:grid-cols-3">
               <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Словник</p>
-                <p className={`mt-2 text-3xl font-bold ${theme.accent}`}>128</p>
+                <p className={`text-sm ${theme.muted}`}>Словник</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>128</p>
               </div>
               <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Нотатки</p>
-                <p className={`mt-2 text-3xl font-bold ${theme.accent}`}>24</p>
+                <p className={`text-sm ${theme.muted}`}>Нотатки</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>24</p>
               </div>
               <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Повторення</p>
-                <p className={`mt-2 text-3xl font-bold ${theme.accent}`}>9</p>
+                <p className={`text-sm ${theme.muted}`}>Повторення</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>9</p>
               </div>
             </section>
 
@@ -107,11 +202,8 @@
               <div className={`rounded-3xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-5`}>
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-xl font-bold">Нові слова</h2>
-                  <button className={`rounded-xl px-3 py-2 text-sm font-medium ${theme.primary}`}>
-                    Додати слово
-                  </button>
+                  <button className={`rounded-xl px-3 py-2 text-sm font-medium ${theme.primary}`}>Додати слово</button>
                 </div>
-
                 <div className="space-y-3">
                   {[
                     { en: 'clarify', uk: 'прояснювати', example: 'The teacher clarified the rules.' },
@@ -120,10 +212,7 @@
                   ].map((word, index) => (
                     <div key={index} className={`flex items-start justify-between gap-3 rounded-2xl border ${theme.border} p-3`}>
                       <div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold">{word.en}</span>
-                          <span className={theme.accent}>{word.uk}</span>
-                        </div>
+                        <div className="flex items-center gap-3"><span className="text-lg font-bold">{word.en}</span><span className={theme.accent}>{word.uk}</span></div>
                         <p className={`mt-1 text-sm ${theme.muted}`}>&ldquo;{word.example}&rdquo;</p>
                       </div>
                     </div>
@@ -133,27 +222,14 @@
 
               <div className={`rounded-3xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-5`}>
                 <h2 className="mb-4 text-xl font-bold">Налаштування</h2>
-
                 <div className={`mb-4 rounded-2xl border ${theme.border} ${theme.primaryLight} p-3`}>
-                  <p className="font-medium">Поточна тема</p>
-                  <p className="text-sm opacity-80">{themeName === 'light' ? 'Світла' : 'Рожева'}</p>
+                  <p className="font-medium">Поточна тема</p><p className="text-sm opacity-80">{theme.label}</p>
                 </div>
-
                 <label className="mb-3 block text-sm font-medium">Введіть слово</label>
-                <input
-                  className={`mb-3 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`}
-                  placeholder="Наприклад: interesting"
-                />
-
+                <input className={`mb-3 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`} placeholder="Наприклад: interesting" />
                 <label className="mb-3 block text-sm font-medium">Переклад</label>
-                <input
-                  className={`mb-4 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`}
-                  placeholder="Наприклад: цікавий"
-                />
-
-                <button className={`w-full rounded-xl px-4 py-3 font-medium ${theme.primary}`}>
-                  Зберегти
-                </button>
+                <input className={`mb-4 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`} placeholder="Наприклад: цікавий" />
+                <button className={`w-full rounded-xl px-4 py-3 font-medium ${theme.primary}`}>Зберегти</button>
               </div>
             </section>
           </main>
