@@ -74,11 +74,14 @@
                 cardBg: "bg-white",
                 border: "border-stone-200",
                 primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
+                secondaryBtn: "bg-stone-800 hover:bg-stone-900 text-white",
                 primaryLight: "bg-indigo-50 text-indigo-700 border-indigo-200",
                 accentText: "text-indigo-600",
                 navBg: "bg-stone-100",
                 inputBg: "bg-stone-50",
-                shadow: "shadow-sm"
+                shadow: "shadow-sm",
+                toastBg: "bg-stone-800 text-white",
+                toastIcon: "text-indigo-400"
             },
             y2k: {
                 bg: "bg-gradient-to-br from-pink-100 via-sky-100 to-pink-50",
@@ -86,11 +89,14 @@
                 cardBg: "bg-white/90 backdrop-blur-md shadow-pink-200/50",
                 border: "border-pink-200",
                 primary: "bg-gradient-to-r from-pink-400 to-sky-400 hover:from-pink-500 hover:to-sky-500 text-white shadow-md shadow-pink-200",
+                secondaryBtn: "bg-gradient-to-r from-pink-500 to-indigo-500 hover:opacity-90 text-white shadow-md",
                 primaryLight: "bg-pink-50 text-pink-700 border-pink-200",
                 accentText: "text-pink-500",
                 navBg: "bg-white/80 border border-pink-200",
                 inputBg: "bg-pink-50/40 border-pink-200",
-                shadow: "shadow-md shadow-pink-100"
+                shadow: "shadow-md shadow-pink-100",
+                toastBg: "bg-white border border-pink-200 text-pink-900 shadow-xl",
+                toastIcon: "text-pink-500"
             }
         };
 
@@ -147,8 +153,11 @@
             const [user, setUser] = useState(null);
             const [authLoading, setAuthLoading] = useState(true);
 
-            // Керування темами (default або y2k)
-            const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem('engspace_theme') || 'default');
+            // Захищене зчитування теми з localStorage з фолбеком на 'default'
+            const [currentTheme, setCurrentTheme] = useState(() => {
+                const saved = localStorage.getItem('engspace_theme');
+                return themes[saved] ? saved : 'default';
+            });
             const t = themes[currentTheme];
 
             const toggleTheme = () => {
@@ -254,8 +263,7 @@
             if (!user) {
                 return (
                     <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
-                        {/* Маленька кнопка зміни теми на екрані входу */}
-                        <button onClick={toggleTheme} className="absolute top-6 right-6 p-2 rounded-xl bg-white/80 border border-pink-200 shadow-sm hover:scale-105 transition-all text-stone-600" title="Змінити тему">
+                        <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-xl ${t.cardBg} border ${t.border} shadow-sm hover:scale-105 transition-all text-stone-600`} title="Змінити тему">
                             <Icon name="palette" size={18} />
                         </button>
                         <div className={`${t.cardBg} p-8 rounded-3xl shadow-sm border ${t.border} max-w-md w-full text-center`}>
@@ -291,7 +299,6 @@
                         </nav>
 
                         <div className="flex items-center gap-2">
-                            {/* Надзвичайно маленька кнопка зміни теми */}
                             <button onClick={toggleTheme} className={`p-2 rounded-xl ${t.cardBg} border ${t.border} hover:scale-105 transition-all text-stone-600`} title="Змінити тему">
                                 <Icon name="palette" size={16} />
                             </button>
@@ -330,8 +337,8 @@
                     </main>
 
                     {toastMessage && (
-                        <div className="fixed bottom-6 right-6 bg-stone-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50">
-                            <Icon name="info" className="text-pink-400" />
+                        <div className={`fixed bottom-6 right-6 ${t.toastBg} px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50`}>
+                            <Icon name="info" className={t.toastIcon} />
                             <span>{toastMessage}</span>
                         </div>
                     )}
@@ -393,10 +400,10 @@
             return (
                 <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
                     <div className="absolute top-6 right-6 flex items-center gap-2">
-                        <button onClick={toggleTheme} className="p-2 rounded-xl bg-white/80 border border-pink-200 shadow-sm hover:scale-105 transition-all text-stone-600" title="Змінити тему">
+                        <button onClick={toggleTheme} className={`p-2.5 rounded-xl ${t.cardBg} border ${t.border} shadow-sm hover:scale-105 transition-all text-stone-600`} title="Змінити тему">
                             <Icon name="palette" size={18} />
                         </button>
-                        <button onClick={logout} className={`flex items-center gap-2 text-stone-600 bg-white/80 px-4 py-2 rounded-xl border ${t.border} shadow-sm text-sm font-medium`}>
+                        <button onClick={logout} className={`flex items-center gap-2 text-stone-600 ${t.cardBg} px-4 py-2 rounded-xl border ${t.border} shadow-sm text-sm font-medium`}>
                             <Icon name="logout" size={16} /> Вийти ({user.email})
                         </button>
                     </div>
@@ -422,7 +429,7 @@
                                 <label className={`block text-sm font-medium ${t.text} mb-1`}>Код запрошення</label>
                                 <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} placeholder="Введіть код" className={`w-full px-4 py-3 ${t.inputBg} border ${t.border} rounded-xl focus:ring-2 focus:ring-pink-400/20 outline-none uppercase text-center tracking-widest text-lg font-mono`} maxLength={6} />
                             </div>
-                            <button type="submit" disabled={loading || !joinCode.trim()} className="w-full bg-stone-800 hover:bg-stone-900 text-white py-3 rounded-xl font-medium transition-colors disabled:opacity-50">
+                            <button type="submit" disabled={loading || !joinCode.trim()} className={`w-full ${t.secondaryBtn} py-3 rounded-xl font-medium transition-colors disabled:opacity-50`}>
                                 Приєднатися
                             </button>
                         </form>
@@ -638,7 +645,7 @@
                                     </div>
                                     <div className="flex gap-2">
                                         {activeNote && <button onClick={() => deleteNote(activeNote)} className="p-2 text-stone-400 hover:text-red-600 rounded-lg"><Icon name="trash" size={18} /></button>}
-                                        <button onClick={saveNote} className={`flex items-center gap-2 ${t.primary} px-4 py-2 rounded-lg text-sm font-medium transition-colors`}><Icon name="save" size={16} /> Зберегти</button>
+                                        <button onClick={saveNote} className={`flex items-center gap-2 ${t.secondaryBtn} px-4 py-2 rounded-lg text-sm font-medium transition-colors`}><Icon name="save" size={16} /> Зберегти</button>
                                     </div>
                                 </div>
                                 <div className="flex-1 flex flex-col p-6 overflow-y-auto">
