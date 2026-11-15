@@ -26,6 +26,62 @@
         .animate-glow {
             animation: pulseGlow 4s ease-in-out infinite;
         }
+
+        /* NOCTURNE — dark gloss cyber-sigilism + editorial brutalism */
+        body.cyber-theme {
+            color: #e8e7f0;
+            background: #07080c;
+            background-image:
+                radial-gradient(ellipse at 18% 0%, rgba(115, 76, 190, .16), transparent 42%),
+                radial-gradient(ellipse at 90% 85%, rgba(85, 43, 125, .10), transparent 38%),
+                linear-gradient(rgba(170, 150, 220, .025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(170, 150, 220, .025) 1px, transparent 1px);
+            background-size: auto, auto, 44px 44px, 44px 44px;
+            background-attachment: fixed;
+        }
+        body.cyber-theme #root { min-height: 100vh; }
+        body.cyber-theme ::selection { background: rgba(167, 139, 250, .35); color: #fff; }
+        body.cyber-theme button, body.cyber-theme input, body.cyber-theme textarea { transition: border-color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease; }
+        body.cyber-theme button:focus-visible, body.cyber-theme input:focus-visible, body.cyber-theme textarea:focus-visible {
+            outline: 1px solid rgba(196, 181, 253, .85);
+            outline-offset: 3px;
+        }
+        body.cyber-theme .rounded-3xl { border-radius: 1rem !important; }
+        body.cyber-theme .rounded-2xl { border-radius: .75rem !important; }
+        body.cyber-theme .rounded-xl { border-radius: .55rem !important; }
+        body.cyber-theme .border-2 { border-width: 1px !important; }
+        body.cyber-theme .shadow-md, body.cyber-theme .shadow-lg { box-shadow: 0 12px 34px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.025) !important; }
+        body.cyber-theme .shadow-2xl { box-shadow: 0 24px 70px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.035) !important; }
+        body.cyber-theme .bg-white, body.cyber-theme .bg-white\/95 { background: rgba(17,19,27,.82) !important; }
+        body.cyber-theme .text-stone-400 { color: #858397 !important; }
+        body.cyber-theme .text-stone-500 { color: #9995aa !important; }
+        body.cyber-theme .text-stone-300 { color: #c3bfd1 !important; }
+        body.cyber-theme .text-cyan-300\\/70, body.cyber-theme .text-cyan-300\\/60 { color: rgba(190,181,220,.68) !important; }
+        body.cyber-theme .text-cyan-500\\/60, body.cyber-theme .text-cyan-500\\/50 { color: rgba(180,160,225,.55) !important; }
+        body.cyber-theme .text-cyan-400 { color: #c4b5fd !important; }
+        body.cyber-theme .text-cyan-300 { color: #d8ccff !important; }
+        body.cyber-theme .border-cyan-400, body.cyber-theme .focus\\:border-cyan-400:focus { border-color: rgba(196,181,253,.65) !important; }
+        body.cyber-theme .hover\\:border-cyan-400:hover { border-color: rgba(196,181,253,.65) !important; }
+        body.cyber-theme .bg-cyan-950, body.cyber-theme .bg-slate-900, body.cyber-theme .bg-neutral-900 { background-color: rgba(18,20,30,.92) !important; }
+        body.cyber-theme .hover\\:bg-cyan-950\\/30:hover, body.cyber-theme .hover\\:bg-cyan-950\\/40:hover { background-color: rgba(139,92,246,.08) !important; }
+        body.cyber-theme input, body.cyber-theme textarea {
+            caret-color: #c4b5fd;
+        }
+        body.cyber-theme header {
+            background: rgba(10,11,17,.88) !important;
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(196,181,253,.24) !important;
+        }
+        body.cyber-theme main > div > div {
+            box-shadow: 0 22px 65px rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.035);
+        }
+        body.cyber-theme .cyber-decoration { opacity: .9; }
+        body.cyber-theme .animate-glow { animation-duration: 7s; }
+        body.cyber-theme .animate-float { animation-duration: 11s; }
+        body.cyber-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
+        body.cyber-theme ::-webkit-scrollbar-track { background: rgba(5,6,10,.45); }
+        body.cyber-theme ::-webkit-scrollbar-thumb { background: rgba(153,126,210,.28); border-radius: 20px; }
+        body.cyber-theme ::-webkit-scrollbar-thumb:hover { background: rgba(180,155,235,.48); }
     </style>
 </head>
 <body class="font-sans transition-colors duration-300">
@@ -83,6 +139,37 @@
 
         // --- Теми оформлення ---
         const themes = {
+            cyber: {
+                id: "cyber",
+                name: "NOCTURNE / Cyber Sigil",
+                bg: "bg-[#07080c]",
+                text: "text-[#e8e7f0]",
+                cardBg: "bg-[#11131b]/80 backdrop-blur-2xl shadow-2xl shadow-black/50 rounded-2xl relative overflow-hidden border border-violet-400/20",
+                border: "border-violet-400/20",
+                primary: "bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white shadow-lg shadow-violet-950/50 rounded-xl font-semibold border border-violet-300/30",
+                secondaryBtn: "bg-[#171923]/90 hover:bg-[#202331] text-[#d9d3ff] border border-violet-300/25 shadow-md rounded-xl font-semibold",
+                primaryLight: "bg-violet-500/10 text-violet-200 border-violet-300/30",
+                accentText: "text-[#b7a5ff] font-semibold tracking-wide",
+                navBg: "bg-[#0c0e15]/90 border border-violet-300/20 shadow-lg backdrop-blur-xl rounded-xl",
+                inputBg: "bg-[#090b11]/85 border-violet-300/20 text-[#f0eff8] focus:border-violet-300/60 rounded-xl placeholder:text-slate-600",
+                shadow: "shadow-2xl shadow-black/40",
+                toastBg: "bg-[#10121a]/95 border border-violet-300/30 text-[#eeeaff] shadow-2xl backdrop-blur-xl rounded-xl",
+                toastIcon: "text-[#c4b5fd]",
+                decorHtml: (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 cyber-decoration">
+                        <div className="absolute -top-28 -right-20 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl animate-glow"></div>
+                        <div className="absolute -bottom-32 -left-24 w-96 h-96 bg-fuchsia-500/5 rounded-full blur-3xl animate-float"></div>
+                        <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-violet-300/50 to-transparent"></div>
+                        <div className="absolute top-5 right-6 text-violet-200/30 text-[10px] font-mono tracking-[0.35em] uppercase">ENGSPACE / 01</div>
+                        <div className="absolute bottom-4 left-6 text-violet-200/20 text-[10px] font-mono tracking-[0.25em]">VOCABULARY ARCHIVE · EST. 2026</div>
+                        <svg className="absolute right-8 bottom-8 w-24 h-24 opacity-[0.12]" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                            <path d="M50 4 61 34 92 50 61 61 50 96 39 61 8 50 39 34Z" stroke="currentColor" strokeWidth=".7"/>
+                            <circle cx="50" cy="50" r="19" stroke="currentColor" strokeWidth=".7"/>
+                            <path d="M50 4V96M8 50H92M20 20 80 80M80 20 20 80" stroke="currentColor" strokeWidth=".45"/>
+                        </svg>
+                    </div>
+                )
+            },
             default: {
                 id: "default",
                 name: "Класична",
@@ -226,20 +313,25 @@
             const [authLoading, setAuthLoading] = useState(true);
 
             const [currentTheme, setCurrentTheme] = useState(() => {
-                const saved = localStorage.getItem('engspace_theme');
-                return themes[saved] ? saved : 'default';
+                const saved = localStorage.getItem('engspace_theme_v2');
+                return themes[saved] ? saved : 'cyber';
             });
             const t = themes[currentTheme];
 
+            useEffect(() => {
+                document.body.classList.toggle('cyber-theme', currentTheme === 'cyber');
+            }, [currentTheme]);
+
             const toggleTheme = () => {
                 let next = 'default';
-                if (currentTheme === 'default') next = 'y2k';
+                if (currentTheme === 'cyber') next = 'default';
+                else if (currentTheme === 'default') next = 'y2k';
                 else if (currentTheme === 'y2k') next = 'darkRed';
                 else if (currentTheme === 'darkRed') next = 'ocean';
-                else next = 'default';
+                else next = 'cyber';
 
                 setCurrentTheme(next);
-                localStorage.setItem('engspace_theme', next);
+                localStorage.setItem('engspace_theme_v2', next);
             };
 
             const [workspaces, setWorkspaces] = useState([]);
