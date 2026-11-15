@@ -20,7 +20,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
             getAuth, 
-            signInWithPopup, 
             signInWithRedirect, 
             GoogleAuthProvider, 
             onAuthStateChanged, 
@@ -48,7 +47,6 @@
             auth, 
             db, 
             appId, 
-            signInWithPopup, 
             signInWithRedirect, 
             GoogleAuthProvider, 
             onAuthStateChanged, 
@@ -164,28 +162,13 @@
                 provider.setCustomParameters({ prompt: "select_account" });
 
                 try {
-                    await fb.signInWithPopup(fb.auth, provider);
+                    await fb.signInWithRedirect(fb.auth, provider);
                 } catch (err) {
                     console.error("Auth error:", err);
-
-                    if (
-                        ["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"]
-                            .includes(err.code)
-                    ) {
-                        try {
-                            await fb.signInWithRedirect(fb.auth, provider);
-                            return;
-                        } catch (redirectError) {
-                            console.error("Redirect auth error:", redirectError);
-                            showToast("Не вдалося відкрити вхід Google. Перевірте налаштування Firebase.");
-                            return;
-                        }
-                    }
-
                     showToast(
                         err.code === "auth/unauthorized-domain"
                             ? "Домен сайту не дозволений у Firebase Authentication."
-                            : "Помилка входу через Google. Перевірте консоль браузера."
+                            : "Помилка входу через Google. Перевірте налаштування."
                     );
                 }
             };
