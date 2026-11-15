@@ -14,10 +14,17 @@
     <style>
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
         }
         .animate-float {
             animation: floatSlow 6s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
         }
     </style>
 </head>
@@ -74,7 +81,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Теми оформлення з насиченою фоновою графікою на великих прямокутниках ---
+        // --- Теми оформлення ---
         const themes = {
             default: {
                 id: "default",
@@ -92,14 +99,15 @@
                 shadow: "shadow-sm",
                 toastBg: "bg-stone-800 text-white",
                 toastIcon: "text-indigo-400",
-                bgGraphics: null
+                decorClass: "",
+                bgDecor: null
             },
             y2k: {
                 id: "y2k",
                 name: "Y2K Pastel",
                 bg: "bg-gradient-to-br from-pink-200 via-sky-200 to-indigo-100",
                 text: "text-slate-800",
-                cardBg: "bg-white/90 backdrop-blur-xl shadow-xl shadow-pink-300/40 rounded-3xl relative overflow-hidden",
+                cardBg: "bg-white/95 backdrop-blur-xl shadow-xl shadow-pink-300/40 rounded-3xl relative overflow-hidden",
                 border: "border-pink-300",
                 primary: "bg-gradient-to-r from-pink-400 to-sky-400 hover:from-pink-500 hover:to-sky-500 text-white shadow-lg shadow-pink-300/50 rounded-2xl font-semibold",
                 secondaryBtn: "bg-gradient-to-r from-sky-400 to-pink-400 hover:opacity-90 text-white shadow-md rounded-2xl font-semibold",
@@ -110,21 +118,15 @@
                 shadow: "shadow-lg shadow-pink-200/60",
                 toastBg: "bg-white/95 border-2 border-pink-300 text-pink-900 shadow-2xl backdrop-blur-md rounded-2xl",
                 toastIcon: "text-pink-500",
-                bgGraphics: (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                        <div className="absolute -top-20 -right-20 w-80 h-80 bg-pink-300/30 rounded-full blur-3xl animate-float"></div>
-                        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-300/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
-                        <div className="absolute top-1/2 right-10 text-pink-300/30 text-5xl select-none">✧</div>
-                        <div className="absolute bottom-10 left-10 text-sky-300/30 text-4xl select-none">☁</div>
-                    </div>
-                )
+                decorClass: "before:absolute before:bottom-3 before:right-4 before:content-['✦'] before:text-pink-300/60 before:text-xl before:pointer-events-none",
+                bgDecor: <div className="absolute inset-0 pointer-events-none overflow-hidden z-0"><div className="absolute top-10 right-10 w-72 h-72 bg-pink-300/20 rounded-full blur-3xl animate-float"></div></div>
             },
             darkRed: {
                 id: "darkRed",
                 name: "Exile (Dark Red)",
                 bg: "bg-[#090505] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(185,28,28,0.15),rgba(255,255,255,0))]",
                 text: "text-stone-100",
-                cardBg: "bg-neutral-950/85 backdrop-blur-xl shadow-2xl shadow-red-950/50 rounded-3xl relative overflow-hidden border border-red-900/40",
+                cardBg: "bg-neutral-950/90 backdrop-blur-xl shadow-2xl shadow-red-950/50 rounded-3xl relative overflow-hidden border border-red-900/40",
                 border: "border-red-900/50",
                 primary: "bg-gradient-to-r from-red-700 to-rose-900 hover:from-red-600 hover:to-rose-800 text-white shadow-lg shadow-red-900/40 rounded-2xl font-semibold border border-red-600/30",
                 secondaryBtn: "bg-neutral-900 hover:bg-neutral-800 text-red-500 border border-red-900/60 shadow-md rounded-2xl font-semibold",
@@ -135,39 +137,40 @@
                 shadow: "shadow-2xl shadow-red-950/30",
                 toastBg: "bg-neutral-950 border-2 border-red-800/80 text-red-200 shadow-2xl backdrop-blur-md rounded-2xl",
                 toastIcon: "text-red-500",
-                bgGraphics: (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                        <div className="absolute -top-20 -right-20 w-80 h-80 bg-red-600/10 rounded-full blur-3xl animate-float"></div>
-                        <div className="absolute bottom-0 right-1/4 text-red-600/20 text-6xl select-none">✦</div>
-                    </div>
-                )
+                decorClass: "before:absolute before:bottom-3 before:right-4 before:content-['✦'] before:text-red-600/40 before:text-lg before:pointer-events-none",
+                bgDecor: <div className="absolute inset-0 pointer-events-none overflow-hidden z-0"><div className="absolute top-1/4 right-1/4 w-96 h-96 bg-red-900/10 rounded-full blur-3xl animate-pulse-glow"></div></div>
             },
             ocean: {
                 id: "ocean",
                 name: "Blue Ocean",
-                bg: "bg-[#030712] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,116,144,0.25),rgba(3,7,18,1))]",
+                // Глибокий океанічний фон з атмосферними світловими плямами (як на референсі)
+                bg: "bg-[#030712] bg-[radial-gradient(ellipse_100%_100%_at_50%_0%,rgba(14,116,144,0.28),rgba(3,7,18,1))]",
                 text: "text-cyan-50",
-                cardBg: "bg-slate-950/80 backdrop-blur-xl shadow-2xl shadow-cyan-950/60 rounded-3xl relative overflow-hidden border border-cyan-500/40",
+                // Найбільший прямокутник із глибокою підводною текстурою та внутрішнім світінням
+                cardBg: "bg-gradient-to-b from-slate-950/95 via-slate-950/90 to-cyan-950/40 backdrop-blur-2xl shadow-2xl shadow-cyan-950/80 rounded-3xl relative overflow-hidden border-2 border-cyan-500/40",
                 border: "border-cyan-500/40",
                 primary: "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/50 rounded-2xl font-semibold border border-cyan-400/30",
                 secondaryBtn: "bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/50 shadow-md rounded-2xl font-semibold",
                 primaryLight: "bg-cyan-950/60 text-cyan-300 border-cyan-500/50",
                 accentText: "text-cyan-400 font-bold tracking-wide",
                 navBg: "bg-slate-950/90 border border-cyan-500/40 shadow-lg backdrop-blur-md rounded-2xl",
-                inputBg: "bg-slate-900/70 border-cyan-500/40 text-cyan-100 focus:border-cyan-400 rounded-2xl placeholder:text-cyan-900/60",
-                shadow: "shadow-2xl shadow-cyan-950/40",
+                inputBg: "bg-slate-900/80 border-cyan-500/40 text-cyan-100 focus:border-cyan-400 rounded-2xl placeholder:text-cyan-800/80",
+                shadow: "shadow-2xl shadow-cyan-950/50",
                 toastBg: "bg-slate-950 border-2 border-cyan-500/80 text-cyan-100 shadow-2xl backdrop-blur-md rounded-2xl",
                 toastIcon: "text-cyan-400",
-                // Розкішна фонова графіка на великих прямокутниках у стилі референсу Blue Ocean[cite: 13]
-                bgGraphics: (
+                // Графічні елементи та підводний декор поверх блоків у стилі Blue Ocean[cite: 13]
+                decorClass: "before:absolute before:bottom-3 before:right-5 before:content-['BLUE OCEAN ✧ TEAM'] before:text-cyan-400/20 before:text-xs before:tracking-[0.2em] before:pointer-events-none after:absolute after:top-4 after:right-5 after:content-[' jellyfish ✦'] after:text-cyan-400/25 after:text-xs after:pointer-events-none",
+                // Велична графіка на задньому плані (глибоководні світлові ефекти та світіння медуз із референсу)
+                bgDecor: (
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                        {/* Глибокі світлові підводні плями */}
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-600/15 rounded-full blur-3xl animate-float"></div>
-                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
-                        {/* Тонкі плаваючі деталі та зірочки поверх фону прямокутника */}
-                        <div className="absolute top-12 right-16 text-cyan-400/25 text-2xl select-none animate-pulse">✦</div>
-                        <div className="absolute bottom-16 left-12 text-cyan-300/20 text-3xl select-none animate-pulse" style={{ animationDelay: '1.5s' }}>✧</div>
-                        <div className="absolute top-1/3 right-1/4 text-cyan-500/10 text-8xl font-bold select-none tracking-widest">OCEAN</div>
+                        {/* Верхнє блакитне світіння */}
+                        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-cyan-500/15 rounded-full blur-[120px] animate-pulse-glow"></div>
+                        {/* Підводні світлові промені та м'які акценти */}
+                        <div className="absolute top-1/3 left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] animate-float"></div>
+                        <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-cyan-900/15 rounded-full blur-[140px] animate-float" style={{ animationDelay: '3s' }}></div>
+                        {/* Делікатні зірочки/частинки на фоні */}
+                        <div className="absolute top-20 left-1/4 text-cyan-400/20 text-xl select-none animate-pulse">✦</div>
+                        <div className="absolute bottom-1/4 right-1/3 text-cyan-300/20 text-2xl select-none animate-pulse" style={{ animationDelay: '1.5s' }}>✧</div>
                     </div>
                 )
             }
@@ -338,21 +341,19 @@
 
             if (!user) {
                 return (
-                    <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
+                    <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative overflow-hidden`}>
+                        {t.bgDecor}
                         <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.cardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText} z-10`} title={`Тема: ${t.name}`}>
                             <Icon name="palette" size={20} />
                         </button>
-                        <div className={`${t.cardBg} p-8 rounded-3xl border-2 ${t.border} max-w-md w-full text-center shadow-2xl relative`}>
-                            {t.bgGraphics}
-                            <div className="relative z-10">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
-                                <h1 className={`text-2xl font-bold ${t.text} mb-2`}>Ласкаво просимо до EngSpace</h1>
-                                <p className="text-cyan-300/70 mb-8 text-sm">Парний хмарний простір для вивчення англійської мови</p>
-                                <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${t.cardBg} border-2 ${t.border} hover:opacity-90 ${t.text} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
-                                    <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                                    Увійти через Google
-                                </button>
-                            </div>
+                        <div className={`${t.cardBg} p-8 rounded-3xl border-2 ${t.border} max-w-md w-full text-center shadow-2xl ${t.decorClass} z-10`}>
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
+                            <h1 className={`text-2xl font-bold ${t.text} mb-2`}>Ласкаво просимо до EngSpace</h1>
+                            <p className="text-cyan-300/70 mb-8 text-sm">Парний хмарний простір для вивчення англійської мови</p>
+                            <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${t.cardBg} border-2 ${t.border} hover:opacity-90 ${t.text} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
+                                <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                                Увійти через Google
+                            </button>
                         </div>
                     </div>
                 );
@@ -363,22 +364,22 @@
             }
 
             return (
-                <div className={`flex flex-col h-screen overflow-hidden ${t.bg}`}>
+                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative`}>
+                    {t.bgDecor}
                     <header className={`flex-none flex items-center justify-between px-6 py-4 ${t.cardBg} border-b-2 ${t.border} ${t.shadow} z-10`}>
-                        {t.bgGraphics}
-                        <div className="flex items-center gap-2 relative z-10">
+                        <div className="flex items-center gap-2">
                             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold shadow-md">E</div>
                             <span className={`font-bold text-lg tracking-tight hidden sm:block ${t.text}`}>EngSpace</span>
                         </div>
 
-                        <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl relative z-10`}>
+                        <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl z-10`}>
                             <NavBtn icon={<Icon name="book" />} label="Словник" active={activeTab === 'dictionary'} onClick={() => {setActiveTab('dictionary'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="pen" />} label="Нотатки" active={activeTab === 'notes'} onClick={() => {setActiveTab('notes'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="brain" />} label="Повторення" active={activeTab === 'revision'} onClick={() => {setActiveTab('revision'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="settings" />} label="Налаштування" active={activeTab === 'settings'} onClick={() => {setActiveTab('settings'); setIsSplitScreen(false);}} t={t} />
                         </nav>
 
-                        <div className="flex items-center gap-2 relative z-10">
+                        <div className="flex items-center gap-2 z-10">
                             <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.cardBg} border-2 ${t.border} hover:scale-110 transition-all ${t.accentText} shadow-sm`} title={`Тема: ${t.name}`}>
                                 <Icon name="palette" size={18} />
                             </button>
@@ -392,37 +393,25 @@
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-hidden p-4 sm:p-6">
+                    <main className="flex-1 overflow-hidden p-4 sm:p-6 z-10">
                         <div className="flex flex-col lg:flex-row gap-6 h-full">
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
-                                {t.bgGraphics}
-                                <div className="relative z-10 flex flex-col h-full">
-                                    <DictionaryPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} showToast={showToast} t={t} />
-                                </div>
+                                <DictionaryPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} showToast={showToast} t={t} />
                             </div>
 
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden ${(activeTab === 'notes' || isSplitScreen) ? 'flex' : 'hidden'}`}>
-                                {t.bgGraphics}
-                                <div className="relative z-10 flex flex-col h-full">
-                                    <NotesPanel user={user} fb={fb} workspaceId={activeWorkspace.id} publicNotes={publicNotes} privateNotes={privateNotes} showToast={showToast} t={t} />
-                                </div>
+                                <NotesPanel user={user} fb={fb} workspaceId={activeWorkspace.id} publicNotes={publicNotes} privateNotes={privateNotes} showToast={showToast} t={t} />
                             </div>
 
                             {!isSplitScreen && activeTab === 'revision' && (
-                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden relative`}>
-                                    {t.bgGraphics}
-                                    <div className="relative z-10 flex flex-col h-full">
-                                        <RevisionPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} t={t} />
-                                    </div>
+                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden`}>
+                                    <RevisionPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} t={t} />
                                 </div>
                             )}
 
                             {!isSplitScreen && activeTab === 'settings' && (
-                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden p-8 overflow-y-auto relative`}>
-                                    {t.bgGraphics}
-                                    <div className="relative z-10">
-                                        <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} t={t} />
-                                    </div>
+                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden p-8 overflow-y-auto`}>
+                                    <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} t={t} />
                                 </div>
                             )}
                         </div>
@@ -489,7 +478,8 @@
             };
 
             return (
-                <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
+                <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative overflow-hidden`}>
+                    {t.bgDecor}
                     <div className="absolute top-6 right-6 flex items-center gap-3 z-10">
                         <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.cardBg} border-2 ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText}`} title="Змінити тему">
                             <Icon name="palette" size={18} />
@@ -498,35 +488,32 @@
                             <Icon name="logout" size={16} /> Вийти ({user.email})
                         </button>
                     </div>
-                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border-2 ${t.border} max-w-md w-full relative`}>
-                        {t.bgGraphics}
-                        <div className="relative z-10">
-                            <div className="flex justify-center mb-6">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
-                            </div>
-                            <h1 className={`text-2xl font-bold text-center ${t.text} mb-2`}>Робочий простір</h1>
-                            <p className="text-center text-cyan-300/70 mb-8 text-sm">Створіть новий простір або приєднайтеся за кодом партнера</p>
-
-                            <button onClick={handleCreate} disabled={loading} className={`w-full flex items-center justify-center gap-2 ${t.primary} py-3.5 rounded-2xl font-medium transition-colors mb-6 shadow-md disabled:opacity-50`}>
-                                <Icon name="plus" size={20} /> Створити новий простір
-                            </button>
-
-                            <div className="relative flex py-4 items-center">
-                                <div className={`flex-grow border-t-2 ${t.border}`}></div>
-                                <span className="flex-shrink-0 mx-4 text-cyan-500/50 text-sm">або</span>
-                                <div className={`flex-grow border-t-2 ${t.border}`}></div>
-                            </div>
-
-                            <form onSubmit={handleJoin} className="space-y-4">
-                                <div>
-                                    <label className={`block text-sm font-medium ${t.text} mb-1`}>Код запрошення</label>
-                                    <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} placeholder="Введіть код" className={`w-full px-4 py-3.5 ${t.inputBg} border-2 ${t.border} rounded-2xl focus:ring-2 focus:ring-cyan-400/30 outline-none uppercase text-center tracking-widest text-lg font-mono`} maxLength={6} />
-                                </div>
-                                <button type="submit" disabled={loading || !joinCode.trim()} className={`w-full ${t.secondaryBtn} py-3.5 rounded-2xl font-medium transition-colors disabled:opacity-50 shadow-md`}>
-                                    Приєднатися
-                                </button>
-                            </form>
+                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border-2 ${t.border} max-w-md w-full ${t.decorClass} z-10`}>
+                        <div className="flex justify-center mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
                         </div>
+                        <h1 className={`text-2xl font-bold text-center ${t.text} mb-2`}>Робочий простір</h1>
+                        <p className="text-center text-cyan-300/70 mb-8 text-sm">Створіть новий простір або приєднайтеся за кодом партнера</p>
+
+                        <button onClick={handleCreate} disabled={loading} className={`w-full flex items-center justify-center gap-2 ${t.primary} py-3.5 rounded-2xl font-medium transition-colors mb-6 shadow-md disabled:opacity-50`}>
+                            <Icon name="plus" size={20} /> Створити новий простір
+                        </button>
+
+                        <div className="relative flex py-4 items-center">
+                            <div className={`flex-grow border-t-2 ${t.border}`}></div>
+                            <span className="flex-shrink-0 mx-4 text-cyan-500/50 text-sm">або</span>
+                            <div className={`flex-grow border-t-2 ${t.border}`}></div>
+                        </div>
+
+                        <form onSubmit={handleJoin} className="space-y-4">
+                            <div>
+                                <label className={`block text-sm font-medium ${t.text} mb-1`}>Код запрошення</label>
+                                <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} placeholder="Введіть код" className={`w-full px-4 py-3.5 ${t.inputBg} border-2 ${t.border} rounded-2xl focus:ring-2 focus:ring-cyan-400/30 outline-none uppercase text-center tracking-widest text-lg font-mono`} maxLength={6} />
+                            </div>
+                            <button type="submit" disabled={loading || !joinCode.trim()} className={`w-full ${t.secondaryBtn} py-3.5 rounded-2xl font-medium transition-colors disabled:opacity-50 shadow-md`}>
+                                Приєднатися
+                            </button>
+                        </form>
                     </div>
                 </div>
             );
@@ -572,9 +559,9 @@
             const filteredWords = words.filter(w => w.en.toLowerCase().includes(search.toLowerCase()) || w.uk.toLowerCase().includes(search.toLowerCase()));
 
             return (
-                <div className="flex flex-col h-full bg-transparent">
-                    <div className={`flex-none p-4 md:p-6 ${t.cardBg} border-b-2 ${t.border} relative`}>
-                        <form onSubmit={handleSave} className="space-y-3 relative z-10">
+                <div className={`flex flex-col h-full bg-transparent ${t.decorClass}`}>
+                    <div className={`flex-none p-4 md:p-6 ${t.cardBg} border-b-2 ${t.border}`}>
+                        <form onSubmit={handleSave} className="space-y-3">
                             <div className="flex flex-col md:flex-row gap-3">
                                 <input value={formData.en} onChange={e => setFormData({...formData, en: e.target.value})} placeholder="English word" className={`flex-1 px-4 py-2.5 border-2 ${t.border} rounded-2xl outline-none focus:border-cyan-400 ${t.inputBg}`} />
                                 <input value={formData.uk} onChange={e => setFormData({...formData, uk: e.target.value})} placeholder="Переклад" className={`flex-1 px-4 py-2.5 border-2 ${t.border} rounded-2xl outline-none focus:border-cyan-400 ${t.inputBg}`} />
@@ -693,7 +680,7 @@
             };
 
             return (
-                <div className="flex h-full">
+                <div className={`flex h-full ${t.decorClass}`}>
                     <div className={`w-full md:w-1/3 border-r-2 ${t.border} flex flex-col bg-transparent ${(activeNote || isCreating) ? 'hidden md:flex' : 'flex'}`}>
                         <div className={`p-4 border-b-2 ${t.border}`}>
                             <button onClick={() => { setActiveNote(null); setTitle(''); setContent(''); setIsCreating(true); }} className={`w-full flex items-center justify-center gap-2 ${t.cardBg} border-2 ${t.border} hover:border-cyan-400 py-2.5 rounded-2xl text-sm font-semibold shadow-sm transition-all ${t.text}`}>
@@ -786,37 +773,31 @@
             };
 
             return (
-                <div className="flex flex-col h-full relative p-6 bg-transparent">
+                <div className={`flex flex-col h-full relative p-6 bg-transparent ${t.decorClass}`}>
                     <h2 className={`text-xl font-bold flex items-center gap-2 mb-6 ${t.text}`}><Icon name="brain" className={t.accentText}/> Тренування ({dueWords.length} слів)</h2>
                     <div className="flex-1 flex items-center justify-center">
                         {!currentWord ? (
-                            <div className={`text-center p-10 ${t.cardBg} rounded-3xl border-2 ${t.border} shadow-xl max-w-sm w-full relative`}>
-                                {t.bgGraphics}
-                                <div className="relative z-10">
-                                    <div className="text-cyan-400 flex justify-center mb-4"><Icon name="check" size={48}/></div>
-                                    <h3 className={`text-2xl font-bold mb-2 ${t.text}`}>Відмінно!</h3>
-                                    <p className="text-cyan-300/60">Всі слова на сьогодні повторені.</p>
-                                </div>
+                            <div className={`text-center p-10 ${t.cardBg} rounded-3xl border-2 ${t.border} shadow-xl max-w-sm w-full`}>
+                                <div className="text-cyan-400 flex justify-center mb-4"><Icon name="check" size={48}/></div>
+                                <h3 className={`text-2xl font-bold mb-2 ${t.text}`}>Відмінно!</h3>
+                                <p className="text-cyan-300/60">Всі слова на сьогодні повторені.</p>
                             </div>
                         ) : (
-                            <div className={`w-full max-w-xl ${t.cardBg} rounded-3xl border-2 ${t.border} p-10 text-center shadow-2xl relative`}>
-                                {t.bgGraphics}
-                                <div className="relative z-10">
-                                    <h2 className={`text-5xl font-bold mb-8 ${t.text}`}>{currentWord.en}</h2>
-                                    {!showAnswer ? (
-                                        <button onClick={() => setShowAnswer(true)} className={`w-full py-4 ${t.secondaryBtn} rounded-2xl font-bold transition-transform active:scale-95 shadow-md`}>Показати переклад</button>
-                                    ) : (
-                                        <div className={`border-t-2 ${t.border} pt-8 animate-in fade-in`}>
-                                            <h3 className={`text-3xl font-bold ${t.accentText} mb-6`}>{currentWord.uk}</h3>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                                <button onClick={() => handleRating(0)} className="py-3 bg-red-950/70 text-red-300 border border-red-900/60 rounded-2xl font-semibold hover:bg-red-900/60 transition-colors shadow-sm">Забув/ла</button>
-                                                <button onClick={() => handleRating(3)} className="py-3 bg-slate-900 text-cyan-200 border border-cyan-900/60 rounded-2xl font-semibold hover:bg-slate-800 transition-colors shadow-sm">Важко</button>
-                                                <button onClick={() => handleRating(4)} className="py-3 bg-slate-900 text-cyan-200 border border-cyan-900/60 rounded-2xl font-semibold hover:bg-slate-800 transition-colors shadow-sm">Добре</button>
-                                                <button onClick={() => handleRating(5)} className="py-3 bg-cyan-950/70 text-cyan-200 border border-cyan-700/50 rounded-2xl font-semibold hover:bg-cyan-900/60 transition-colors shadow-sm">Легко</button>
-                                            </div>
+                            <div className={`w-full max-w-xl ${t.cardBg} rounded-3xl border-2 ${t.border} p-10 text-center shadow-2xl`}>
+                                <h2 className={`text-5xl font-bold mb-8 ${t.text}`}>{currentWord.en}</h2>
+                                {!showAnswer ? (
+                                    <button onClick={() => setShowAnswer(true)} className={`w-full py-4 ${t.secondaryBtn} rounded-2xl font-bold transition-transform active:scale-95 shadow-md`}>Показати переклад</button>
+                                ) : (
+                                    <div className={`border-t-2 ${t.border} pt-8 animate-in fade-in`}>
+                                        <h3 className={`text-3xl font-bold ${t.accentText} mb-6`}>{currentWord.uk}</h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            <button onClick={() => handleRating(0)} className="py-3 bg-red-950/70 text-red-300 border border-red-900/60 rounded-2xl font-semibold hover:bg-red-900/60 transition-colors shadow-sm">Забув/ла</button>
+                                            <button onClick={() => handleRating(3)} className="py-3 bg-slate-900 text-cyan-200 border border-cyan-900/60 rounded-2xl font-semibold hover:bg-slate-800 transition-colors shadow-sm">Важко</button>
+                                            <button onClick={() => handleRating(4)} className="py-3 bg-slate-900 text-cyan-200 border border-cyan-900/60 rounded-2xl font-semibold hover:bg-slate-800 transition-colors shadow-sm">Добре</button>
+                                            <button onClick={() => handleRating(5)} className="py-3 bg-cyan-950/70 text-cyan-200 border border-cyan-700/50 rounded-2xl font-semibold hover:bg-cyan-900/60 transition-colors shadow-sm">Легко</button>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -839,59 +820,49 @@
             };
 
             return (
-                <div className="max-w-2xl mx-auto w-full space-y-6">
+                <div className={`max-w-2xl mx-auto w-full space-y-6 ${t.decorClass}`}>
                     <h2 className={`text-2xl font-bold flex items-center gap-2 ${t.text}`}><Icon name="settings" /> Налаштування та профіль</h2>
                     
-                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md relative`}>
-                        {t.bgGraphics}
-                        <div className="relative z-10">
-                            <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${t.text}`}><Icon name="user" className={t.accentText} /> Дані облікового запису Google</h3>
-                            <div className="space-y-3 text-sm">
-                                <div className="flex items-center gap-3">
-                                    {user.photoURL && <img src={user.photoURL} alt="Avatar" className={`w-12 h-12 rounded-2xl border-2 ${t.border} shadow-sm`} />}
-                                    <div>
-                                        <p className={`font-bold ${t.text} text-base`}>{user.displayName || "Користувач"}</p>
-                                        <p className="text-cyan-300/60">{user.email}</p>
-                                    </div>
+                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md`}>
+                        <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${t.text}`}><Icon name="user" className={t.accentText} /> Дані облікового запису Google</h3>
+                        <div className="space-y-3 text-sm">
+                            <div className="flex items-center gap-3">
+                                {user.photoURL && <img src={user.photoURL} alt="Avatar" className={`w-12 h-12 rounded-2xl border-2 ${t.border} shadow-sm`} />}
+                                <div>
+                                    <p className={`font-bold ${t.text} text-base`}>{user.displayName || "Користувач"}</p>
+                                    <p className="text-cyan-300/60">{user.email}</p>
                                 </div>
-                                <div className={`pt-3 border-t-2 ${t.border} flex flex-col gap-1`}>
-                                    <span className="text-cyan-500/60 text-xs uppercase tracking-wider">Унікальний ID користувача в базі:</span>
-                                    <code className={`${t.navBg} px-3.5 py-2 rounded-xl text-xs font-mono text-cyan-300/80 select-all border ${t.border}`}>{user.uid}</code>
-                                </div>
+                            </div>
+                            <div className={`pt-3 border-t-2 ${t.border} flex flex-col gap-1`}>
+                                <span className="text-cyan-500/60 text-xs uppercase tracking-wider">Унікальний ID користувача в базі:</span>
+                                <code className={`${t.navBg} px-3.5 py-2 rounded-xl text-xs font-mono text-cyan-300/80 select-all border ${t.border}`}>{user.uid}</code>
                             </div>
                         </div>
                     </div>
 
-                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md relative`}>
-                        {t.bgGraphics}
-                        <div className="relative z-10">
-                            <h3 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${t.text}`}><Icon name="users" className={t.accentText} /> Код запрошення для партнера</h3>
-                            <p className="text-sm text-cyan-300/60 mb-4">Поділіться цим кодом, щоб підключити другу людину до вашого словника та спільних нотаток у реальному часі.</p>
-                            <div className={`flex items-center gap-4 ${t.navBg} p-4 rounded-2xl border-2 ${t.border}`}>
-                                <div className={`text-3xl font-mono font-bold tracking-widest ${t.accentText} ${t.cardBg} px-6 py-2.5 rounded-xl border-2 ${t.border} shadow-sm`}>{workspace.inviteCode}</div>
-                                <span className={`text-sm font-bold ${t.primaryLight} px-4 py-1.5 rounded-xl ml-auto border`}>Учасників: {workspace.members?.length || 0}/2</span>
-                            </div>
+                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md`}>
+                        <h3 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${t.text}`}><Icon name="users" className={t.accentText} /> Код запрошення для партнера</h3>
+                        <p className="text-sm text-cyan-300/60 mb-4">Поділіться цим кодом, щоб підключити другу людину до вашого словника та спільних нотаток у реальному часі.</p>
+                        <div className={`flex items-center gap-4 ${t.navBg} p-4 rounded-2xl border-2 ${t.border}`}>
+                            <div className={`text-3xl font-mono font-bold tracking-widest ${t.accentText} ${t.cardBg} px-6 py-2.5 rounded-xl border-2 ${t.border} shadow-sm`}>{workspace.inviteCode}</div>
+                            <span className={`text-sm font-bold ${t.primaryLight} px-4 py-1.5 rounded-xl ml-auto border`}>Учасників: {workspace.members?.length || 0}/2</span>
                         </div>
                     </div>
 
-                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative`}>
-                        {t.bgGraphics}
-                        <div className="relative z-10">
+                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`}>
+                        <div>
                             <h3 className={`text-lg font-semibold mb-1 ${t.text}`}>Вихід із системи</h3>
                             <p className="text-sm text-cyan-300/60">Завершити поточну сесію та вийти з аккаунта Google.</p>
                         </div>
-                        <button onClick={logout} className={`px-5 py-3 ${t.navBg} hover:opacity-80 ${t.text} rounded-2xl transition-colors font-semibold flex items-center gap-2 shrink-0 border-2 ${t.border} shadow-sm relative z-10`}>
+                        <button onClick={logout} className={`px-5 py-3 ${t.navBg} hover:opacity-80 ${t.text} rounded-2xl transition-colors font-semibold flex items-center gap-2 shrink-0 border-2 ${t.border} shadow-sm`}>
                             <Icon name="logout" size={16} /> Вийти з аккаунта
                         </button>
                     </div>
 
-                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md relative`}>
-                        {t.bgGraphics}
-                        <div className="relative z-10">
-                            <h3 className="text-lg font-semibold mb-2 text-red-400">Небезпечна зона</h3>
-                            <p className="text-sm text-cyan-300/60 mb-4">Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
-                            <button onClick={handleLeave} className="px-5 py-3 bg-red-950/60 text-red-300 rounded-2xl border-2 border-red-900/80 hover:bg-red-900/50 transition-colors font-semibold shadow-sm">Покинути простір</button>
-                        </div>
+                    <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md`}>
+                        <h3 className="text-lg font-semibold mb-2 text-red-400">Небезпечна зона</h3>
+                        <p className="text-sm text-cyan-300/60 mb-4">Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
+                        <button onClick={handleLeave} className="px-5 py-3 bg-red-950/60 text-red-300 rounded-2xl border-2 border-red-900/80 hover:bg-red-900/50 transition-colors font-semibold shadow-sm">Покинути простір</button>
                     </div>
                 </div>
             );
