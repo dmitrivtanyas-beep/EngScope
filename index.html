@@ -1,244 +1,1118 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EngSpace</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    .ocean-background {
-      background: linear-gradient(180deg, #010409 0%, #031329 22%, #051d3b 48%, #031226 74%, #020a17 100%);
-      color: #f8fafc;
-    }
-    .ocean-background::before {
-      content: "";
-      position: fixed;
-      inset: 0 0 auto;
-      height: 620px;
-      pointer-events: none;
-      background: radial-gradient(ellipse at 50% 0%, rgba(186,230,253,.28), rgba(56,189,248,.12) 34%, transparent 72%);
-      filter: blur(18px);
-    }
-    .ocean-glass {
-      background: linear-gradient(145deg, rgba(15,42,78,.75), rgba(5,19,38,.78) 58%, rgba(8,28,56,.74));
-      border: 1px solid rgba(147,210,255,.32);
-      box-shadow: 0 18px 45px rgba(0,4,12,.42), 0 0 24px rgba(56,189,248,.1), inset 0 1px rgba(224,242,254,.18);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .ocean-button {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: white;
-      box-shadow: 0 5px 20px rgba(2,132,199,.3);
-    }
-    .ocean-button:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); }
-    .ocean-jellyfish {
-      animation: jelly-drift 7s ease-in-out infinite;
-      filter: drop-shadow(0 0 24px rgba(56,189,248,.55));
-    }
-    @keyframes jelly-drift {
-      0%, 100% { transform: translateY(0) rotate(-4deg); }
-      50% { transform: translateY(-18px) rotate(3deg); }
-    }
-    .ocean-plankton {
-      position: absolute;
-      border-radius: 9999px;
-      background: radial-gradient(circle, rgba(224,242,254,.95), rgba(56,189,248,.3) 60%, transparent);
-      animation: plankton-float 10s ease-in-out infinite;
-    }
-    @keyframes plankton-float {
-      0%, 100% { transform: translateY(0); opacity: .25; }
-      50% { transform: translateY(-28px); opacity: .85; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ocean-jellyfish, .ocean-plankton { animation: none; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EngSpace - Парний простір для вивчення англійської</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+        .animate-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        /* Стилі з шаблону TEAM Blue Ocean (Abyss Ocean Theme) */
+        .abyss-bg {
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, 
+                #010409 0%, 
+                #031329 18%, 
+                #051d3b 38%, 
+                #031226 62%, 
+                #020c1b 82%, 
+                #04182e 100%
+            );
+        }
+
+        .abyss-ray-core {
+            background: radial-gradient(ellipse at 50% 0%, 
+                rgba(186, 230, 253, 0.45) 0%, 
+                rgba(56, 189, 248, 0.22) 32%, 
+                rgba(14, 165, 233, 0.06) 60%, 
+                transparent 80%
+            );
+            filter: blur(28px);
+            animation: rayPulse 9s ease-in-out infinite;
+        }
+
+        .abyss-ray-beam {
+            background: conic-gradient(from 165deg at 50% 0%, 
+                transparent 0deg, 
+                rgba(125, 211, 252, 0.2) 12deg, 
+                rgba(224, 242, 254, 0.28) 18deg, 
+                rgba(56, 189, 248, 0.12) 26deg, 
+                transparent 38deg
+            );
+            filter: blur(18px);
+            opacity: 0.85;
+            animation: beamSway 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes rayPulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        @keyframes beamSway {
+            0% { transform: translateX(-52%) rotate(-2deg); }
+            100% { transform: translateX(-48%) rotate(2deg); }
+        }
+
+        .jellyfish-float {
+            animation: jellyDrift 7s ease-in-out infinite;
+            filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.5));
+        }
+
+        @keyframes jellyDrift {
+            0%, 100% { transform: translateY(0px) rotate(-4deg); }
+            50% { transform: translateY(-16px) rotate(3deg); }
+        }
+
+        .plankton-dot {
+            position: absolute;
+            border-radius: 9999px;
+            background: radial-gradient(circle, rgba(224, 242, 254, 0.95) 0%, rgba(56, 189, 248, 0.3) 60%, transparent 100%);
+            pointer-events: none;
+            animation: floatPlankton linear infinite;
+        }
+
+        @keyframes floatPlankton {
+            0% { transform: translateY(0px) translateX(0px); opacity: 0; }
+            20% { opacity: 0.85; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-140px) translateX(25px); opacity: 0; }
+        }
+
+        .abyss-glass-panel {
+            background: linear-gradient(145deg, 
+                rgba(15, 42, 78, 0.48) 0%, 
+                rgba(5, 19, 38, 0.72) 55%, 
+                rgba(8, 28, 56, 0.58) 100%
+            );
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(147, 210, 255, 0.32);
+            box-shadow: 
+                0 20px 50px rgba(0, 4, 12, 0.75),
+                0 0 35px rgba(56, 189, 248, 0.14),
+                inset 0 1px 1px rgba(224, 242, 254, 0.35),
+                inset 0 -1px 1px rgba(56, 189, 248, 0.15);
+        }
+
+        .abyss-sub-card {
+            background: linear-gradient(180deg, rgba(16, 52, 94, 0.45) 0%, rgba(4, 16, 34, 0.78) 100%);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(186, 230, 253, 0.28);
+            box-shadow: 0 10px 25px rgba(0, 5, 15, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+        }
+
+        .abyss-pill-btn {
+            background: linear-gradient(180deg, rgba(30, 78, 130, 0.55) 0%, rgba(7, 24, 48, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(147, 210, 255, 0.45);
+            box-shadow: 0 6px 20px rgba(0, 5, 15, 0.65), 0 0 18px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transition: all 0.25s ease;
+        }
+        .abyss-pill-btn:hover {
+            border-color: rgba(186, 230, 253, 0.85);
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.4) 0%, rgba(12, 42, 78, 0.9) 100%);
+            box-shadow: 0 8px 25px rgba(0, 10, 25, 0.8), 0 0 26px rgba(56, 189, 248, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.55);
+        }
+
+        .text-glow-abyss {
+            text-shadow: 0 0 24px rgba(186, 230, 253, 0.45), 0 4px 14px rgba(0, 5, 15, 0.85);
+        }
+    </style>
 </head>
 <body class="font-sans transition-colors duration-300">
-  <div id="root"></div>
+    <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+    <!-- Firebase SDKs (v10 modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const themes = {
-      light: {
-        label: 'Світла',
-        bg: 'bg-stone-50',
-        text: 'text-stone-800',
-        cardBg: 'bg-white',
-        border: 'border-stone-200',
-        primary: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-        primaryLight: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        accent: 'text-indigo-600',
-        navBg: 'bg-stone-100',
-        inputBg: 'bg-stone-50',
-        muted: 'text-stone-500',
-        shadow: 'shadow-sm',
-        toggle: 'bg-white border-stone-200 text-stone-600'
-      },
-      pink: {
-        label: 'Рожева',
-        bg: 'bg-gradient-to-br from-pink-100 via-sky-100 to-pink-50',
-        text: 'text-pink-900',
-        cardBg: 'bg-white/90 backdrop-blur-md',
-        border: 'border-pink-200',
-        primary: 'bg-gradient-to-r from-pink-400 to-sky-400 hover:from-pink-500 hover:to-sky-500 text-white shadow-md shadow-pink-200',
-        primaryLight: 'bg-pink-50 text-pink-700 border-pink-200',
-        accent: 'text-pink-500',
-        navBg: 'bg-white/80 border border-pink-200',
-        inputBg: 'bg-pink-50/60 border-pink-200',
-        muted: 'text-stone-500',
-        shadow: 'shadow-md shadow-pink-100',
-        toggle: 'bg-white/80 border-pink-200 text-stone-600'
-      },
-      ocean: {
-        label: 'Blue Ocean',
-        bg: 'ocean-background',
-        text: 'text-slate-50',
-        cardBg: 'ocean-glass',
-        border: 'border-sky-200/30',
-        primary: 'ocean-button',
-        primaryLight: 'bg-sky-400/15 text-sky-100 border-sky-300/30',
-        accent: 'text-sky-300',
-        navBg: 'bg-slate-950/40 border border-sky-200/25 backdrop-blur-xl',
-        inputBg: 'bg-slate-950/40 border-sky-200/30 text-white placeholder:text-sky-100/45',
-        muted: 'text-sky-100/70',
-        shadow: 'shadow-xl shadow-slate-950/30',
-        toggle: 'bg-slate-950/50 border-sky-200/30 text-sky-100'
-      }
-    };
+        const firebaseConfig = {
+          apiKey: "AIzaSyBtohoKon-Q9CB0qXoa6XlufqcsRpYFPHo",
+          authDomain: "engscope-7ae3c.firebaseapp.com",
+          projectId: "engscope-7ae3c",
+          storageBucket: "engscope-7ae3c.firebasestorage.app",
+          messagingSenderId: "602537995169",
+          appId: "1:602537995169:web:e3cc995338dd50dfa9f9e0",
+          measurementId: "G-TVD7HHYZ3Q"
+        };
 
-    function OceanDecor() {
-      return (
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-          <div className="ocean-plankton left-[8%] top-[22%] h-1 w-1" />
-          <div className="ocean-plankton left-[24%] top-[48%] h-1.5 w-1.5 [animation-delay:1s]" />
-          <div className="ocean-plankton left-[78%] top-[34%] h-1 w-1 [animation-delay:2s]" />
-          <div className="ocean-plankton left-[90%] top-[60%] h-1.5 w-1.5 [animation-delay:3s]" />
-          <div className="ocean-plankton left-[58%] top-[72%] h-1 w-1 [animation-delay:4s]" />
-          <div className="ocean-jellyfish absolute right-[4%] top-32 opacity-70 sm:right-[10%] lg:right-[18%]">
-            <svg className="h-44 w-36 sm:h-56 sm:w-44" viewBox="0 0 220 280" fill="none">
-              <defs>
-                <radialGradient id="jellyBell" cx="45%" cy="30%" r="65%">
-                  <stop offset="0%" stopColor="#fff" stopOpacity=".95" />
-                  <stop offset="38%" stopColor="#7dd3fc" stopOpacity=".72" />
-                  <stop offset="78%" stopColor="#0284c7" stopOpacity=".35" />
-                  <stop offset="100%" stopColor="#0369a1" stopOpacity=".05" />
-                </radialGradient>
-                <linearGradient id="tentacleGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#bae6fd" stopOpacity=".75" />
-                  <stop offset="60%" stopColor="#38bdf8" stopOpacity=".3" />
-                  <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <g transform="rotate(-18 110 110)">
-                <path d="M72 118 Q62 175 84 235 M88 122 Q98 185 82 255 M106 124 Q100 190 118 265 M124 122 Q138 180 122 250 M142 116 Q155 170 140 230" stroke="url(#tentacleGrad)" strokeWidth="3" strokeLinecap="round" />
-                <path d="M52 112 C52 58 168 58 168 112 C168 124 146 128 134 122 C122 128 98 128 86 122 C74 128 52 124 52 112Z" fill="url(#jellyBell)" stroke="#e0f2fe" strokeOpacity=".65" strokeWidth="1.2" />
-                <ellipse cx="110" cy="84" rx="34" ry="15" fill="white" fillOpacity=".35" />
-              </g>
-            </svg>
-          </div>
-          <div className="absolute left-[5%] top-[68%] opacity-25 sm:left-[12%]">
-            <svg className="h-32 w-32 text-sky-200" viewBox="0 0 200 200" fill="none">
-              <path d="M100 14 122 72 184 76 135 114 152 175 100 140 48 175 65 114 16 76 78 72Z" fill="currentColor" fillOpacity=".2" stroke="currentColor" strokeOpacity=".65" strokeWidth="2" />
-            </svg>
-          </div>
-        </div>
-      );
-    }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "engspace-main-space";
 
-    function App() {
-      const [themeName, setThemeName] = useState(() => {
-        const saved = localStorage.getItem('engspace_theme');
-        return saved && themes[saved] ? saved : 'light';
-      });
+        window.firebaseApp = { 
+            auth, 
+            db, 
+            appId, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            onAuthStateChanged, 
+            signOut, 
+            collection, 
+            onSnapshot, 
+            doc, 
+            setDoc, 
+            updateDoc, 
+            deleteDoc, 
+            addDoc, 
+            getDoc 
+        };
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
 
-      const theme = themes[themeName];
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
 
-      useEffect(() => {
-        localStorage.setItem('engspace_theme', themeName);
-      }, [themeName]);
+        // Графічний шар для нової теми Abyss Ocean (промені, планктон, медуза, силуети акул)
+        const AbyssGlobalLayer = () => {
+            const dots = useMemo(() => Array.from({ length: 24 }).map((_, i) => ({
+                id: i,
+                size: (i % 4) + 1.5,
+                left: `${(i * 17) % 100}%`,
+                top: `${(i * 23) % 100}%`,
+                duration: `${(i % 7) + 8}s`,
+                delay: `${i % 5}s`
+            })), []);
 
-      const switchTheme = () => {
-        setThemeName(prev => prev === 'light' ? 'pink' : prev === 'pink' ? 'ocean' : 'light');
-      };
-
-      return (
-        <div className={`relative min-h-screen overflow-hidden ${theme.bg} ${theme.text} transition-all duration-300`}>
-          {themeName === 'ocean' && <OceanDecor />}
-          <header className={`sticky top-0 z-10 border-b ${theme.border} ${theme.cardBg} ${theme.shadow}`}>
-            <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-400 to-indigo-600 text-lg font-bold text-white shadow-md">E</div>
-                <div>
-                  <p className="text-lg font-bold">EngSpace</p>
-                  <p className={`text-xs ${theme.muted}`}>Парний простір для англійської</p>
-                </div>
-              </div>
-              <button onClick={switchTheme} className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${theme.toggle}`}>
-                Наступна тема: {themeName === 'light' ? 'Рожева' : themeName === 'pink' ? 'Blue Ocean' : 'Світла'}
-              </button>
-            </div>
-          </header>
-
-          <main className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6">
-            <section className="mb-8 grid gap-4 md:grid-cols-3">
-              <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Словник</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>128</p>
-              </div>
-              <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Нотатки</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>24</p>
-              </div>
-              <div className={`rounded-2xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-4`}>
-                <p className={`text-sm ${theme.muted}`}>Повторення</p><p className={`mt-2 text-3xl font-bold ${theme.accent}`}>9</p>
-              </div>
-            </section>
-
-            <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className={`rounded-3xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-5`}>
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-xl font-bold">Нові слова</h2>
-                  <button className={`rounded-xl px-3 py-2 text-sm font-medium ${theme.primary}`}>Додати слово</button>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { en: 'clarify', uk: 'прояснювати', example: 'The teacher clarified the rules.' },
-                    { en: 'focus', uk: 'зосереджуватися', example: 'Stay focused during the lesson.' },
-                    { en: 'practice', uk: 'практика', example: 'Daily practice helps a lot.' }
-                  ].map((word, index) => (
-                    <div key={index} className={`flex items-start justify-between gap-3 rounded-2xl border ${theme.border} p-3`}>
-                      <div>
-                        <div className="flex items-center gap-3"><span className="text-lg font-bold">{word.en}</span><span className={theme.accent}>{word.uk}</span></div>
-                        <p className={`mt-1 text-sm ${theme.muted}`}>&ldquo;{word.example}&rdquo;</p>
-                      </div>
+            return (
+                <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+                    {/* Об'ємні промені світла з поверхні */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[850px]">
+                        <div className="abyss-ray-core absolute -top-28 left-1/2 -translate-x-1/2 w-[680px] h-[760px]"></div>
+                        <div className="abyss-ray-beam absolute -top-14 left-1/2 w-[420px] h-[800px]"></div>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              <div className={`rounded-3xl border ${theme.border} ${theme.cardBg} ${theme.shadow} p-5`}>
-                <h2 className="mb-4 text-xl font-bold">Налаштування</h2>
-                <div className={`mb-4 rounded-2xl border ${theme.border} ${theme.primaryLight} p-3`}>
-                  <p className="font-medium">Поточна тема</p><p className="text-sm opacity-80">{theme.label}</p>
-                </div>
-                <label className="mb-3 block text-sm font-medium">Введіть слово</label>
-                <input className={`mb-3 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`} placeholder="Наприклад: interesting" />
-                <label className="mb-3 block text-sm font-medium">Переклад</label>
-                <input className={`mb-4 w-full rounded-xl border px-3 py-2 outline-none ${theme.inputBg}`} placeholder="Наприклад: цікавий" />
-                <button className={`w-full rounded-xl px-4 py-3 font-medium ${theme.primary}`}>Зберегти</button>
-              </div>
-            </section>
-          </main>
-        </div>
-      );
-    }
+                    {/* Плаваючий біолюмінесцентний планктон */}
+                    {dots.map(d => (
+                        <span
+                            key={d.id}
+                            className="plankton-dot"
+                            style={{
+                                width: `${d.size}px`,
+                                height: `${d.size}px`,
+                                left: d.left,
+                                top: d.top,
+                                animationDuration: d.duration,
+                                animationDelay: d.delay
+                            }}
+                        />
+                    ))}
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+                    {/* Біолюмінесцентна медуза справа */}
+                    <div className="absolute top-28 right-[4%] lg:right-[8%] opacity-65 jellyfish-float">
+                        <svg className="w-36 h-48 sm:w-48 sm:h-60" viewBox="0 0 220 280" fill="none">
+                            <defs>
+                                <radialGradient id="jellyBellApp" cx="45%" cy="30%" r="65%">
+                                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95"/>
+                                    <stop offset="38%" stopColor="#7dd3fc" stopOpacity="0.72"/>
+                                    <stop offset="78%" stopColor="#0284c7" stopOpacity="0.35"/>
+                                    <stop offset="100%" stopColor="#0369a1" stopOpacity="0.05"/>
+                                </radialGradient>
+                                <linearGradient id="tentacleGradApp" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#bae6fd" stopOpacity="0.75"/>
+                                    <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.3"/>
+                                    <stop offset="100%" stopColor="#0284c7" stopOpacity="0"/>
+                                </linearGradient>
+                            </defs>
+                            <g transform="rotate(-18 110 110)">
+                                <path d="M72 118 Q62 175 84 235" stroke="url(#tentacleGradApp)" strokeWidth="2.2" strokeLinecap="round"/>
+                                <path d="M88 122 Q98 185 82 255" stroke="url(#tentacleGradApp)" strokeWidth="3" strokeLinecap="round"/>
+                                <path d="M106 124 Q100 190 118 265" stroke="url(#tentacleGradApp)" strokeWidth="2.5" strokeLinecap="round"/>
+                                <path d="M124 122 Q138 180 122 250" stroke="url(#tentacleGradApp)" strokeWidth="3" strokeLinecap="round"/>
+                                <path d="M142 116 Q155 170 140 230" stroke="url(#tentacleGradApp)" strokeWidth="1.8" strokeLinecap="round"/>
+                                <path d="M52 112 C52 58, 168 58, 168 112 C168 124, 146 128, 134 122 C122 128, 98 128, 86 122 C74 128, 52 124, 52 112 Z" fill="url(#jellyBellApp)" stroke="#e0f2fe" strokeOpacity="0.65" strokeWidth="1.2"/>
+                                <ellipse cx="110" cy="84" rx="34" ry="15" fill="#ffffff" fillOpacity="0.35"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    {/* Біолюмінесцентний кораловий відблиск знизу */}
+                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-cyan-500/20 via-sky-900/10 to-transparent"></div>
+                    <div className="absolute -bottom-10 left-[15%] w-72 h-36 rounded-full bg-purple-500/15 blur-3xl"></div>
+                    <div className="absolute -bottom-10 right-[18%] w-80 h-40 rounded-full bg-cyan-400/20 blur-3xl"></div>
+                </div>
+            );
+        };
+
+        const AbyssPanelDecor = () => (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+                {/* Силуети акул та промені всередині великої скляної панелі */}
+                <svg className="w-full h-full opacity-35" viewBox="0 0 700 420" preserveAspectRatio="xMidYMid slice">
+                    <defs>
+                        <radialGradient id="panelWaterGlow" cx="50%" cy="15%" r="80%">
+                            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.38"/>
+                            <stop offset="60%" stopColor="#0369a1" stopOpacity="0.14"/>
+                            <stop offset="100%" stopColor="#020617" stopOpacity="0.4"/>
+                        </radialGradient>
+                    </defs>
+                    <rect width="700" height="420" fill="url(#panelWaterGlow)"/>
+                    <g fill="#010914" opacity="0.65">
+                        <path d="M220 225 C255 212, 295 214, 330 226 L355 208 L345 230 L365 242 L338 238 C302 246, 260 244, 220 225 Z M275 216 L288 194 L298 217 Z"/>
+                        <path d="M415 165 C445 154, 480 156, 512 168 L534 152 L525 172 L542 182 L518 178 C486 185, 450 182, 415 165 Z M465 157 L476 138 L484 158 Z"/>
+                        <path d="M315 312 C342 302, 372 304, 400 314 L418 300 L410 318 L426 326 L405 322 C376 328, 345 326, 315 312 Z M360 305 L369 288 L376 306 Z"/>
+                    </g>
+                    <g fill="#bae6fd" opacity="0.28">
+                        <circle cx="85" cy="295" r="2.5"/><circle cx="98" cy="272" r="1.8"/><circle cx="74" cy="258" r="3"/>
+                        <circle cx="590" cy="290" r="2.5"/><circle cx="608" cy="265" r="2"/><circle cx="580" cy="250" r="1.5"/>
+                    </g>
+                </svg>
+                <div className="absolute bottom-3 right-5 text-[10px] font-mono tracking-[0.2em] text-sky-200/35 uppercase select-none">
+                    FIRST EDITION • 2025 ✦
+                </div>
+            </div>
+        );
+
+        // --- Теми оформлення ---
+        const themes = {
+            default: {
+                id: "default",
+                name: "Класична",
+                bg: "bg-stone-50",
+                text: "text-stone-800",
+                cardBg: "bg-white",
+                subCardBg: "bg-white",
+                border: "border-stone-200",
+                primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
+                secondaryBtn: "bg-stone-800 hover:bg-stone-900 text-white",
+                primaryLight: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                accentText: "text-indigo-600",
+                navBg: "bg-stone-100",
+                inputBg: "bg-stone-50",
+                shadow: "shadow-sm",
+                toastBg: "bg-stone-800 text-white",
+                toastIcon: "text-indigo-400",
+                globalLayer: null,
+                decorHtml: null
+            },
+            y2k: {
+                id: "y2k",
+                name: "Y2K Pastel",
+                bg: "bg-gradient-to-br from-pink-200 via-sky-200 to-indigo-100",
+                text: "text-slate-800",
+                cardBg: "bg-white/95 backdrop-blur-xl shadow-xl shadow-pink-300/40 rounded-3xl relative overflow-hidden",
+                subCardBg: "bg-white/90",
+                border: "border-pink-300",
+                primary: "bg-gradient-to-r from-pink-400 to-sky-400 hover:from-pink-500 hover:to-sky-500 text-white shadow-lg shadow-pink-300/50 rounded-2xl font-semibold",
+                secondaryBtn: "bg-gradient-to-r from-sky-400 to-pink-400 hover:opacity-90 text-white shadow-md rounded-2xl font-semibold",
+                primaryLight: "bg-pink-100 text-pink-700 border-pink-300",
+                accentText: "text-pink-500 font-bold",
+                navBg: "bg-white/90 border border-pink-300 shadow-md backdrop-blur-md rounded-2xl",
+                inputBg: "bg-pink-50/70 border-pink-300 focus:border-pink-400 rounded-2xl",
+                shadow: "shadow-lg shadow-pink-200/60",
+                toastBg: "bg-white/95 border-2 border-pink-300 text-pink-900 shadow-2xl backdrop-blur-md rounded-2xl",
+                toastIcon: "text-pink-500",
+                globalLayer: null,
+                decorHtml: <div className="absolute bottom-3 right-4 text-pink-300/60 text-xl pointer-events-none select-none">✦</div>
+            },
+            darkRed: {
+                id: "darkRed",
+                name: "Exile (Dark Red)",
+                bg: "bg-[#090505] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(185,28,28,0.15),rgba(255,255,255,0))]",
+                text: "text-stone-100",
+                cardBg: "bg-neutral-950/90 backdrop-blur-xl shadow-2xl shadow-red-950/50 rounded-3xl relative overflow-hidden border border-red-900/40",
+                subCardBg: "bg-neutral-900/90",
+                border: "border-red-900/50",
+                primary: "bg-gradient-to-r from-red-700 to-rose-900 hover:from-red-600 hover:to-rose-800 text-white shadow-lg shadow-red-900/40 rounded-2xl font-semibold border border-red-600/30",
+                secondaryBtn: "bg-neutral-900 hover:bg-neutral-800 text-red-500 border border-red-900/60 shadow-md rounded-2xl font-semibold",
+                primaryLight: "bg-red-950/60 text-red-400 border-red-900/50",
+                accentText: "text-red-500 font-bold tracking-wide",
+                navBg: "bg-neutral-950/90 border border-red-900/50 shadow-lg backdrop-blur-md rounded-2xl",
+                inputBg: "bg-neutral-900/80 border-red-900/50 text-stone-200 focus:border-red-600 rounded-2xl placeholder:text-stone-600",
+                shadow: "shadow-2xl shadow-red-950/30",
+                toastBg: "bg-neutral-950 border-2 border-red-800/80 text-red-200 shadow-2xl backdrop-blur-md rounded-2xl",
+                toastIcon: "text-red-500",
+                globalLayer: null,
+                decorHtml: <div className="absolute bottom-3 right-4 text-red-600/40 text-lg pointer-events-none select-none">✦</div>
+            },
+            ocean: {
+                id: "ocean",
+                name: "Blue Ocean",
+                bg: "bg-[#020617] bg-[radial-gradient(circle_at_50%_0%,rgba(14,116,144,0.35)_0%,rgba(3,7,18,0.95)_70%,rgba(2,6,23,1)_100%)]",
+                text: "text-cyan-50",
+                cardBg: "bg-slate-950/90 backdrop-blur-2xl shadow-2xl shadow-cyan-950/80 rounded-3xl relative overflow-hidden border border-cyan-500/40 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.15),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,99,235,0.1),transparent_50%)]",
+                subCardBg: "bg-slate-950/80",
+                border: "border-cyan-500/50",
+                primary: "bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/60 rounded-2xl font-semibold border border-cyan-400/40",
+                secondaryBtn: "bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/60 shadow-md rounded-2xl font-semibold",
+                primaryLight: "bg-cyan-950/70 text-cyan-200 border-cyan-500/60",
+                accentText: "text-cyan-400 font-bold tracking-wide",
+                navBg: "bg-slate-950/90 border border-cyan-500/50 shadow-lg backdrop-blur-md rounded-2xl",
+                inputBg: "bg-slate-900/80 border-cyan-500/50 text-cyan-100 focus:border-cyan-400 rounded-2xl placeholder:text-cyan-700/60",
+                shadow: "shadow-2xl shadow-cyan-950/50",
+                toastBg: "bg-slate-950 border-2 border-cyan-500 text-cyan-100 shadow-2xl backdrop-blur-md rounded-2xl",
+                toastIcon: "text-cyan-400",
+                globalLayer: null,
+                decorHtml: (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                        <div className="absolute -top-20 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-glow"></div>
+                        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl animate-float"></div>
+                        <div className="absolute top-4 right-6 text-cyan-400/30 text-xs font-mono tracking-widest uppercase select-none flex items-center gap-1">
+                            <span>BLUE OCEAN DEEP</span> <span>✦</span>
+                        </div>
+                    </div>
+                )
+            },
+            abyssOcean: {
+                id: "abyssOcean",
+                name: "Abyss Ocean (Glassmorphism)",
+                bg: "abyss-bg",
+                text: "text-slate-50 text-glow-abyss",
+                cardBg: "abyss-glass-panel rounded-[28px] relative overflow-hidden",
+                subCardBg: "abyss-sub-card",
+                border: "border-sky-300/30",
+                primary: "abyss-pill-btn text-white rounded-full font-semibold tracking-wide",
+                secondaryBtn: "abyss-pill-btn text-sky-100 rounded-full font-semibold",
+                primaryLight: "bg-sky-400/15 text-sky-200 border-sky-300/45 shadow-[0_0_20px_rgba(56,189,248,0.2)]",
+                accentText: "text-sky-300 font-bold tracking-wide",
+                navBg: "bg-[#031226]/80 border border-sky-300/25 shadow-lg backdrop-blur-xl rounded-full",
+                inputBg: "bg-[#020a17]/75 border-sky-300/30 text-sky-50 focus:border-sky-300/80 rounded-2xl placeholder:text-sky-200/35",
+                shadow: "shadow-[0_20px_50px_rgba(0,4,12,0.75)]",
+                toastBg: "abyss-glass-panel text-sky-100 rounded-2xl",
+                toastIcon: "text-sky-300",
+                globalLayer: <AbyssGlobalLayer />,
+                decorHtml: <AbyssPanelDecor />
+            }
+        };
+
+        const Icon = ({ name, size = 18, className = "" }) => {
+            const paths = {
+                book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+                pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+                brain: '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>',
+                settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+                columns: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="12" x2="12" y1="3" y2="21"/>',
+                splitClose: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="9" x2="9" y1="3" y2="21"/><path d="m14 9-3 3 3 3"/>',
+                search: '<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/>',
+                plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+                trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+                save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+                info: '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/>',
+                check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+                users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+                logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+                user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+                palette: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.504 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>'
+            };
+            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: paths[name] || '' }} />;
+        };
+
+        const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        const calculateNextReview = (quality, currentReps = 0, currentInterval = 0, currentEase = 2.5) => {
+            let reps = currentReps;
+            let interval = currentInterval;
+            let ease = currentEase;
+
+            if (quality < 3) {
+                reps = 0;
+                interval = 1;
+            } else {
+                reps += 1;
+                if (reps === 1) interval = 1;
+                else if (reps === 2) interval = 6;
+                else interval = Math.round(interval * ease);
+            }
+
+            ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+            if (ease < 1.3) ease = 1.3;
+
+            const nextDate = new Date();
+            nextDate.setDate(nextDate.getDate() + interval);
+            return { repetitions: reps, interval, easeFactor: ease, nextReviewDate: nextDate.getTime() };
+        };
+
+        function App() {
+            const [fb, setFb] = useState(null);
+            const [user, setUser] = useState(null);
+            const [authLoading, setAuthLoading] = useState(true);
+
+            const [currentTheme, setCurrentTheme] = useState(() => {
+                const saved = localStorage.getItem('engspace_theme');
+                return themes[saved] ? saved : 'abyssOcean';
+            });
+            const t = themes[currentTheme];
+
+            const toggleTheme = () => {
+                const order = ['default', 'y2k', 'darkRed', 'ocean', 'abyssOcean'];
+                const next = order[(order.indexOf(currentTheme) + 1) % order.length];
+                setCurrentTheme(next);
+                localStorage.setItem('engspace_theme', next);
+                showToast(`Тема: ${themes[next].name}`);
+            };
+
+            const [workspaces, setWorkspaces] = useState([]);
+            const [activeWorkspace, setActiveWorkspace] = useState(null);
+
+            const [words, setWords] = useState([]);
+            const [publicNotes, setPublicNotes] = useState([]);
+            const [privateNotes, setPrivateNotes] = useState([]);
+
+            const [activeTab, setActiveTab] = useState('dictionary');
+            const [isSplitScreen, setIsSplitScreen] = useState(false);
+            const [toastMessage, setToastMessage] = useState(null);
+            const toastTimeoutRef = useRef(null);
+
+            const showToast = (msg) => {
+                setToastMessage(msg);
+                if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+                toastTimeoutRef.current = setTimeout(() => setToastMessage(null), 3000);
+            };
+
+            useEffect(() => {
+                const handleReady = () => {
+                    if (window.firebaseApp) {
+                        setFb(window.firebaseApp);
+                        const unsubscribe = window.firebaseApp.onAuthStateChanged(window.firebaseApp.auth, (u) => {
+                            setUser(u);
+                            setAuthLoading(false);
+                        });
+                        return () => unsubscribe();
+                    }
+                };
+                if (window.firebaseApp) handleReady();
+                window.addEventListener('firebase-ready', handleReady);
+            }, []);
+
+            const loginWithGoogle = async () => {
+                if (!fb) {
+                    showToast("Firebase ще завантажується.");
+                    return;
+                }
+
+                const provider = new fb.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: "select_account" });
+
+                try {
+                    await fb.signInWithPopup(fb.auth, provider);
+                } catch (err) {
+                    console.error("Повна помилка входу:", err);
+                    alert("Помилка входу: " + err.code + " - " + err.message);
+                }
+            };
+
+            const logout = async () => {
+                if (!fb) return;
+                await fb.signOut(fb.auth);
+                setUser(null);
+                setActiveWorkspace(null);
+            };
+
+            useEffect(() => {
+                if (!user || !fb) return;
+                const wRef = fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces');
+                const unsub = fb.onSnapshot(wRef, (snap) => {
+                    const allWs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    setWorkspaces(allWs);
+                    const myWs = allWs.find(ws => ws.members && ws.members.includes(user.uid));
+                    setActiveWorkspace(myWs || null);
+                }, (err) => console.error("Workspaces error:", err));
+                return () => unsub();
+            }, [user, fb]);
+
+            useEffect(() => {
+                if (!user || !activeWorkspace || !fb) return;
+
+                const vRef = fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces', activeWorkspace.id, 'vocabulary');
+                const unsubV = fb.onSnapshot(vRef, (snap) => {
+                    setWords(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+                });
+
+                const nRef = fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces', activeWorkspace.id, 'notes');
+                const unsubN = fb.onSnapshot(nRef, (snap) => {
+                    setPublicNotes(snap.docs.map(d => ({ id: d.id, ...d.data(), isShared: true })));
+                });
+
+                const pRef = fb.collection(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes');
+                const unsubP = fb.onSnapshot(pRef, (snap) => {
+                    setPrivateNotes(snap.docs.map(d => ({ id: d.id, ...d.data(), isShared: false })));
+                });
+
+                return () => { unsubV(); unsubN(); unsubP(); };
+            }, [user, activeWorkspace, fb]);
+
+            if (authLoading) {
+                return <div className={`flex h-screen items-center justify-center ${t.bg} ${t.text} text-lg font-medium`}>Завантаження EngSpace...</div>;
+            }
+
+            if (!user) {
+                return (
+                    <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
+                        {t.globalLayer}
+                        <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.cardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText} z-10`} title={`Тема: ${t.name}`}>
+                            <Icon name="palette" size={20} />
+                        </button>
+                        <div className={`${t.cardBg} p-8 rounded-3xl border ${t.border} max-w-md w-full text-center shadow-2xl relative z-10`}>
+                            {t.decorHtml}
+                            <div className="relative z-10">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
+                                <h1 className={`text-2xl font-bold ${t.text} mb-2`}>Ласкаво просимо до EngSpace</h1>
+                                <p className="text-sky-200/75 mb-8 text-sm">Парний хмарний простір для вивчення англійської мови</p>
+                                <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${t.subCardBg} border ${t.border} hover:opacity-90 ${t.text} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                                    Увійти через Google
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (!activeWorkspace) {
+                return <WorkspaceSetup user={user} fb={fb} workspaces={workspaces} showToast={showToast} logout={logout} t={t} toggleTheme={toggleTheme} />;
+            }
+
+            return (
+                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative`}>
+                    {t.globalLayer}
+                    <header className={`flex-none flex items-center justify-between px-6 py-4 ${t.cardBg} border-b ${t.border} ${t.shadow} z-10`}>
+                        <div className="flex items-center gap-2.5 relative z-10">
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-[0_0_18px_rgba(56,189,248,0.45)]">E</div>
+                            <div className="hidden sm:flex flex-col">
+                                <span className={`font-bold text-lg tracking-tight leading-none ${t.text}`}>EngSpace</span>
+                                {currentTheme === 'abyssOcean' && (
+                                    <span className="text-[9px] uppercase tracking-[0.22em] text-sky-300/75 mt-0.5">Blue Ocean Edition</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl relative z-10`}>
+                            <NavBtn icon={<Icon name="book" />} label="Словник" active={activeTab === 'dictionary'} onClick={() => {setActiveTab('dictionary'); setIsSplitScreen(false);}} t={t} />
+                            <NavBtn icon={<Icon name="pen" />} label="Нотатки" active={activeTab === 'notes'} onClick={() => {setActiveTab('notes'); setIsSplitScreen(false);}} t={t} />
+                            <NavBtn icon={<Icon name="brain" />} label="Повторення" active={activeTab === 'revision'} onClick={() => {setActiveTab('revision'); setIsSplitScreen(false);}} t={t} />
+                            <NavBtn icon={<Icon name="settings" />} label="Налаштування" active={activeTab === 'settings'} onClick={() => {setActiveTab('settings'); setIsSplitScreen(false);}} t={t} />
+                        </nav>
+
+                        <div className="flex items-center gap-2 relative z-10">
+                            <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.subCardBg} border ${t.border} hover:scale-110 transition-all ${t.accentText} shadow-sm`} title={`Тема: ${t.name}`}>
+                                <Icon name="palette" size={18} />
+                            </button>
+                            <button onClick={() => setIsSplitScreen(!isSplitScreen)} className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl font-medium transition-colors ${isSplitScreen ? t.primaryLight : `${t.subCardBg} border ${t.border} hover:opacity-85 text-sky-200/75`}`}>
+                                <Icon name={isSplitScreen ? "splitClose" : "columns"} />
+                                <span className="hidden md:block text-sm">{isSplitScreen ? 'Закрити спліт' : 'Спліт-екран'}</span>
+                            </button>
+                            <button onClick={logout} className={`p-2.5 ${t.subCardBg} border ${t.border} text-sky-200/75 hover:text-sky-300 rounded-2xl transition-colors shadow-sm`} title="Вийти">
+                                <Icon name="logout" size={18} />
+                            </button>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 overflow-hidden p-4 sm:p-6 relative z-10">
+                        <div className="flex flex-col lg:flex-row gap-6 h-full">
+                            <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                <DictionaryPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} showToast={showToast} t={t} />
+                            </div>
+
+                            <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'notes' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                <NotesPanel user={user} fb={fb} workspaceId={activeWorkspace.id} publicNotes={publicNotes} privateNotes={privateNotes} showToast={showToast} t={t} />
+                            </div>
+
+                            {!isSplitScreen && activeTab === 'revision' && (
+                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden`}>
+                                    <RevisionPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} t={t} />
+                                </div>
+                            )}
+
+                            {!isSplitScreen && activeTab === 'settings' && (
+                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden p-8 overflow-y-auto`}>
+                                    <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} t={t} />
+                                </div>
+                            )}
+                        </div>
+                    </main>
+
+                    {toastMessage && (
+                        <div className={`fixed bottom-6 right-6 ${t.toastBg} px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 border ${t.border}`}>
+                            <Icon name="info" className={t.toastIcon} size={20} />
+                            <span className="font-medium">{toastMessage}</span>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const NavBtn = ({ icon, label, active, onClick, t }) => (
+            <button onClick={onClick} className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all ${active ? `${t.subCardBg} ${t.accentText} shadow-md font-bold scale-105 border ${t.border}` : 'text-sky-200/65 hover:text-white hover:bg-sky-400/10'}`}>
+                {icon}
+                <span className="hidden md:block text-sm">{label}</span>
+            </button>
+        );
+
+        function WorkspaceSetup({ user, fb, workspaces, showToast, logout, t, toggleTheme }) {
+            const [joinCode, setJoinCode] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleCreate = async () => {
+                setLoading(true);
+                try {
+                    const code = generateInviteCode();
+                    const wsRef = fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces');
+                    await fb.addDoc(wsRef, {
+                        inviteCode: code,
+                        members: [user.uid],
+                        createdAt: Date.now()
+                    });
+                    showToast("Простір створено!");
+                } catch (err) {
+                    showToast("Помилка створення простору");
+                }
+                setLoading(false);
+            };
+
+            const handleJoin = async (e) => {
+                e.preventDefault();
+                if (!joinCode.trim()) return;
+                setLoading(true);
+                try {
+                    const wsToJoin = workspaces.find(w => w.inviteCode.toUpperCase() === joinCode.toUpperCase().trim());
+                    if (!wsToJoin) {
+                        showToast("Код не знайдено");
+                    } else if (wsToJoin.members.length >= 2 && !wsToJoin.members.includes(user.uid)) {
+                        showToast("Робочий простір вже має двох учасників");
+                    } else {
+                        const wsRef = fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', wsToJoin.id);
+                        const updatedMembers = wsToJoin.members.includes(user.uid) ? wsToJoin.members : [...wsToJoin.members, user.uid];
+                        await fb.updateDoc(wsRef, { members: updatedMembers });
+                        showToast("Успішно приєднано!");
+                    }
+                } catch (err) {
+                    showToast("Помилка приєднання");
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
+                    {t.globalLayer}
+                    <div className="absolute top-6 right-6 flex items-center gap-3 z-10">
+                        <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.subCardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText}`} title="Змінити тему">
+                            <Icon name="palette" size={18} />
+                        </button>
+                        <button onClick={logout} className={`flex items-center gap-2 text-sky-100 ${t.subCardBg} px-4 py-2.5 rounded-2xl border ${t.border} shadow-md text-sm font-medium`}>
+                            <Icon name="logout" size={16} /> Вийти ({user.email})
+                        </button>
+                    </div>
+                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border ${t.border} max-w-md w-full relative z-10`}>
+                        {t.decorHtml}
+                        <div className="relative z-10">
+                            <div className="flex justify-center mb-6">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
+                            </div>
+                            <h1 className={`text-2xl font-bold text-center ${t.text} mb-2`}>Робочий простір</h1>
+                            <p className="text-center text-sky-200/75 mb-8 text-sm">Створіть новий простір або приєднайтеся за кодом партнера</p>
+
+                            <button onClick={handleCreate} disabled={loading} className={`w-full flex items-center justify-center gap-2 ${t.primary} py-3.5 rounded-2xl font-medium transition-colors mb-6 shadow-md disabled:opacity-50`}>
+                                <Icon name="plus" size={20} /> Створити новий простір
+                            </button>
+
+                            <div className="relative flex py-4 items-center">
+                                <div className={`flex-grow border-t ${t.border}`}></div>
+                                <span className="flex-shrink-0 mx-4 text-sky-300/60 text-sm">або</span>
+                                <div className={`flex-grow border-t ${t.border}`}></div>
+                            </div>
+
+                            <form onSubmit={handleJoin} className="space-y-4">
+                                <div>
+                                    <label className={`block text-sm font-medium ${t.text} mb-1`}>Код запрошення</label>
+                                    <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} placeholder="Введіть код" className={`w-full px-4 py-3.5 ${t.inputBg} border ${t.border} rounded-2xl focus:ring-2 focus:ring-sky-400/30 outline-none uppercase text-center tracking-widest text-lg font-mono`} maxLength={6} />
+                                </div>
+                                <button type="submit" disabled={loading || !joinCode.trim()} className={`w-full ${t.secondaryBtn} py-3.5 rounded-2xl font-medium transition-colors disabled:opacity-50 shadow-md`}>
+                                    Приєднатися
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function DictionaryPanel({ user, fb, workspaceId, words, showToast, t }) {
+            const [search, setSearch] = useState('');
+            const [formData, setFormData] = useState({ en: '', uk: '', example: '' });
+
+            const handleSave = async (e) => {
+                e.preventDefault();
+                if (!formData.en.trim() || !formData.uk.trim()) return;
+
+                const newWord = {
+                    ...formData,
+                    addedBy: user.uid,
+                    createdAt: Date.now(),
+                    nextReviewDate: null,
+                    interval: 0,
+                    easeFactor: 2.5,
+                    repetitions: 0
+                };
+
+                try {
+                    const colRef = fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'vocabulary');
+                    await fb.addDoc(colRef, newWord);
+                    setFormData({ en: '', uk: '', example: '' });
+                    showToast("Слово збережено");
+                } catch (err) {
+                    showToast("Помилка збереження");
+                }
+            };
+
+            const handleDelete = async (id) => {
+                try {
+                    await fb.deleteDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'vocabulary', id));
+                    showToast("Видалено");
+                } catch (err) {
+                    showToast("Помилка видалення");
+                }
+            };
+
+            const filteredWords = words.filter(w => w.en.toLowerCase().includes(search.toLowerCase()) || w.uk.toLowerCase().includes(search.toLowerCase()));
+
+            return (
+                <div className={`flex flex-col h-full bg-transparent relative`}>
+                    {t.decorHtml}
+                    <div className={`flex-none p-4 md:p-6 bg-transparent border-b ${t.border} relative z-10`}>
+                        <form onSubmit={handleSave} className="space-y-3">
+                            <div className="flex flex-col md:flex-row gap-3">
+                                <input value={formData.en} onChange={e => setFormData({...formData, en: e.target.value})} placeholder="English word" className={`flex-1 px-4 py-2.5 border ${t.border} rounded-2xl outline-none focus:border-sky-300 ${t.inputBg}`} />
+                                <input value={formData.uk} onChange={e => setFormData({...formData, uk: e.target.value})} placeholder="Переклад" className={`flex-1 px-4 py-2.5 border ${t.border} rounded-2xl outline-none focus:border-sky-300 ${t.inputBg}`} />
+                                <button type="submit" disabled={!formData.en.trim() || !formData.uk.trim()} className={`px-6 py-2.5 ${t.primary} rounded-2xl disabled:opacity-50 flex gap-2 justify-center items-center shadow-md`}>
+                                    <Icon name="save" /> <span className="hidden md:inline">Зберегти</span>
+                                </button>
+                            </div>
+                            <input value={formData.example} onChange={e => setFormData({...formData, example: e.target.value})} placeholder="Приклад речення (необов'язково)" className={`w-full px-4 py-2 border ${t.border} rounded-2xl outline-none focus:border-sky-300 text-sm ${t.inputBg}`} />
+                        </form>
+                    </div>
+
+                    <div className="flex-1 flex flex-col min-h-0 relative z-10">
+                        <div className={`p-4 flex-none border-b ${t.border} bg-transparent sticky top-0`}>
+                            <div className="relative">
+                                <span className="absolute left-3.5 top-3 text-sky-300/60"><Icon name="search" size={16} /></span>
+                                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Пошук у спільному словнику..." className={`w-full pl-10 pr-4 py-2.5 ${t.inputBg} border ${t.border} rounded-2xl text-sm outline-none focus:border-sky-300`} />
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            {filteredWords.length === 0 ? (
+                                <div className="text-center text-sky-200/60 mt-10">Словник порожній. Додайте перше слово!</div>
+                            ) : (
+                                filteredWords.map(word => (
+                                    <div key={word.id} className={`group ${t.subCardBg} p-4 rounded-2xl border ${t.border} shadow-sm hover:border-sky-300/60 transition-all flex justify-between items-start gap-4`}>
+                                        <div>
+                                            <div className="flex items-baseline gap-3">
+                                                <span className={`font-bold text-lg ${t.text}`}>{word.en}</span>
+                                                <span className={`${t.accentText} font-medium`}>{word.uk}</span>
+                                            </div>
+                                            {word.example && <p className="text-sky-200/65 italic text-sm mt-1">"{word.example}"</p>}
+                                        </div>
+                                        <button onClick={() => handleDelete(word.id)} className="text-sky-300/60 hover:text-red-400 p-2 rounded-xl hover:bg-sky-400/10 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Icon name="trash" size={16} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function NotesPanel({ user, fb, workspaceId, publicNotes, privateNotes, showToast, t }) {
+            const [activeNote, setActiveNote] = useState(null);
+            const [isCreating, setIsCreating] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [title, setTitle] = useState('');
+            const [content, setContent] = useState('');
+            const [isShared, setIsShared] = useState(true);
+
+            const allNotes = useMemo(() => [...publicNotes, ...privateNotes].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)), [publicNotes, privateNotes]);
+            const filteredNotes = allNotes.filter(n => n.title?.toLowerCase().includes(searchQuery.toLowerCase()) || n.content?.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            const openNote = (note) => {
+                setActiveNote(note);
+                setIsCreating(false);
+                setTitle(note.title);
+                setContent(note.content);
+                setIsShared(note.isShared);
+            };
+
+            const saveNote = async () => {
+                if (!title.trim() && !content.trim()) return;
+                const noteData = { title: title || 'Без назви', content, updatedAt: Date.now() };
+
+                try {
+                    if (activeNote) {
+                        if (activeNote.isShared !== isShared) {
+                            const oldPath = activeNote.isShared 
+                                ? fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes', activeNote.id)
+                                : fb.doc(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes', activeNote.id);
+                            await fb.deleteDoc(oldPath);
+
+                            const newCol = isShared 
+                                ? fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes')
+                                : fb.collection(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes');
+                            const newDoc = await fb.addDoc(newCol, { ...noteData, createdAt: activeNote.createdAt || Date.now() });
+                            setActiveNote({ id: newDoc.id, ...noteData, isShared });
+                        } else {
+                            const ref = isShared 
+                                ? fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes', activeNote.id)
+                                : fb.doc(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes', activeNote.id);
+                            await fb.updateDoc(ref, noteData);
+                            setActiveNote({ ...activeNote, ...noteData });
+                        }
+                    } else {
+                        const col = isShared 
+                            ? fb.collection(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes')
+                            : fb.collection(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes');
+                        const newDoc = await fb.addDoc(col, { ...noteData, createdAt: Date.now() });
+                        setActiveNote({ id: newDoc.id, ...noteData, isShared });
+                        setIsCreating(false);
+                    }
+                    showToast("Нотатку збережено");
+                } catch (err) {
+                    showToast("Помилка збереження");
+                }
+            };
+
+            const deleteNote = async (note) => {
+                try {
+                    const ref = note.isShared 
+                        ? fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'notes', note.id)
+                        : fb.doc(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'notes', note.id);
+                    await fb.deleteDoc(ref);
+                    if (activeNote?.id === note.id) {
+                        setActiveNote(null);
+                        setIsCreating(false);
+                    }
+                    showToast("Видалено");
+                } catch (err) {
+                    showToast("Помилка видалення");
+                }
+            };
+
+            return (
+                <div className={`flex h-full relative`}>
+                    {t.decorHtml}
+                    <div className={`w-full md:w-1/3 border-r ${t.border} flex flex-col bg-transparent relative z-10 ${(activeNote || isCreating) ? 'hidden md:flex' : 'flex'}`}>
+                        <div className={`p-4 border-b ${t.border}`}>
+                            <button onClick={() => { setActiveNote(null); setTitle(''); setContent(''); setIsCreating(true); }} className={`w-full flex items-center justify-center gap-2 ${t.subCardBg} border ${t.border} hover:border-sky-300/70 py-2.5 rounded-2xl text-sm font-semibold shadow-sm transition-all ${t.text}`}>
+                                <Icon name="plus" /> Створити нотатку
+                            </button>
+                        </div>
+                        <div className={`p-3 border-b ${t.border} bg-transparent`}>
+                            <div className="relative">
+                                <span className="absolute left-3.5 top-3 text-sky-300/60"><Icon name="search" size={16} /></span>
+                                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Пошук нотаток..." className={`w-full pl-10 pr-3 py-2 ${t.inputBg} border ${t.border} rounded-2xl text-sm outline-none focus:border-sky-300`} />
+                            </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+                            {filteredNotes.map(note => (
+                                <div key={note.id} onClick={() => openNote(note)} className={`p-3.5 rounded-2xl cursor-pointer border transition-all ${activeNote?.id === note.id ? `${t.primaryLight} border-sky-300 shadow-sm` : `hover:bg-sky-400/10 border-transparent`}`}>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <h4 className={`font-semibold ${t.text} truncate pr-2`}>{note.title}</h4>
+                                        {note.isShared ? <span title="Спільна"><Icon name="users" size={14} className={t.accentText} /></span> : <span title="Особиста"><span className="text-xs bg-sky-950/80 px-2 py-0.5 rounded-xl font-medium text-sky-200 border border-sky-300/30">Особиста</span></span>}
+                                    </div>
+                                    <p className="text-xs text-sky-200/60 truncate">{note.content || 'Пусто...'}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className={`w-full md:w-2/3 flex flex-col bg-transparent relative z-10 ${!activeNote && !isCreating && allNotes.length > 0 ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
+                        {(!activeNote && !isCreating && title === '' && content === '') ? (
+                            <div className="text-center text-sky-200/60 flex flex-col items-center gap-3">
+                                <Icon name="pen" size={48} className="opacity-25" />
+                                <p>Оберіть нотатку або створіть нову</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`flex items-center justify-between p-4 border-b ${t.border}`}>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => { setActiveNote(null); setIsCreating(false); }} className="md:hidden text-sky-300"><Icon name="splitClose" className="rotate-180" /></button>
+                                        <div className={`flex ${t.navBg} p-1 rounded-2xl border ${t.border}`}>
+                                            <button onClick={() => setIsShared(true)} className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all ${isShared ? `${t.subCardBg} shadow-md ${t.accentText}` : 'text-sky-200/50'}`}>Спільна</button>
+                                            <button onClick={() => setIsShared(false)} className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all ${!isShared ? `${t.subCardBg} shadow-md ${t.text}` : 'text-sky-200/50'}`}>Особиста</button>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {activeNote && <button onClick={() => deleteNote(activeNote)} className="p-2.5 text-sky-300/60 hover:text-red-400 rounded-2xl hover:bg-sky-400/10 transition-colors"><Icon name="trash" size={18} /></button>}
+                                        <button onClick={saveNote} className={`flex items-center gap-2 ${t.secondaryBtn} px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors shadow-md`}><Icon name="save" size={16} /> Зберегти</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                                    <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Назва нотатки..." className={`text-2xl font-bold border-none outline-none mb-4 bg-transparent placeholder:text-sky-200/35 ${t.text}`} />
+                                    <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Почніть писати тут..." className={`flex-1 w-full resize-none border-none outline-none bg-transparent ${t.text} leading-relaxed`} />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function RevisionPanel({ user, fb, workspaceId, words, t }) {
+            const [currentWord, setCurrentWord] = useState(null);
+            const [showAnswer, setShowAnswer] = useState(false);
+
+            const dueWords = useMemo(() => {
+                const now = Date.now();
+                return words.filter(w => !w.nextReviewDate || w.nextReviewDate <= now).sort((a, b) => (a.nextReviewDate || 0) - (b.nextReviewDate || 0));
+            }, [words]);
+
+            useEffect(() => {
+                if (dueWords.length > 0) {
+                    if (!currentWord || !dueWords.find(w => w.id === currentWord.id)) {
+                        setCurrentWord(dueWords[0]);
+                        setShowAnswer(false);
+                    }
+                } else {
+                    setCurrentWord(null);
+                }
+            }, [dueWords, currentWord]);
+
+            const handleRating = async (quality) => {
+                if (!currentWord) return;
+                const { repetitions, interval, easeFactor, nextReviewDate } = calculateNextReview(quality, currentWord.repetitions, currentWord.interval, currentWord.easeFactor);
+
+                try {
+                    const wRef = fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspaceId, 'vocabulary', currentWord.id);
+                    await fb.updateDoc(wRef, { repetitions, interval, easeFactor, nextReviewDate });
+                    setCurrentWord(null);
+                    setShowAnswer(false);
+                } catch (err) {
+                    console.error("Review update error", err);
+                }
+            };
+
+            return (
+                <div className={`flex flex-col h-full relative p-6 bg-transparent`}>
+                    {t.decorHtml}
+                    <h2 className={`text-xl font-bold flex items-center gap-2 mb-6 ${t.text} relative z-10`}><Icon name="brain" className={t.accentText}/> Тренування ({dueWords.length} слів)</h2>
+                    <div className="flex-1 flex items-center justify-center relative z-10">
+                        {!currentWord ? (
+                            <div className={`text-center p-10 ${t.subCardBg} rounded-3xl border ${t.border} shadow-xl max-w-sm w-full`}>
+                                <div className="text-sky-300 flex justify-center mb-4"><Icon name="check" size={48}/></div>
+                                <h3 className={`text-2xl font-bold mb-2 ${t.text}`}>Відмінно!</h3>
+                                <p className="text-sky-200/65">Всі слова на сьогодні повторені.</p>
+                            </div>
+                        ) : (
+                            <div className={`w-full max-w-xl ${t.subCardBg} rounded-3xl border ${t.border} p-10 text-center shadow-2xl`}>
+                                <h2 className={`text-5xl font-bold mb-8 ${t.text}`}>{currentWord.en}</h2>
+                                {!showAnswer ? (
+                                    <button onClick={() => setShowAnswer(true)} className={`w-full py-4 ${t.secondaryBtn} rounded-2xl font-bold transition-transform active:scale-95 shadow-md`}>Показати переклад</button>
+                                ) : (
+                                    <div className={`border-t ${t.border} pt-8 animate-in fade-in`}>
+                                        <h3 className={`text-3xl font-bold ${t.accentText} mb-6`}>{currentWord.uk}</h3>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            <button onClick={() => handleRating(0)} className="py-3 bg-red-950/70 text-red-300 border border-red-900/60 rounded-2xl font-semibold hover:bg-red-900/60 transition-colors shadow-sm">Забув/ла</button>
+                                            <button onClick={() => handleRating(3)} className="py-3 bg-sky-950/60 text-sky-200 border border-sky-300/30 rounded-2xl font-semibold hover:bg-sky-900/50 transition-colors shadow-sm">Важко</button>
+                                            <button onClick={() => handleRating(4)} className="py-3 bg-sky-950/60 text-sky-200 border border-sky-300/30 rounded-2xl font-semibold hover:bg-sky-900/50 transition-colors shadow-sm">Добре</button>
+                                            <button onClick={() => handleRating(5)} className="py-3 bg-sky-500/25 text-sky-100 border border-sky-300/50 rounded-2xl font-semibold hover:bg-sky-500/35 transition-colors shadow-sm">Легко</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function SettingsPanel({ user, fb, workspace, showToast, logout, t }) {
+            const handleLeave = async () => {
+                if (window.confirm("Ви впевнені, що хочете покинути цей простір?")) {
+                    try {
+                        const wsRef = fb.doc(fb.db, 'artifacts', fb.appId, 'workspaces', workspace.id);
+                        const newMembers = workspace.members.filter(m => m !== user.uid);
+                        await fb.updateDoc(wsRef, { members: newMembers });
+                        showToast("Ви покинули простір");
+                    } catch (err) {
+                        showToast("Помилка");
+                    }
+                }
+            };
+
+            return (
+                <div className={`max-w-2xl mx-auto w-full space-y-6 relative`}>
+                    {t.decorHtml}
+                    <div className="relative z-10 space-y-6">
+                        <h2 className={`text-2xl font-bold flex items-center gap-2 ${t.text}`}><Icon name="settings" /> Налаштування та профіль</h2>
+                        
+                        <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
+                            <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${t.text}`}><Icon name="user" className={t.accentText} /> Дані облікового запису Google</h3>
+                            <div className="space-y-3 text-sm">
+                                <div className="flex items-center gap-3">
+                                    {user.photoURL && <img src={user.photoURL} alt="Avatar" className={`w-12 h-12 rounded-2xl border ${t.border} shadow-sm`} />}
+                                    <div>
+                                        <p className={`font-bold ${t.text} text-base`}>{user.displayName || "Користувач"}</p>
+                                        <p className="text-sky-200/65">{user.email}</p>
+                                    </div>
+                                </div>
+                                <div className={`pt-3 border-t ${t.border} flex flex-col gap-1`}>
+                                    <span className="text-sky-300/60 text-xs uppercase tracking-wider">Унікальний ID користувача в базі:</span>
+                                    <code className={`${t.navBg} px-3.5 py-2 rounded-xl text-xs font-mono text-sky-200/80 select-all border ${t.border}`}>{user.uid}</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
+                            <h3 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${t.text}`}><Icon name="users" className={t.accentText} /> Код запрошення для партнера</h3>
+                            <p className="text-sm text-sky-200/65 mb-4">Поділіться цим кодом, щоб підключити другу людину до вашого словника та спільних нотаток у реальному часі.</p>
+                            <div className={`flex items-center gap-4 ${t.navBg} p-4 rounded-2xl border ${t.border}`}>
+                                <div className={`text-3xl font-mono font-bold tracking-widest ${t.accentText} ${t.subCardBg} px-6 py-2.5 rounded-xl border ${t.border} shadow-sm`}>{workspace.inviteCode}</div>
+                                <span className={`text-sm font-bold ${t.primaryLight} px-4 py-1.5 rounded-xl ml-auto border`}>Учасників: {workspace.members?.length || 0}/2</span>
+                            </div>
+                        </div>
+
+                        <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`}>
+                            <div>
+                                <h3 className={`text-lg font-semibold mb-1 ${t.text}`}>Вихід із системи</h3>
+                                <p className="text-sm text-sky-200/65">Завершити поточну сесію та вийти з аккаунта Google.</p>
+                            </div>
+                            <button onClick={logout} className={`px-5 py-3 ${t.navBg} hover:opacity-80 ${t.text} rounded-2xl transition-colors font-semibold flex items-center gap-2 shrink-0 border ${t.border} shadow-sm`}>
+                                <Icon name="logout" size={16} /> Вийти з аккаунта
+                            </button>
+                        </div>
+
+                        <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
+                            <h3 className="text-lg font-semibold mb-2 text-red-400">Небезпечна зона</h3>
+                            <p className="text-sm text-sky-200/65 mb-4">Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
+                            <button onClick={handleLeave} className="px-5 py-3 bg-red-950/60 text-red-300 rounded-2xl border border-red-900/80 hover:bg-red-900/50 transition-colors font-semibold shadow-sm">Покинути простір</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
