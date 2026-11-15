@@ -20,14 +20,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
             getAuth, 
-            signInWithRedirect, 
+            signInWithPopup, 
             GoogleAuthProvider, 
             onAuthStateChanged, 
             signOut 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Виправлена конфігурація з правильним API-ключем
+        // Конфігурація Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyBtohoKon-Q9CB0qXoa6XlufqcsRpYFPHo",
           authDomain: "engscope-7ae3c.firebaseapp.com",
@@ -47,7 +47,7 @@
             auth, 
             db, 
             appId, 
-            signInWithRedirect, 
+            signInWithPopup, 
             GoogleAuthProvider, 
             onAuthStateChanged, 
             signOut, 
@@ -162,7 +162,7 @@
                 provider.setCustomParameters({ prompt: "select_account" });
 
                 try {
-                    await fb.signInWithRedirect(fb.auth, provider);
+                    await fb.signInWithPopup(fb.auth, provider);
                 } catch (err) {
                     console.error("Повна помилка входу:", err);
                     alert("Помилка входу: " + err.code + " - " + err.message);
