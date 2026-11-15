@@ -154,7 +154,7 @@
 
             const loginWithGoogle = async () => {
                 if (!fb) {
-                    showToast("Firebase ще завантажується. Спробуйте ще раз.");
+                    showToast("Firebase ще завантажується.");
                     return;
                 }
 
@@ -164,12 +164,8 @@
                 try {
                     await fb.signInWithRedirect(fb.auth, provider);
                 } catch (err) {
-                    console.error("Auth error:", err);
-                    showToast(
-                        err.code === "auth/unauthorized-domain"
-                            ? "Домен сайту не дозволений у Firebase Authentication."
-                            : "Помилка входу через Google. Перевірте налаштування."
-                    );
+                    console.error("Повна помилка входу:", err);
+                    alert("Помилка входу: " + err.code + " - " + err.message);
                 }
             };
 
@@ -730,7 +726,7 @@
                             <p className="text-sm text-stone-500">Завершити поточну сесію та вийти з аккаунта Google.</p>
                         </div>
                         <button onClick={logout} className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition-colors font-medium flex items-center gap-2 shrink-0">
-                            <Icon name="logout" size={16} /> Вийти з аккаунта
+                            <Icon name="logout" size=16 /> Вийти з аккаунта
                         </button>
                     </div>
 
