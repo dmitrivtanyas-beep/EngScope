@@ -11,15 +11,6 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel -->
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
-        }
-        .animate-float {
-            animation: floatSlow 6s ease-in-out infinite;
-        }
-    </style>
 </head>
 <body class="font-sans transition-colors duration-300">
     <div id="root"></div>
@@ -88,42 +79,25 @@
                 inputBg: "bg-stone-50",
                 shadow: "shadow-sm",
                 toastBg: "bg-stone-800 text-white",
-                toastIcon: "text-indigo-400"
+                toastIcon: "text-indigo-400",
+                decorClass: ""
             },
             y2k: {
                 bg: "bg-gradient-to-br from-pink-200 via-sky-200 to-indigo-100",
                 text: "text-slate-800",
-                cardBg: "bg-white/90 backdrop-blur-xl shadow-xl shadow-pink-300/40 rounded-3xl",
+                cardBg: "bg-white/95 backdrop-blur-xl shadow-xl shadow-pink-300/40 rounded-3xl relative overflow-hidden",
                 border: "border-pink-300",
                 primary: "bg-gradient-to-r from-pink-400 to-sky-400 hover:from-pink-500 hover:to-sky-500 text-white shadow-lg shadow-pink-300/50 rounded-2xl font-semibold",
                 secondaryBtn: "bg-gradient-to-r from-sky-400 to-pink-400 hover:opacity-90 text-white shadow-md rounded-2xl font-semibold",
                 primaryLight: "bg-pink-100 text-pink-700 border-pink-300",
                 accentText: "text-pink-500 font-bold",
-                navBg: "bg-white/80 border border-pink-300 shadow-md backdrop-blur-md rounded-2xl",
-                inputBg: "bg-pink-50/60 border-pink-300 focus:border-pink-400 rounded-2xl",
+                navBg: "bg-white/90 border border-pink-300 shadow-md backdrop-blur-md rounded-2xl",
+                inputBg: "bg-pink-50/70 border-pink-300 focus:border-pink-400 rounded-2xl",
                 shadow: "shadow-lg shadow-pink-200/60",
                 toastBg: "bg-white/95 border-2 border-pink-300 text-pink-900 shadow-2xl backdrop-blur-md rounded-2xl",
-                toastIcon: "text-pink-500"
+                toastIcon: "text-pink-500",
+                decorClass: "before:absolute before:bottom-2 before:right-3 before:content-['✦'] before:text-pink-300/60 before:text-xl before:pointer-events-none"
             }
-        };
-
-        // --- Фонова графіка для Y2K стилю ---
-        const Y2KBackgroundDecor = ({ currentTheme }) => {
-            if (currentTheme !== 'y2k') return null;
-            return (
-                <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                    {/* М'які розмиті світлові плямуваті кола */}
-                    <div className="absolute top-10 left-10 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl animate-float"></div>
-                    <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-sky-300/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-                    <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
-
-                    {/* Бліді бліки / зірочки / цятки на фоні */}
-                    <div className="absolute top-16 right-1/4 text-pink-400/40 text-2xl select-none animate-pulse">✦</div>
-                    <div className="absolute bottom-20 left-1/4 text-sky-400/40 text-3xl select-none animate-pulse" style={{ animationDelay: '1s' }}>✧</div>
-                    <div className="absolute top-1/3 left-12 text-pink-300/50 text-xl select-none">☁</div>
-                    <div className="absolute bottom-1/3 right-16 text-sky-300/50 text-2xl select-none">☁</div>
-                </div>
-            );
         };
 
         const Icon = ({ name, size = 18, className = "" }) => {
@@ -286,12 +260,11 @@
 
             if (!user) {
                 return (
-                    <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative overflow-hidden`}>
-                        <Y2KBackgroundDecor currentTheme={currentTheme} />
+                    <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
                         <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.cardBg} border ${t.border} shadow-md hover:scale-110 transition-all text-pink-600 z-10`} title="Змінити тему">
                             <Icon name="palette" size={20} />
                         </button>
-                        <div className={`${t.cardBg} p-8 rounded-3xl border-2 ${t.border} max-w-md w-full text-center shadow-2xl relative z-10`}>
+                        <div className={`${t.cardBg} p-8 rounded-3xl border-2 ${t.border} max-w-md w-full text-center shadow-2xl ${t.decorClass}`}>
                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-pink-400 to-sky-400 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
                             <h1 className={`text-2xl font-bold ${t.text} mb-2`}>Ласкаво просимо до EngSpace</h1>
                             <p className="text-stone-500 mb-8 text-sm">Парний хмарний простір для вивчення англійської мови</p>
@@ -309,22 +282,21 @@
             }
 
             return (
-                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative`}>
-                    <Y2KBackgroundDecor currentTheme={currentTheme} />
+                <div className={`flex flex-col h-screen overflow-hidden ${t.bg}`}>
                     <header className={`flex-none flex items-center justify-between px-6 py-4 ${t.cardBg} border-b-2 ${t.border} ${t.shadow} z-10`}>
                         <div className="flex items-center gap-2">
                             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-400 to-sky-400 flex items-center justify-center text-white font-bold shadow-md">E</div>
                             <span className={`font-bold text-lg tracking-tight hidden sm:block ${t.text}`}>EngSpace</span>
                         </div>
 
-                        <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl z-10`}>
+                        <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl`}>
                             <NavBtn icon={<Icon name="book" />} label="Словник" active={activeTab === 'dictionary'} onClick={() => {setActiveTab('dictionary'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="pen" />} label="Нотатки" active={activeTab === 'notes'} onClick={() => {setActiveTab('notes'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="brain" />} label="Повторення" active={activeTab === 'revision'} onClick={() => {setActiveTab('revision'); setIsSplitScreen(false);}} t={t} />
                             <NavBtn icon={<Icon name="settings" />} label="Налаштування" active={activeTab === 'settings'} onClick={() => {setActiveTab('settings'); setIsSplitScreen(false);}} t={t} />
                         </nav>
 
-                        <div className="flex items-center gap-2 z-10">
+                        <div className="flex items-center gap-2">
                             <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.cardBg} border-2 ${t.border} hover:scale-110 transition-all text-pink-600 shadow-sm`} title="Змінити тему">
                                 <Icon name="palette" size={18} />
                             </button>
@@ -338,7 +310,7 @@
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-hidden p-4 sm:p-6 z-10">
+                    <main className="flex-1 overflow-hidden p-4 sm:p-6">
                         <div className="flex flex-col lg:flex-row gap-6 h-full">
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border-2 ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
                                 <DictionaryPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} showToast={showToast} t={t} />
@@ -423,8 +395,7 @@
             };
 
             return (
-                <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative overflow-hidden`}>
-                    <Y2KBackgroundDecor currentTheme={currentTheme} />
+                <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
                     <div className="absolute top-6 right-6 flex items-center gap-3 z-10">
                         <button onClick={toggleTheme} className={`p-2.5 rounded-2xl ${t.cardBg} border-2 ${t.border} shadow-md hover:scale-110 transition-all text-pink-600`} title="Змінити тему">
                             <Icon name="palette" size={18} />
@@ -433,7 +404,7 @@
                             <Icon name="logout" size={16} /> Вийти ({user.email})
                         </button>
                     </div>
-                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border-2 ${t.border} max-w-md w-full relative z-10`}>
+                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border-2 ${t.border} max-w-md w-full ${t.decorClass}`}>
                         <div className="flex justify-center mb-6">
                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-pink-400 to-sky-400 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
                         </div>
@@ -504,7 +475,7 @@
             const filteredWords = words.filter(w => w.en.toLowerCase().includes(search.toLowerCase()) || w.uk.toLowerCase().includes(search.toLowerCase()));
 
             return (
-                <div className="flex flex-col h-full bg-transparent">
+                <div className={`flex flex-col h-full bg-transparent ${t.decorClass}`}>
                     <div className={`flex-none p-4 md:p-6 ${t.cardBg} border-b-2 ${t.border}`}>
                         <form onSubmit={handleSave} className="space-y-3">
                             <div className="flex flex-col md:flex-row gap-3">
@@ -625,7 +596,7 @@
             };
 
             return (
-                <div className="flex h-full">
+                <div className={`flex h-full ${t.decorClass}`}>
                     <div className={`w-full md:w-1/3 border-r-2 ${t.border} flex flex-col bg-transparent ${(activeNote || isCreating) ? 'hidden md:flex' : 'flex'}`}>
                         <div className={`p-4 border-b-2 ${t.border}`}>
                             <button onClick={() => { setActiveNote(null); setTitle(''); setContent(''); setIsCreating(true); }} className={`w-full flex items-center justify-center gap-2 ${t.cardBg} border-2 ${t.border} hover:border-pink-400 py-2.5 rounded-2xl text-sm font-semibold shadow-sm transition-all ${t.text}`}>
@@ -718,7 +689,7 @@
             };
 
             return (
-                <div className="flex flex-col h-full relative p-6 bg-transparent">
+                <div className={`flex flex-col h-full relative p-6 bg-transparent ${t.decorClass}`}>
                     <h2 className={`text-xl font-bold flex items-center gap-2 mb-6 ${t.text}`}><Icon name="brain" className={t.accentText}/> Тренування ({dueWords.length} слів)</h2>
                     <div className="flex-1 flex items-center justify-center">
                         {!currentWord ? (
@@ -765,7 +736,7 @@
             };
 
             return (
-                <div className="max-w-2xl mx-auto w-full space-y-6">
+                <div className={`max-w-2xl mx-auto w-full space-y-6 ${t.decorClass}`}>
                     <h2 className={`text-2xl font-bold flex items-center gap-2 ${t.text}`}><Icon name="settings" /> Налаштування та профіль</h2>
                     
                     <div className={`${t.cardBg} border-2 ${t.border} rounded-3xl p-6 shadow-md`}>
