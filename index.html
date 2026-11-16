@@ -118,7 +118,7 @@
             box-shadow: 0 10px 25px rgba(0, 5, 15, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.25);
         }
 
-        /* Стилі для нової теми Deep Ocean (Jellyfish & Coral Reef) */
+        /* Стилі для теми Deep Ocean (Jellyfish & Coral Reef — прозорі вікна без блюру медуз) */
         .deep-ocean-bg {
             font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(180deg, 
@@ -131,37 +131,38 @@
             );
         }
 
+        /* Велика панель повністю прозора без backdrop-filter, щоб медузи на фоні залишалися чіткими */
         .deep-glass-panel {
             background: linear-gradient(145deg, 
-                rgba(15, 42, 78, 0.44) 0%, 
-                rgba(5, 19, 38, 0.68) 55%, 
-                rgba(8, 28, 56, 0.52) 100%
+                rgba(15, 42, 78, 0.14) 0%, 
+                rgba(5, 19, 38, 0.22) 55%, 
+                rgba(8, 28, 56, 0.16) 100%
             );
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(147, 210, 255, 0.36);
+            border: 1px solid rgba(147, 210, 255, 0.34);
             box-shadow: 
-                0 20px 50px rgba(0, 4, 12, 0.75),
-                0 0 38px rgba(56, 189, 248, 0.18),
-                inset 0 1px 1px rgba(224, 242, 254, 0.42),
-                inset 0 -1px 1px rgba(56, 189, 248, 0.18);
+                0 20px 50px rgba(0, 4, 12, 0.45),
+                0 0 38px rgba(56, 189, 248, 0.14),
+                inset 0 1px 1px rgba(224, 242, 254, 0.38),
+                inset 0 -1px 1px rgba(56, 189, 248, 0.16);
         }
 
+        /* Внутрішні картки напівпрозорі з мінімальним розмиттям, крізь яке чітко видно медуз */
         .deep-sub-card {
-            background: linear-gradient(180deg, rgba(16, 52, 94, 0.52) 0%, rgba(4, 16, 34, 0.82) 100%);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(186, 230, 253, 0.34);
+            background: linear-gradient(180deg, rgba(16, 52, 94, 0.32) 0%, rgba(4, 16, 34, 0.52) 100%);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 1px solid rgba(186, 230, 253, 0.35);
             box-shadow: 
-                0 12px 28px rgba(0, 5, 15, 0.65),
+                0 12px 28px rgba(0, 5, 15, 0.45),
                 inset 0 1px 1px rgba(255, 255, 255, 0.32);
             transition: all 0.3s ease;
         }
         .deep-sub-card:hover {
             border-color: rgba(125, 211, 252, 0.8);
+            background: linear-gradient(180deg, rgba(20, 62, 110, 0.38) 0%, rgba(6, 22, 46, 0.58) 100%);
             box-shadow: 
-                0 15px 35px rgba(0, 10, 25, 0.8),
-                0 0 24px rgba(56, 189, 248, 0.28),
+                0 15px 35px rgba(0, 10, 25, 0.65),
+                0 0 24px rgba(56, 189, 248, 0.25),
                 inset 0 1px 2px rgba(255, 255, 255, 0.5);
         }
 
@@ -335,14 +336,14 @@
             <svg className={className} viewBox="0 0 220 280" fill="none">
                 <defs>
                     <radialGradient id={`${gradId}Bell`} cx="45%" cy="30%" r="65%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95"/>
-                        <stop offset="38%" stopColor="#7dd3fc" stopOpacity="0.72"/>
-                        <stop offset="78%" stopColor="#0284c7" stopOpacity="0.35"/>
-                        <stop offset="100%" stopColor="#0369a1" stopOpacity="0.05"/>
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98"/>
+                        <stop offset="38%" stopColor="#7dd3fc" stopOpacity="0.8"/>
+                        <stop offset="78%" stopColor="#0284c7" stopOpacity="0.45"/>
+                        <stop offset="100%" stopColor="#0369a1" stopOpacity="0.08"/>
                     </radialGradient>
                     <linearGradient id={`${gradId}Tentacle`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#bae6fd" stopOpacity="0.8"/>
-                        <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.32"/>
+                        <stop offset="0%" stopColor="#bae6fd" stopOpacity="0.88"/>
+                        <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.4"/>
                         <stop offset="100%" stopColor="#0284c7" stopOpacity="0"/>
                     </linearGradient>
                 </defs>
@@ -352,15 +353,15 @@
                     <path d="M106 124 Q100 190 118 265" stroke={`url(#${gradId}Tentacle)`} strokeWidth="2.5" strokeLinecap="round"/>
                     <path d="M124 122 Q138 180 122 250" stroke={`url(#${gradId}Tentacle)`} strokeWidth="3" strokeLinecap="round"/>
                     <path d="M142 116 Q155 170 140 230" stroke={`url(#${gradId}Tentacle)`} strokeWidth="1.8" strokeLinecap="round"/>
-                    <path d="M52 112 C52 58, 168 58, 168 112 C168 124, 146 128, 134 122 C122 128, 98 128, 86 122 C74 128, 52 124, 52 112 Z" fill={`url(#${gradId}Bell)`} stroke="#e0f2fe" strokeOpacity="0.7" strokeWidth="1.2"/>
-                    <ellipse cx="110" cy="84" rx="34" ry="15" fill="#ffffff" fillOpacity="0.38"/>
+                    <path d="M52 112 C52 58, 168 58, 168 112 C168 124, 146 128, 134 122 C122 128, 98 128, 86 122 C74 128, 52 124, 52 112 Z" fill={`url(#${gradId}Bell)`} stroke="#e0f2fe" strokeOpacity="0.78" strokeWidth="1.3"/>
+                    <ellipse cx="110" cy="84" rx="34" ry="15" fill="#ffffff" fillOpacity="0.45"/>
                 </g>
             </svg>
         );
 
-        // Новий графічний шар для теми Deep Ocean: об'ємні промені, 3 плаваючі медузи, морська зірка та біолюмінесцентний кораловий риф
+        // Графічний шар для теми Deep Ocean: медузи залишаються абсолютно чіткими без блюру
         const DeepOceanGlobalLayer = () => {
-            const dots = useMemo(() => Array.from({ length: 30 }).map((_, i) => ({
+            const dots = useMemo(() => Array.from({ length: 32 }).map((_, i) => ({
                 id: i,
                 size: (i % 4) + 1.5,
                 left: `${(i * 19 + 7) % 100}%`,
@@ -394,40 +395,45 @@
                     ))}
 
                     {/* Головна велика медуза праворуч угорі */}
-                    <div className="absolute top-20 right-[3%] sm:right-[7%] lg:right-[11%] opacity-85 jellyfish-float">
+                    <div className="absolute top-20 right-[4%] sm:right-[8%] lg:right-[13%] opacity-90 jellyfish-float">
                         <JellyfishSvg className="w-40 h-52 sm:w-52 sm:h-64" gradId="deepMain" />
                     </div>
 
                     {/* Друга плаваюча медуза ліворуч по центру */}
-                    <div className="absolute top-[42%] left-[2%] sm:left-[5%] opacity-60 jellyfish-float-delayed">
-                        <JellyfishSvg className="w-28 h-36 sm:w-36 sm:h-44 -scale-x-100" gradId="deepLeft" />
+                    <div className="absolute top-[36%] left-[3%] sm:left-[7%] lg:left-[11%] opacity-80 jellyfish-float-delayed">
+                        <JellyfishSvg className="w-32 h-40 sm:w-40 sm:h-48 -scale-x-100" gradId="deepLeft" />
                     </div>
 
-                    {/* Третя невелика медуза праворуч знизу */}
-                    <div className="hidden md:block absolute bottom-24 right-[14%] opacity-55 jellyfish-float">
-                        <JellyfishSvg className="w-24 h-32" gradId="deepBottom" />
+                    {/* Третя медуза у центрально-правій зоні (плаває позаду прозорого вікна) */}
+                    <div className="absolute top-[52%] right-[16%] sm:right-[22%] opacity-75 jellyfish-float">
+                        <JellyfishSvg className="w-28 h-36 sm:w-36 sm:h-44" gradId="deepCenterRight" />
+                    </div>
+
+                    {/* Четверта невелика медуза ліворуч угорі */}
+                    <div className="hidden sm:block absolute top-28 left-[18%] opacity-65 jellyfish-float">
+                        <JellyfishSvg className="w-24 h-32" gradId="deepTopLeft" />
                     </div>
 
                     {/* Морська зірка на задньому плані ліворуч */}
-                    <div className="absolute bottom-28 left-[4%] sm:left-[10%] opacity-40">
-                        <svg className="w-36 h-36 sm:w-48 sm:h-48 text-sky-300/30" viewBox="0 0 200 200" fill="none">
+                    <div className="absolute bottom-24 left-[5%] sm:left-[12%] opacity-50">
+                        <svg className="w-36 h-36 sm:w-48 sm:h-48 text-sky-300/35" viewBox="0 0 200 200" fill="none">
                             <defs>
                                 <radialGradient id="deepStarfish" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.45"/>
-                                    <stop offset="75%" stopColor="#0c4a6e" stopOpacity="0.25"/>
+                                    <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.5"/>
+                                    <stop offset="75%" stopColor="#0c4a6e" stopOpacity="0.28"/>
                                     <stop offset="100%" stopColor="#020617" stopOpacity="0"/>
                                 </radialGradient>
                             </defs>
-                            <path d="M100 14 L122 72 L184 76 L135 114 L152 175 L100 140 L48 175 L65 114 L16 76 L78 72 Z" fill="url(#deepStarfish)" stroke="#bae6fd" strokeOpacity="0.35" strokeWidth="1.5" strokeLinejoin="round"/>
+                            <path d="M100 14 L122 72 L184 76 L135 114 L152 175 L100 140 L48 175 L65 114 L16 76 L78 72 Z" fill="url(#deepStarfish)" stroke="#bae6fd" strokeOpacity="0.4" strokeWidth="1.5" strokeLinejoin="round"/>
                         </svg>
                     </div>
 
-                    {/* Біолюмінесцентний кораловий риф на дні (ціановий + фіолетовий) */}
+                    {/* Біолюмінесцентний кораловий риф на дні */}
                     <div className="absolute inset-x-0 bottom-0 h-56">
                         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-cyan-500/30 via-sky-900/20 to-transparent"></div>
                         <div className="absolute bottom-2 left-[12%] w-64 h-36 rounded-full bg-purple-500/25 blur-3xl"></div>
                         <div className="absolute bottom-2 right-[14%] w-72 h-40 rounded-full bg-cyan-400/30 blur-3xl"></div>
-                        <svg className="w-full h-full object-cover opacity-80" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice">
+                        <svg className="w-full h-full object-cover opacity-85" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice">
                             <defs>
                                 <linearGradient id="deepCoralCyan" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.85"/>
@@ -458,20 +464,20 @@
             );
         };
 
-        // Внутрішній декор великих скляних панелей для Deep Ocean (плаваючі медузи + зграї рибок + промені)
+        // Внутрішній прозорий декор великих панелей для Deep Ocean (зграї рибок + промені без замилення)
         const DeepOceanPanelDecor = () => (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-                <svg className="w-full h-full opacity-45" viewBox="0 0 700 420" preserveAspectRatio="xMidYMid slice">
+                <svg className="w-full h-full opacity-40" viewBox="0 0 700 420" preserveAspectRatio="xMidYMid slice">
                     <defs>
                         <radialGradient id="deepPanelWater" cx="50%" cy="10%" r="85%">
-                            <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.45"/>
-                            <stop offset="45%" stopColor="#0284c7" stopOpacity="0.18"/>
-                            <stop offset="100%" stopColor="#020a18" stopOpacity="0.55"/>
+                            <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.32"/>
+                            <stop offset="45%" stopColor="#0284c7" stopOpacity="0.1"/>
+                            <stop offset="100%" stopColor="#020a18" stopOpacity="0.15"/>
                         </radialGradient>
                     </defs>
                     <rect width="700" height="420" fill="url(#deepPanelWater)"/>
                     {/* Зграйки рибок у глибині панелі */}
-                    <g fill="#031329" opacity="0.72">
+                    <g fill="#031329" opacity="0.65">
                         <ellipse cx="165" cy="185" rx="14" ry="4.5"/><polygon points="150,185 141,179 141,191"/>
                         <ellipse cx="205" cy="172" rx="16" ry="5"/><polygon points="188,172 178,165 178,179"/>
                         <ellipse cx="225" cy="202" rx="12" ry="4"/><polygon points="212,202 204,197 204,207"/>
@@ -488,15 +494,7 @@
                     </g>
                 </svg>
 
-                {/* Плаваюча напівпрозора медуза всередині самої панелі */}
-                <div className="absolute bottom-6 right-8 opacity-45 jellyfish-float">
-                    <JellyfishSvg className="w-28 h-36 sm:w-36 sm:h-44" gradId="panelJf1" />
-                </div>
-                <div className="hidden sm:block absolute top-24 left-10 opacity-30 jellyfish-float-delayed">
-                    <JellyfishSvg className="w-20 h-28 -scale-x-100" gradId="panelJf2" />
-                </div>
-
-                <div className="absolute bottom-3 left-5 text-[10px] font-mono tracking-[0.2em] text-sky-200/40 uppercase select-none">
+                <div className="absolute bottom-3 left-5 text-[10px] font-mono tracking-[0.2em] text-sky-200/45 uppercase select-none">
                     DEEP OCEAN • JELLYFISH SANCTUARY ✦
                 </div>
             </div>
@@ -576,10 +574,10 @@
                 secondaryBtn: "abyss-pill-btn text-sky-100 rounded-full font-semibold",
                 primaryLight: "bg-sky-400/20 text-sky-100 border-sky-300/55 shadow-[0_0_24px_rgba(56,189,248,0.28)]",
                 accentText: "text-cyan-300 font-bold tracking-wide",
-                navBg: "bg-[#031226]/80 border border-sky-300/30 shadow-lg backdrop-blur-xl rounded-full",
-                inputBg: "bg-[#020a17]/75 border-sky-300/35 text-sky-50 focus:border-cyan-300/85 rounded-2xl placeholder:text-sky-200/40",
-                shadow: "shadow-[0_20px_50px_rgba(0,4,12,0.8)]",
-                toastBg: "deep-glass-panel text-sky-100 rounded-2xl",
+                navBg: "bg-[#031226]/65 border border-sky-300/30 shadow-lg rounded-full",
+                inputBg: "bg-[#020a17]/60 border-sky-300/35 text-sky-50 focus:border-cyan-300/85 rounded-2xl placeholder:text-sky-200/40",
+                shadow: "shadow-[0_20px_50px_rgba(0,4,12,0.6)]",
+                toastBg: "deep-sub-card text-sky-100 rounded-2xl",
                 toastIcon: "text-cyan-300",
                 globalLayer: <DeepOceanGlobalLayer />,
                 decorHtml: <DeepOceanPanelDecor />
@@ -750,7 +748,7 @@
                 return (
                     <div className={`flex h-screen items-center justify-center ${t.bg} p-4 relative`}>
                         {t.globalLayer}
-                        <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.cardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText} z-10`} title={`Тема: ${t.name}`}>
+                        <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.subCardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText} z-10`} title={`Тема: ${t.name}`}>
                             <Icon name="palette" size={20} />
                         </button>
                         <div className={`${t.cardBg} p-8 rounded-3xl border ${t.border} max-w-md w-full text-center shadow-2xl relative z-10`}>
