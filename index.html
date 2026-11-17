@@ -6,7 +6,7 @@
     <title>EngSpace - Парний простір для вивчення англійської</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rubik+Bubbles&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -180,6 +180,185 @@
         .text-glow-abyss {
             text-shadow: 0 0 24px rgba(186, 230, 253, 0.45), 0 4px 14px rgba(0, 5, 15, 0.85);
         }
+
+        /* =========================================================
+           СТИЛІ ДЛЯ ТЕМИ DOLLHOUSE 98 (Y2K Retro Windows 98 Store)
+           ========================================================= */
+        .dollhouse-bg {
+            background-color: #fffdf9;
+            background-image: 
+                radial-gradient(#f3d1e8 1.2px, transparent 1.2px),
+                radial-gradient(#d5e3fc 1.2px, #fffdf9 1.2px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+            font-family: 'Space Mono', monospace;
+            color: #1f1b24;
+        }
+
+        .font-pixel {
+            font-family: 'Silkscreen', monospace;
+        }
+        .font-vt {
+            font-family: 'VT323', monospace;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .font-bubble {
+            font-family: 'Rubik Bubbles', cursive;
+        }
+
+        .win98-window {
+            background: #ffffff;
+            border: 2px solid #1f1b24;
+            box-shadow: 4px 4px 0px rgba(31, 27, 36, 0.22), inset 2px 2px 0px #ffffff, inset -2px -2px 0px #c5c5d8;
+        }
+
+        .win98-subcard {
+            background: #ffffff;
+            border: 2px solid #1f1b24;
+            box-shadow: 2px 2px 0px #1f1b24, inset 1px 1px 0px #ffffff;
+            transition: transform 0.1s ease;
+        }
+        .win98-subcard:hover {
+            background: #fff5fc;
+        }
+
+        .win98-titlebar {
+            border-bottom: 2px solid #1f1b24;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Silkscreen', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            user-select: none;
+            color: #1f1b24;
+        }
+
+        .titlebar-periwinkle {
+            background: linear-gradient(90deg, #b5c7f7 0%, #d4c4fb 100%);
+        }
+        .titlebar-pink {
+            background: linear-gradient(90deg, #ff79c6 0%, #ffb3e6 100%);
+        }
+        .titlebar-cyan {
+            background: linear-gradient(90deg, #8fd3f4 0%, #c2e9fb 100%);
+        }
+        .titlebar-lavender {
+            background: linear-gradient(90deg, #d8b4fe 0%, #f5d0fe 100%);
+        }
+
+        .win-ctrl {
+            width: 16px;
+            height: 16px;
+            background: #e9e4f5;
+            border: 1.5px solid #1f1b24;
+            box-shadow: inset 1px 1px 0px #fff, inset -1px -1px 0px #9c94b8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            line-height: 1;
+            font-family: 'Silkscreen', monospace;
+            color: #1f1b24;
+            padding: 0;
+        }
+
+        .y2k-btn {
+            border: 2px solid #1f1b24;
+            box-shadow: 2px 2px 0px #1f1b24, inset 1.5px 1.5px 0px rgba(255,255,255,0.85);
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            cursor: pointer;
+        }
+        .y2k-btn:hover {
+            filter: brightness(1.04);
+        }
+        .y2k-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #1f1b24;
+        }
+
+        .dollhouse-logo {
+            font-family: 'Rubik Bubbles', cursive;
+            color: #4a1c2f;
+            -webkit-text-stroke: 1.2px #1f1b24;
+            text-shadow: 
+                -1.5px -1.5px 0 #ffb3e0,
+                 1.5px -1.5px 0 #ffb3e0,
+                -1.5px  1.5px 0 #ffb3e0,
+                 1.5px  1.5px 0 #ffb3e0,
+                 0px  3px 0 #1f1b24;
+            line-height: 0.92;
+        }
+
+        .cd-disc {
+            background: conic-gradient(
+                from 45deg,
+                #e0e7ff,
+                #f9a8d4,
+                #fde68a,
+                #a7f3d0,
+                #bae6fd,
+                #ddd6fe,
+                #fbcfe8,
+                #e0e7ff
+            );
+            border: 2px solid #1f1b24;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 3px 4px 0px rgba(31,27,36,0.22);
+            animation: spinSlow 14s linear infinite;
+        }
+        .cd-disc::before {
+            content: '';
+            position: absolute;
+            inset: 31%;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.78);
+            border: 1.5px solid #1f1b24;
+        }
+        .cd-disc::after {
+            content: '';
+            position: absolute;
+            inset: 41%;
+            border-radius: 50%;
+            background: #fffdf9;
+            border: 1.5px solid #1f1b24;
+        }
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .checkerboard-strip {
+            background-image: 
+                linear-gradient(45deg, #1f1b24 25%, transparent 25%), 
+                linear-gradient(-45deg, #1f1b24 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #1f1b24 75%), 
+                linear-gradient(-45deg, transparent 75%, #1f1b24 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+            background-color: #ffffff;
+        }
+
+        .sticky-note {
+            background: #fef6a8;
+            border: 1.5px solid #1f1b24;
+            box-shadow: 3px 4px 0px rgba(31, 27, 36, 0.22);
+            position: relative;
+        }
+        .sticky-note::after {
+            content: '';
+            position: absolute;
+            bottom: -1.5px;
+            right: -1.5px;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #e5dc7a 45%, #1f1b24 46%, #1f1b24 52%, #fffdf9 53%);
+        }
     </style>
 </head>
 <body class="font-sans transition-colors duration-300">
@@ -234,6 +413,158 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
+
+        // =========================================================
+        // ГРАФІЧНИЙ ШАР ДЛЯ ТЕМИ DOLLHOUSE 98 (Елементи з dollhouse_y2k_retro_store.html)
+        // =========================================================
+        const DollhouseGlobalLayer = () => (
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+                {/* Верхня шахова смужка + градієнт оголошень */}
+                <div className="w-full h-1.5 bg-gradient-to-r from-[#ebb8ff] via-[#f7b7e5] to-[#d5b8ff]"></div>
+                <div className="checkerboard-strip h-2 w-full border-b border-[#1f1b24] opacity-75"></div>
+
+                {/* Райдужний CD-диск ліворуч зверху */}
+                <div className="cd-disc w-20 h-20 sm:w-24 sm:h-24 fixed top-24 left-4 lg:left-8 opacity-85"></div>
+
+                {/* Блискучі зірочки та метелик */}
+                <svg className="w-8 h-8 fixed top-28 right-8 lg:right-14 text-[#a4c2f4] drop-shadow-[1px_1px_0_#1f1b24] opacity-85" viewBox="0 0 24 24" fill="currentColor" stroke="#1f1b24" strokeWidth="1.5">
+                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                </svg>
+
+                {/* Жовтий стікер Post-It ліворуч знизу */}
+                <div className="hidden xl:block sticky-note p-3 transform -rotate-3 fixed bottom-14 left-6 w-40 opacity-90">
+                    <ul className="text-[11px] font-bold space-y-0.5 text-[#1f1b24]">
+                        <li>☆ don't forget</li>
+                        <li>☆ drink water</li>
+                        <li>☆ learn 5 words</li>
+                        <li>☆ call ur bff ♡</li>
+                    </ul>
+                    <div className="absolute -bottom-2.5 -right-2.5 text-base">🪽💖</div>
+                </div>
+
+                {/* Рожевий Y2K телефон-розкладачка ("ur cute ♡") праворуч знизу */}
+                <div className="hidden xl:block w-[72px] bg-gradient-to-b from-[#ff9de0] to-[#ff63c3] border-2 border-[#1f1b24] rounded-2xl p-1.5 shadow-[3px_4px_0_#1f1b24] transform rotate-12 fixed bottom-14 right-6 opacity-95">
+                    <div className="bg-[#231f2e] border border-[#1f1b24] rounded-lg p-1 text-center mb-1.5">
+                        <div className="bg-[#ffd6ef] rounded py-1 px-1">
+                            <div className="font-pixel text-[8px] font-bold leading-tight text-[#1f1b24]">ur cute</div>
+                            <div className="text-[9px] text-[#ff3399]">♡</div>
+                        </div>
+                    </div>
+                    <div className="h-1 bg-[#d9469f] border-y border-[#1f1b24] -mx-1.5 mb-1"></div>
+                    <div className="grid grid-cols-3 gap-0.5 px-0.5 pb-0.5">
+                        {Array.from({ length: 9 }).map((_, idx) => (
+                            <span key={idx} className="h-1.5 bg-white border border-[#1f1b24]"></span>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Нижня шахова смужка над Windows 98 Taskbar */}
+                <div className="checkerboard-strip h-2 w-full border-t border-[#1f1b24] fixed bottom-9 left-0 right-0 opacity-75"></div>
+            </div>
+        );
+
+        // Заголовок вікна Windows 98 для панелей у темі Dollhouse 98
+        const Win98WindowBar = ({ title = "window.exe", variant = "titlebar-periwinkle", icon = "♡" }) => (
+            <div className={`win98-titlebar ${variant} shrink-0 relative z-10`}>
+                <span className="flex items-center gap-1.5">
+                    <span>{icon}</span>
+                    <span>{title}</span>
+                </span>
+                <div className="flex items-center gap-1">
+                    <span className="win-ctrl">_</span>
+                    <span className="win-ctrl">□</span>
+                    <span className="win-ctrl bg-[#ff94d2]">X</span>
+                </div>
+            </div>
+        );
+
+        // Класична нижня панель завдань Windows 98 для теми Dollhouse 98
+        const DollhouseTaskbar = ({ activeTab, onQuickSwitch, showToast }) => {
+            const [clock, setClock] = useState("10:30 PM");
+            useEffect(() => {
+                const updateClock = () => {
+                    const now = new Date();
+                    setClock(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                };
+                updateClock();
+                const id = setInterval(updateClock, 30000);
+                return () => clearInterval(id);
+            }, []);
+
+            const tabNames = {
+                dictionary: 'vocabulary.exe',
+                notes: 'notes_pad.txt',
+                revision: 'brain_train.exe',
+                settings: 'control_panel.sys'
+            };
+
+            return (
+                <div className="fixed bottom-0 left-0 right-0 h-9 bg-[#e4def5] border-t-2 border-[#1f1b24] px-2 flex items-center justify-between z-40 select-none text-[#1f1b24]">
+                    <div className="flex items-center gap-2 overflow-x-auto">
+                        <button
+                            onClick={() => showToast('✨ DOLLHOUSE 98 OS • stay y2k forever! ♡')}
+                            className="y2k-btn bg-[#d2c6f0] px-2.5 py-0.5 flex items-center gap-1.5 font-pixel text-[11px] font-bold shrink-0"
+                        >
+                            <span className="grid grid-cols-2 gap-0.5 w-3 h-3">
+                                <span className="bg-[#ff595e]"></span>
+                                <span className="bg-[#8ac926]"></span>
+                                <span className="bg-[#1982c4]"></span>
+                                <span className="bg-[#ffca3a]"></span>
+                            </span>
+                            start
+                        </button>
+
+                        <div className="hidden sm:flex items-center gap-1.5">
+                            <div className="bg-[#f4f0ff] border-2 border-[#1f1b24] shadow-[inset_1px_1px_0_#9b8ec2] px-2.5 py-0.5 text-[11px] font-bold flex items-center gap-1.5">
+                                <span>🌐</span> {tabNames[activeTab] || 'welcome 2 engspace.html'}
+                            </div>
+                            <button
+                                onClick={() => onQuickSwitch('dictionary')}
+                                className="bg-[#ffe6f5] border-2 border-[#1f1b24] shadow-[1px_1px_0_#1f1b24] px-2.5 py-0.5 text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:bg-white"
+                            >
+                                <span>💖</span> dollhouse™ mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#dcd4f2] border border-[#1f1b24] shadow-[inset_1px_1px_0_#a69bc4] px-2.5 py-0.5 flex items-center gap-2 text-[11px] font-bold shrink-0">
+                        <span title="Sound On">🔊</span>
+                        <span title="Connected">💻</span>
+                        <span>{clock}</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // Інтерактивний міні-тамагочі для теми Dollhouse 98
+        const MiniTamagotchi = () => {
+            const [pet, setPet] = useState('🐱');
+            const [status, setStatus] = useState('HAPPY!');
+
+            const interact = (type) => {
+                if (type === 'feed') { setPet('🍓'); setStatus('YUMMY!'); }
+                else if (type === 'love') { setPet('😻'); setStatus('LOVES U!'); }
+                else { setPet('🪩'); setStatus('DANCING!'); }
+                setTimeout(() => { setPet('🐱'); setStatus('HAPPY!'); }, 1600);
+            };
+
+            return (
+                <div className="w-[92px] h-[110px] bg-gradient-to-b from-[#ff96d5] via-[#ff6ec7] to-[#e048a7] rounded-[48%_48%_45%_45%/52%_52%_44%_44%] border-2 border-[#1f1b24] shadow-[2px_3px_0_#1f1b24] flex flex-col items-center justify-between p-2 select-none shrink-0">
+                    <div className="w-3.5 h-2.5 border-2 border-[#1f1b24] rounded-full bg-[#e2e8f0] -mt-3.5"></div>
+                    <div className="w-[62px] h-[50px] bg-[#ffd6ef] border-2 border-[#1f1b24] rounded-xl flex flex-col items-center justify-center p-1">
+                        <div className="w-full h-full bg-[#c9d6c1] border border-[#1f1b24] rounded flex flex-col items-center justify-center text-center">
+                            <span className="text-sm leading-none">{pet}</span>
+                            <span className="font-vt text-[10px] leading-none mt-0.5 text-[#1f1b24]">{status}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <button type="button" onClick={() => interact('feed')} title="Feed" className="w-3 h-3 rounded-full bg-[#ffe66d] border border-[#1f1b24] active:scale-90 cursor-pointer"></button>
+                        <button type="button" onClick={() => interact('love')} title="Pet" className="w-3 h-3 rounded-full bg-[#9bc2ff] border border-[#1f1b24] active:scale-90 cursor-pointer"></button>
+                        <button type="button" onClick={() => interact('dance')} title="Dance" className="w-3 h-3 rounded-full bg-[#ffffff] border border-[#1f1b24] active:scale-90 cursor-pointer"></button>
+                    </div>
+                </div>
+            );
+        };
 
         // Графічний шар для теми Abyss Ocean
         const AbyssGlobalLayer = () => {
@@ -485,7 +816,7 @@
             </div>
         );
 
-        // --- Теми оформлення з окремими контрастними кольорами тексту для світлих і темних тем ---
+        // --- Теми оформлення ---
         const themes = {
             default: {
                 id: "default",
@@ -538,6 +869,32 @@
                 toastIcon: "text-pink-500",
                 globalLayer: null,
                 decorHtml: <div className="absolute bottom-3 right-4 text-pink-300/60 text-xl pointer-events-none select-none">✦</div>
+            },
+            dollhouse: {
+                id: "dollhouse",
+                name: "Dollhouse 98",
+                bg: "dollhouse-bg",
+                text: "text-[#1f1b24]",
+                mutedText: "text-[#554c66]",
+                subtleText: "text-[#8a819c]",
+                cardBg: "win98-window !rounded-none relative overflow-hidden",
+                subCardBg: "win98-subcard !rounded-none",
+                border: "border-[#1f1b24]",
+                primary: "y2k-btn bg-[#ff79c6] text-[#1f1b24] !rounded-none font-bold",
+                secondaryBtn: "y2k-btn bg-[#b8d4ff] text-[#1f1b24] !rounded-none font-bold",
+                primaryLight: "bg-[#ffb6e1] text-[#1f1b24] border-[#1f1b24] font-bold",
+                accentText: "text-[#ff4db8] font-bold",
+                navBg: "bg-[#e9e4f5] border-2 border-[#1f1b24] !rounded-none shadow-[2px_2px_0_#1f1b24]",
+                navInactive: "text-[#1f1b24] hover:bg-[#fff0fa] !rounded-none",
+                iconBtn: "text-[#1f1b24] hover:bg-[#ffb6e1] !rounded-none",
+                trashBtn: "text-[#554c66] hover:text-[#1f1b24] hover:bg-[#ff94d2] !rounded-none",
+                inputBg: "bg-[#fffaff] border-2 border-[#1f1b24] text-[#1f1b24] placeholder:text-[#8a819c] focus:bg-white !rounded-none",
+                badgeBg: "bg-[#ffe66d] text-[#1f1b24] border-[#1f1b24] font-pixel text-[10px]",
+                shadow: "shadow-[4px_4px_0_#1f1b24]",
+                toastBg: "bg-[#ffe66d] border-2 border-[#1f1b24] text-[#1f1b24] shadow-[4px_4px_0_#1f1b24] !rounded-none",
+                toastIcon: "text-[#ff4db8]",
+                globalLayer: <DollhouseGlobalLayer />,
+                decorHtml: null
             },
             abyssOcean: {
                 id: "abyssOcean",
@@ -650,9 +1007,10 @@
                 return themes[saved] ? saved : 'deepOcean';
             });
             const t = themes[currentTheme];
+            const isDollhouse = currentTheme === 'dollhouse';
 
             const toggleTheme = () => {
-                const order = ['default', 'y2k', 'abyssOcean', 'deepOcean'];
+                const order = ['default', 'y2k', 'dollhouse', 'abyssOcean', 'deepOcean'];
                 const next = order[(order.indexOf(currentTheme) + 1) % order.length];
                 setCurrentTheme(next);
                 localStorage.setItem('engspace_theme', next);
@@ -760,11 +1118,19 @@
                         <button onClick={toggleTheme} className={`absolute top-6 right-6 p-2.5 rounded-2xl ${t.subCardBg} border ${t.border} shadow-md hover:scale-110 transition-all ${t.accentText} z-10`} title={`Тема: ${t.name}`}>
                             <Icon name="palette" size={20} />
                         </button>
-                        <div className={`${t.cardBg} p-8 rounded-3xl border ${t.border} max-w-md w-full text-center shadow-2xl relative z-10`}>
+                        <div className={`${t.cardBg} ${isDollhouse ? 'p-0' : 'p-8'} rounded-3xl border ${t.border} max-w-md w-full text-center shadow-2xl relative z-10`}>
+                            {isDollhouse && <Win98WindowBar title="welcome 2 my world.html" variant="titlebar-pink" icon="💖" />}
                             {t.decorHtml}
-                            <div className="relative z-10">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
-                                <h1 className={`text-2xl font-bold ${t.text} mb-2`}>Ласкаво просимо до EngSpace</h1>
+                            <div className={`relative z-10 ${isDollhouse ? 'p-8' : ''}`}>
+                                {isDollhouse ? (
+                                    <div className="flex items-center justify-center gap-4 mb-5">
+                                        <div className="dollhouse-logo text-4xl transform -rotate-2">eng<br/>space</div>
+                                        <MiniTamagotchi />
+                                    </div>
+                                ) : (
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
+                                )}
+                                <h1 className={`text-2xl font-bold ${t.text} mb-2 ${isDollhouse ? 'font-pixel text-lg' : ''}`}>Ласкаво просимо до EngSpace</h1>
                                 <p className={`${t.mutedText} mb-8 text-sm`}>Парний хмарний простір для вивчення англійської мови</p>
                                 <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${t.subCardBg} border ${t.border} hover:opacity-90 ${t.text} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
                                     <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -772,6 +1138,7 @@
                                 </button>
                             </div>
                         </div>
+                        {isDollhouse && <DollhouseTaskbar activeTab="login" onQuickSwitch={() => {}} showToast={showToast} />}
                     </div>
                 );
             }
@@ -781,19 +1148,28 @@
             }
 
             return (
-                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative`}>
+                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative ${isDollhouse ? 'pb-11' : ''}`}>
                     {t.globalLayer}
                     <header className={`flex-none flex items-center justify-between px-6 py-4 ${t.cardBg} border-b ${t.border} ${t.shadow} z-10`}>
                         <div className="flex items-center gap-2.5 relative z-10">
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-[0_0_18px_rgba(56,189,248,0.45)]">E</div>
-                            <div className="hidden sm:flex flex-col">
-                                <span className={`font-bold text-lg tracking-tight leading-none ${t.text}`}>EngSpace</span>
-                                {(currentTheme === 'abyssOcean' || currentTheme === 'deepOcean') && (
-                                    <span className={`text-[9px] uppercase tracking-[0.22em] ${t.mutedText} mt-0.5`}>
-                                        {currentTheme === 'deepOcean' ? 'Deep Ocean • Jellyfish' : 'Abyss Ocean Edition'}
-                                    </span>
-                                )}
-                            </div>
+                            {isDollhouse ? (
+                                <div className="flex items-center gap-2 select-none">
+                                    <span className="dollhouse-logo text-2xl tracking-tight transform -rotate-2">engspace</span>
+                                    <span className="text-xs text-[#ff4db8]">✦</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-[0_0_18px_rgba(56,189,248,0.45)]">E</div>
+                                    <div className="hidden sm:flex flex-col">
+                                        <span className={`font-bold text-lg tracking-tight leading-none ${t.text}`}>EngSpace</span>
+                                        {(currentTheme === 'abyssOcean' || currentTheme === 'deepOcean') && (
+                                            <span className={`text-[9px] uppercase tracking-[0.22em] ${t.mutedText} mt-0.5`}>
+                                                {currentTheme === 'deepOcean' ? 'Deep Ocean • Jellyfish' : 'Abyss Ocean Edition'}
+                                            </span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <nav className={`flex items-center gap-1 sm:gap-2 ${t.navBg} p-1.5 rounded-2xl relative z-10`}>
@@ -820,29 +1196,43 @@
                     <main className="flex-1 overflow-hidden p-4 sm:p-6 relative z-10">
                         <div className="flex flex-col lg:flex-row gap-6 h-full">
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                {isDollhouse && <Win98WindowBar title="vocabulary.exe — shared dictionary" variant="titlebar-cyan" icon="★" />}
                                 <DictionaryPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} showToast={showToast} t={t} />
                             </div>
 
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'notes' || isSplitScreen) ? 'flex' : 'hidden'}`}>
+                                {isDollhouse && <Win98WindowBar title="notes_pad.txt — cyber diary" variant="titlebar-lavender" icon="♡" />}
                                 <NotesPanel user={user} fb={fb} workspaceId={activeWorkspace.id} publicNotes={publicNotes} privateNotes={privateNotes} showToast={showToast} t={t} />
                             </div>
 
                             {!isSplitScreen && activeTab === 'revision' && (
                                 <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden`}>
+                                    {isDollhouse && <Win98WindowBar title="brain_train.exe — flashcards" variant="titlebar-pink" icon="☆" />}
                                     <RevisionPanel user={user} fb={fb} workspaceId={activeWorkspace.id} words={words} t={t} />
                                 </div>
                             )}
 
                             {!isSplitScreen && activeTab === 'settings' && (
-                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden p-8 overflow-y-auto`}>
-                                    <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} t={t} />
+                                <div className={`flex-1 flex flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden`}>
+                                    {isDollhouse && <Win98WindowBar title="control_panel.sys — settings" variant="titlebar-periwinkle" icon="☾" />}
+                                    <div className="flex-1 overflow-y-auto p-6 sm:p-8">
+                                        <SettingsPanel user={user} fb={fb} workspace={activeWorkspace} showToast={showToast} logout={logout} t={t} />
+                                    </div>
                                 </div>
                             )}
                         </div>
                     </main>
 
+                    {isDollhouse && (
+                        <DollhouseTaskbar
+                            activeTab={activeTab}
+                            onQuickSwitch={(tab) => { setActiveTab(tab); setIsSplitScreen(false); }}
+                            showToast={showToast}
+                        />
+                    )}
+
                     {toastMessage && (
-                        <div className={`fixed bottom-6 right-6 ${t.toastBg} px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 border ${t.border}`}>
+                        <div className={`fixed ${isDollhouse ? 'bottom-12' : 'bottom-6'} right-6 ${t.toastBg} px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 z-50 border ${t.border}`}>
                             <Icon name="info" className={t.toastIcon} size={20} />
                             <span className="font-medium">{toastMessage}</span>
                         </div>
@@ -851,16 +1241,20 @@
             );
         }
 
-        const NavBtn = ({ icon, label, active, onClick, t }) => (
-            <button onClick={onClick} className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all ${active ? `${t.subCardBg} ${t.accentText} shadow-md font-bold scale-105 border ${t.border}` : t.navInactive}`}>
-                {icon}
-                <span className="hidden md:block text-sm">{label}</span>
-            </button>
-        );
+        const NavBtn = ({ icon, label, active, onClick, t }) => {
+            const isDollhouse = t.id === 'dollhouse';
+            return (
+                <button onClick={onClick} className={`flex items-center gap-2 px-3.5 py-2 ${isDollhouse ? 'rounded-none' : 'rounded-xl'} transition-all ${active ? `${t.subCardBg} ${t.accentText} shadow-md font-bold ${isDollhouse ? '' : 'scale-105'} border ${t.border}` : t.navInactive}`}>
+                    {icon}
+                    <span className="hidden md:block text-sm">{label}</span>
+                </button>
+            );
+        };
 
         function WorkspaceSetup({ user, fb, workspaces, showToast, logout, t, toggleTheme }) {
             const [joinCode, setJoinCode] = useState('');
             const [loading, setLoading] = useState(false);
+            const isDollhouse = t.id === 'dollhouse';
 
             const handleCreate = async () => {
                 setLoading(true);
@@ -912,13 +1306,18 @@
                             <Icon name="logout" size={16} /> Вийти ({user.email})
                         </button>
                     </div>
-                    <div className={`${t.cardBg} p-8 rounded-3xl shadow-2xl border ${t.border} max-w-md w-full relative z-10`}>
+                    <div className={`${t.cardBg} ${isDollhouse ? 'p-0' : 'p-8'} rounded-3xl shadow-2xl border ${t.border} max-w-md w-full relative z-10`}>
+                        {isDollhouse && <Win98WindowBar title="workspace_setup.exe" variant="titlebar-periwinkle" icon="☾" />}
                         {t.decorHtml}
-                        <div className="relative z-10">
+                        <div className={`relative z-10 ${isDollhouse ? 'p-8' : ''}`}>
                             <div className="flex justify-center mb-6">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
+                                {isDollhouse ? (
+                                    <div className="dollhouse-logo text-3xl transform -rotate-2">engspace</div>
+                                ) : (
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
+                                )}
                             </div>
-                            <h1 className={`text-2xl font-bold text-center ${t.text} mb-2`}>Робочий простір</h1>
+                            <h1 className={`text-2xl font-bold text-center ${t.text} mb-2 ${isDollhouse ? 'font-pixel text-lg' : ''}`}>Робочий простір</h1>
                             <p className={`text-center ${t.mutedText} mb-8 text-sm`}>Створіть новий простір або приєднайтеся за кодом партнера</p>
 
                             <button onClick={handleCreate} disabled={loading} className={`w-full flex items-center justify-center gap-2 ${t.primary} py-3.5 rounded-2xl font-medium transition-colors mb-6 shadow-md disabled:opacity-50`}>
@@ -942,6 +1341,7 @@
                             </form>
                         </div>
                     </div>
+                    {isDollhouse && <DollhouseTaskbar activeTab="settings" onQuickSwitch={() => {}} showToast={showToast} />}
                 </div>
             );
         }
@@ -986,7 +1386,7 @@
             const filteredWords = words.filter(w => w.en.toLowerCase().includes(search.toLowerCase()) || w.uk.toLowerCase().includes(search.toLowerCase()));
 
             return (
-                <div className={`flex flex-col h-full bg-transparent relative`}>
+                <div className={`flex flex-col flex-1 min-h-0 bg-transparent relative`}>
                     {t.decorHtml}
                     <div className={`flex-none p-4 md:p-6 bg-transparent border-b ${t.border} relative z-10`}>
                         <form onSubmit={handleSave} className="space-y-3">
@@ -1108,7 +1508,7 @@
             };
 
             return (
-                <div className={`flex h-full relative`}>
+                <div className={`flex flex-1 min-h-0 relative`}>
                     {t.decorHtml}
                     <div className={`w-full md:w-1/3 border-r ${t.border} flex flex-col bg-transparent relative z-10 ${(activeNote || isCreating) ? 'hidden md:flex' : 'flex'}`}>
                         <div className={`p-4 border-b ${t.border}`}>
@@ -1202,9 +1602,10 @@
             };
 
             const isDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
+            const isDollhouse = t.id === 'dollhouse';
 
             return (
-                <div className={`flex flex-col h-full relative p-6 bg-transparent`}>
+                <div className={`flex flex-col flex-1 min-h-0 relative p-6 bg-transparent`}>
                     {t.decorHtml}
                     <h2 className={`text-xl font-bold flex items-center gap-2 mb-6 ${t.text} relative z-10`}><Icon name="brain" className={t.accentText}/> Тренування ({dueWords.length} слів)</h2>
                     <div className="flex-1 flex items-center justify-center relative z-10">
@@ -1223,10 +1624,10 @@
                                     <div className={`border-t ${t.border} pt-8 animate-in fade-in`}>
                                         <h3 className={`text-3xl font-bold ${t.accentText} mb-6`}>{currentWord.uk}</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <button onClick={() => handleRating(0)} className={`py-3 rounded-2xl font-semibold transition-colors shadow-sm border ${isDark ? 'bg-red-950/70 text-red-300 border-red-900/60 hover:bg-red-900/60' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'}`}>Забув/ла</button>
-                                            <button onClick={() => handleRating(3)} className={`py-3 rounded-2xl font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'}`}>Важко</button>
-                                            <button onClick={() => handleRating(4)} className={`py-3 rounded-2xl font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'}`}>Добре</button>
-                                            <button onClick={() => handleRating(5)} className={`py-3 rounded-2xl font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-500/25 text-sky-100 border-sky-300/50 hover:bg-sky-500/35' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}>Легко</button>
+                                            <button onClick={() => handleRating(0)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-red-950/70 text-red-300 border-red-900/60 hover:bg-red-900/60' : (!isDollhouse ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Забув/ла</button>
+                                            <button onClick={() => handleRating(3)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ffe66d] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : '')}`}>Важко</button>
+                                            <button onClick={() => handleRating(4)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#b8d4ff] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' : '')}`}>Добре</button>
+                                            <button onClick={() => handleRating(5)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#a7f3d0] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-500/25 text-sky-100 border-sky-300/50 hover:bg-sky-500/35' : (!isDollhouse ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : '')}`}>Легко</button>
                                         </div>
                                     </div>
                                 )}
@@ -1252,12 +1653,16 @@
             };
 
             const isDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
+            const isDollhouse = t.id === 'dollhouse';
 
             return (
                 <div className={`max-w-2xl mx-auto w-full space-y-6 relative`}>
                     {t.decorHtml}
                     <div className="relative z-10 space-y-6">
-                        <h2 className={`text-2xl font-bold flex items-center gap-2 ${t.text}`}><Icon name="settings" /> Налаштування та профіль</h2>
+                        <div className="flex items-center justify-between gap-4">
+                            <h2 className={`text-2xl font-bold flex items-center gap-2 ${t.text}`}><Icon name="settings" /> Налаштування та профіль</h2>
+                            {isDollhouse && <MiniTamagotchi />}
+                        </div>
                         
                         <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
                             <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${t.text}`}><Icon name="user" className={t.accentText} /> Дані облікового запису Google</h3>
@@ -1298,7 +1703,7 @@
                         <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
                             <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Небезпечна зона</h3>
                             <p className={`text-sm ${t.mutedText} mb-4`}>Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
-                            <button onClick={handleLeave} className={`px-5 py-3 rounded-2xl border transition-colors font-semibold shadow-sm ${isDark ? 'bg-red-950/60 text-red-300 border-red-900/80 hover:bg-red-900/50' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'}`}>Покинути простір</button>
+                            <button onClick={handleLeave} className={`px-5 py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : 'rounded-2xl'} border transition-colors font-semibold shadow-sm ${isDark ? 'bg-red-950/60 text-red-300 border-red-900/80 hover:bg-red-900/50' : (!isDollhouse ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Покинути простір</button>
                         </div>
                     </div>
                 </div>
