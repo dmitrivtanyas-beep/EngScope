@@ -185,12 +185,12 @@
            СТИЛІ ДЛЯ ТЕМИ DOLLHOUSE 98 (Y2K Retro Windows 98 Store)
            ========================================================= */
         .dollhouse-bg {
-            background-color: #fffdf9;
+            background-color: #fff8fc;
             background-image: 
-                radial-gradient(#f3d1e8 1.2px, transparent 1.2px),
-                radial-gradient(#d5e3fc 1.2px, #fffdf9 1.2px);
-            background-size: 32px 32px;
-            background-position: 0 0, 16px 16px;
+                radial-gradient(#ff94d2 1.6px, transparent 1.6px),
+                radial-gradient(#9bc2ff 1.6px, #fff8fc 1.6px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
             font-family: 'Space Mono', monospace;
             color: #1f1b24;
         }
@@ -209,19 +209,20 @@
         }
 
         .win98-window {
-            background: #ffffff;
+            background: rgba(255, 253, 255, 0.84);
+            backdrop-filter: blur(4px);
             border: 2px solid #1f1b24;
-            box-shadow: 4px 4px 0px rgba(31, 27, 36, 0.22), inset 2px 2px 0px #ffffff, inset -2px -2px 0px #c5c5d8;
+            box-shadow: 5px 5px 0px rgba(31, 27, 36, 0.25), inset 2px 2px 0px #ffffff, inset -2px -2px 0px #c5c5d8;
         }
 
         .win98-subcard {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.92);
             border: 2px solid #1f1b24;
             box-shadow: 2px 2px 0px #1f1b24, inset 1px 1px 0px #ffffff;
             transition: transform 0.1s ease;
         }
         .win98-subcard:hover {
-            background: #fff5fc;
+            background: #fff0fa;
         }
 
         .win98-titlebar {
@@ -309,7 +310,7 @@
             border: 2px solid #1f1b24;
             border-radius: 50%;
             position: relative;
-            box-shadow: 3px 4px 0px rgba(31,27,36,0.22);
+            box-shadow: 3px 4px 0px rgba(31,27,36,0.25);
             animation: spinSlow 14s linear infinite;
         }
         .cd-disc::before {
@@ -317,7 +318,7 @@
             position: absolute;
             inset: 31%;
             border-radius: 50%;
-            background: rgba(255,255,255,0.78);
+            background: rgba(255,255,255,0.82);
             border: 1.5px solid #1f1b24;
         }
         .cd-disc::after {
@@ -325,7 +326,7 @@
             position: absolute;
             inset: 41%;
             border-radius: 50%;
-            background: #fffdf9;
+            background: #fff8fc;
             border: 1.5px solid #1f1b24;
         }
         @keyframes spinSlow {
@@ -347,7 +348,7 @@
         .sticky-note {
             background: #fef6a8;
             border: 1.5px solid #1f1b24;
-            box-shadow: 3px 4px 0px rgba(31, 27, 36, 0.22);
+            box-shadow: 3px 4px 0px rgba(31, 27, 36, 0.25);
             position: relative;
         }
         .sticky-note::after {
@@ -357,7 +358,7 @@
             right: -1.5px;
             width: 16px;
             height: 16px;
-            background: linear-gradient(135deg, #e5dc7a 45%, #1f1b24 46%, #1f1b24 52%, #fffdf9 53%);
+            background: linear-gradient(135deg, #e5dc7a 45%, #1f1b24 46%, #1f1b24 52%, #fff8fc 53%);
         }
     </style>
 </head>
@@ -415,51 +416,89 @@
         const { useState, useEffect, useRef, useMemo } = React;
 
         // =========================================================
-        // ГРАФІЧНИЙ ШАР ДЛЯ ТЕМИ DOLLHOUSE 98 (Елементи з dollhouse_y2k_retro_store.html)
+        // ГРАФІЧНИЙ ШАР ДЛЯ ТЕМИ DOLLHOUSE 98 (Видимі наліпки по краях і поверх вікон)
         // =========================================================
         const DollhouseGlobalLayer = () => (
-            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-                {/* Верхня шахова смужка + градієнт оголошень */}
-                <div className="w-full h-1.5 bg-gradient-to-r from-[#ebb8ff] via-[#f7b7e5] to-[#d5b8ff]"></div>
-                <div className="checkerboard-strip h-2 w-full border-b border-[#1f1b24] opacity-75"></div>
-
-                {/* Райдужний CD-диск ліворуч зверху */}
-                <div className="cd-disc w-20 h-20 sm:w-24 sm:h-24 fixed top-24 left-4 lg:left-8 opacity-85"></div>
-
-                {/* Блискучі зірочки та метелик */}
-                <svg className="w-8 h-8 fixed top-28 right-8 lg:right-14 text-[#a4c2f4] drop-shadow-[1px_1px_0_#1f1b24] opacity-85" viewBox="0 0 24 24" fill="currentColor" stroke="#1f1b24" strokeWidth="1.5">
-                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
-                </svg>
-
-                {/* Жовтий стікер Post-It ліворуч знизу */}
-                <div className="hidden xl:block sticky-note p-3 transform -rotate-3 fixed bottom-14 left-6 w-40 opacity-90">
-                    <ul className="text-[11px] font-bold space-y-0.5 text-[#1f1b24]">
-                        <li>☆ don't forget</li>
-                        <li>☆ drink water</li>
-                        <li>☆ learn 5 words</li>
-                        <li>☆ call ur bff ♡</li>
-                    </ul>
-                    <div className="absolute -bottom-2.5 -right-2.5 text-base">🪽💖</div>
+            <>
+                {/* Фонова смуга зверху */}
+                <div className="fixed top-0 left-0 right-0 pointer-events-none z-0" aria-hidden="true">
+                    <div className="w-full h-1.5 bg-gradient-to-r from-[#ebb8ff] via-[#f7b7e5] to-[#d5b8ff]"></div>
+                    <div className="checkerboard-strip h-2 w-full border-b border-[#1f1b24]"></div>
                 </div>
 
-                {/* Рожевий Y2K телефон-розкладачка ("ur cute ♡") праворуч знизу */}
-                <div className="hidden xl:block w-[72px] bg-gradient-to-b from-[#ff9de0] to-[#ff63c3] border-2 border-[#1f1b24] rounded-2xl p-1.5 shadow-[3px_4px_0_#1f1b24] transform rotate-12 fixed bottom-14 right-6 opacity-95">
-                    <div className="bg-[#231f2e] border border-[#1f1b24] rounded-lg p-1 text-center mb-1.5">
-                        <div className="bg-[#ffd6ef] rounded py-1 px-1">
-                            <div className="font-pixel text-[8px] font-bold leading-tight text-[#1f1b24]">ur cute</div>
-                            <div className="text-[9px] text-[#ff3399]">♡</div>
+                {/* Наліпки поверх країв вікон (pointer-events-none щоб не заважали клікам) */}
+                <div className="fixed inset-0 pointer-events-none overflow-hidden z-20" aria-hidden="true">
+                    {/* Райдужний CD-диск ліворуч зверху на кутку вікна */}
+                    <div className="cd-disc w-16 h-16 sm:w-20 sm:h-20 fixed top-16 left-2 sm:left-4"></div>
+
+                    {/* Фіолетова блискуча зірка праворуч зверху */}
+                    <svg className="w-10 h-10 sm:w-12 sm:h-12 fixed top-16 right-2 sm:right-5 transform rotate-12 drop-shadow-[2px_2px_0_#1f1b24]" viewBox="0 0 40 40">
+                        <path d="M20 2L25 14L38 15L28 24L31 37L20 30L9 37L12 24L2 15L15 14L20 2Z" fill="#a855f7" stroke="#1f1b24" strokeWidth="2"/>
+                        <circle cx="17" cy="15" r="1.2" fill="#fff"/>
+                        <circle cx="23" cy="20" r="1.2" fill="#fff"/>
+                        <circle cx="15" cy="24" r="1" fill="#fff"/>
+                    </svg>
+
+                    {/* Метелик ліворуч по центру */}
+                    <svg className="hidden md:block w-11 h-11 fixed top-1/2 left-1.5 -translate-y-1/2 transform -rotate-12 drop-shadow-[1px_2px_0_#1f1b24]" viewBox="0 0 64 64">
+                        <path d="M30 32C20 14 4 14 8 28C10 35 20 36 30 34Z" fill="#ff85d0" stroke="#1f1b24" strokeWidth="2.5"/>
+                        <path d="M34 32C44 14 60 14 56 28C54 35 44 36 34 34Z" fill="#ff85d0" stroke="#1f1b24" strokeWidth="2.5"/>
+                        <path d="M30 35C18 36 10 48 18 53C24 56 29 46 31 36Z" fill="#ffb8e4" stroke="#1f1b24" strokeWidth="2.5"/>
+                        <path d="M34 35C46 36 54 48 46 53C40 56 35 46 33 36Z" fill="#ffb8e4" stroke="#1f1b24" strokeWidth="2.5"/>
+                        <rect x="30" y="22" width="4" height="22" rx="2" fill="#1f1b24"/>
+                    </svg>
+
+                    {/* Жовтий стікер Post-It ліворуч знизу */}
+                    <div className="hidden sm:block sticky-note p-2.5 transform -rotate-3 fixed bottom-12 left-3 w-36">
+                        <ul className="text-[10px] font-bold space-y-0.5 text-[#1f1b24]">
+                            <li>☆ don't forget</li>
+                            <li>☆ drink water</li>
+                            <li>☆ learn 5 words</li>
+                            <li>☆ call ur bff ♡</li>
+                        </ul>
+                        <div className="absolute -bottom-2 -right-2 text-sm">🪽💖</div>
+                    </div>
+
+                    {/* Рожевий Y2K телефон-розкладачка ("ur cute ♡") праворуч знизу */}
+                    <div className="hidden sm:block w-[66px] bg-gradient-to-b from-[#ff9de0] to-[#ff63c3] border-2 border-[#1f1b24] rounded-2xl p-1.5 shadow-[3px_4px_0_#1f1b24] transform rotate-12 fixed bottom-12 right-3">
+                        <div className="bg-[#231f2e] border border-[#1f1b24] rounded-lg p-1 text-center mb-1">
+                            <div className="bg-[#ffd6ef] rounded py-1 px-0.5">
+                                <div className="font-pixel text-[7px] font-bold leading-tight text-[#1f1b24]">ur cute</div>
+                                <div className="text-[8px] text-[#ff3399]">♡</div>
+                            </div>
+                        </div>
+                        <div className="h-1 bg-[#d9469f] border-y border-[#1f1b24] -mx-1.5 mb-1"></div>
+                        <div className="grid grid-cols-3 gap-0.5 px-0.5 pb-0.5">
+                            {Array.from({ length: 9 }).map((_, idx) => (
+                                <span key={idx} className="h-1.5 bg-white border border-[#1f1b24]"></span>
+                            ))}
                         </div>
                     </div>
-                    <div className="h-1 bg-[#d9469f] border-y border-[#1f1b24] -mx-1.5 mb-1"></div>
-                    <div className="grid grid-cols-3 gap-0.5 px-0.5 pb-0.5">
-                        {Array.from({ length: 9 }).map((_, idx) => (
-                            <span key={idx} className="h-1.5 bg-white border border-[#1f1b24]"></span>
-                        ))}
-                    </div>
-                </div>
 
-                {/* Нижня шахова смужка над Windows 98 Taskbar */}
-                <div className="checkerboard-strip h-2 w-full border-t border-[#1f1b24] fixed bottom-9 left-0 right-0 opacity-75"></div>
+                    {/* Нижня шахова смужка над Windows 98 Taskbar */}
+                    <div className="checkerboard-strip h-2 w-full border-t border-[#1f1b24] fixed bottom-9 left-0 right-0"></div>
+                </div>
+            </>
+        );
+
+        // Внутрішній напівпрозорий декор усередині панелей Dollhouse 98 (водяні знаки Y2K)
+        const DollhousePanelDecor = () => (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+                {/* М'який градієнтний відблиск всередині вікна */}
+                <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-[#ffb6e1]/20 blur-2xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-[#a4c2f4]/25 blur-2xl"></div>
+
+                {/* Напівпрозора хмаринка + зірочки + котик на фоні панелі */}
+                <svg className="absolute bottom-4 right-6 w-44 h-44 opacity-25" viewBox="0 0 120 120">
+                    <circle cx="40" cy="40" r="22" fill="#ffb6e1"/>
+                    <circle cx="65" cy="36" r="26" fill="#a4c2f4"/>
+                    <circle cx="85" cy="44" r="18" fill="#ffb6e1"/>
+                    <path d="M60 102C60 102 32 84 32 66C32 58 38 52 46 52C51 52 56 55 60 60C64 55 69 52 74 52C82 52 88 58 88 66C88 84 60 102 60 102Z" fill="#ff79c6" stroke="#1f1b24" strokeWidth="2"/>
+                </svg>
+
+                <div className="absolute bottom-2.5 left-4 font-pixel text-[9px] text-[#ff4db8]/45 tracking-wider select-none">
+                    ✦ DOLLHOUSE™ CYBER-PASTEL OS 98 ✦
+                </div>
             </div>
         );
 
@@ -894,7 +933,7 @@
                 toastBg: "bg-[#ffe66d] border-2 border-[#1f1b24] text-[#1f1b24] shadow-[4px_4px_0_#1f1b24] !rounded-none",
                 toastIcon: "text-[#ff4db8]",
                 globalLayer: <DollhouseGlobalLayer />,
-                decorHtml: null
+                decorHtml: <DollhousePanelDecor />
             },
             abyssOcean: {
                 id: "abyssOcean",
@@ -1193,7 +1232,7 @@
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-hidden p-4 sm:p-6 relative z-10">
+                    <main className={`flex-1 overflow-hidden ${isDollhouse ? 'px-5 sm:px-10 py-5 max-w-6xl w-full mx-auto' : 'p-4 sm:p-6'} relative z-10`}>
                         <div className="flex flex-col lg:flex-row gap-6 h-full">
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
                                 {isDollhouse && <Win98WindowBar title="vocabulary.exe — shared dictionary" variant="titlebar-cyan" icon="★" />}
