@@ -6,7 +6,7 @@
     <title>EngSpace - Парний простір для вивчення англійської</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rubik+Bubbles&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rubik+Bubbles&family=Share+Tech+Mono&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -360,6 +360,97 @@
             height: 16px;
             background: linear-gradient(135deg, #e5dc7a 45%, #1f1b24 46%, #1f1b24 52%, #fff8fc 53%);
         }
+
+        /* =========================================================
+           СТИЛІ ДЛЯ ТЕМИ CYBER QUIZ (cyber_quiz_coupon_landing_page.html)
+           ========================================================= */
+        .cyber-quiz-bg {
+            background-color: #0a0a0a;
+            background-image:
+                linear-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 102, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .pixel-title {
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px #222, 0 0 12px rgba(0, 255, 102, 0.35);
+        }
+
+        .cyber-window {
+            background: rgba(18, 18, 18, 0.84);
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255, 255, 255, 0.82);
+            box-shadow: 8px 8px 0px #181818, 0 0 24px rgba(0, 255, 102, 0.08);
+        }
+
+        .cyber-subcard {
+            background: rgba(20, 20, 20, 0.92);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.15s ease;
+        }
+        .cyber-subcard:hover {
+            border-color: #00ff66;
+            box-shadow: 0 0 14px rgba(0, 255, 102, 0.16);
+        }
+
+        .cyber-btn-green {
+            background-color: #00ff66;
+            color: #000000;
+            font-weight: 800;
+            border: 2px solid #00ff66;
+            box-shadow: 3px 3px 0px #181818;
+            transition: all 0.12s ease;
+            cursor: pointer;
+        }
+        .cyber-btn-green:hover {
+            background-color: #00cc52;
+            border-color: #00cc52;
+        }
+        .cyber-btn-green:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #181818;
+        }
+
+        .cyber-btn-pink {
+            background-color: #ff007f;
+            color: #ffffff;
+            font-weight: 800;
+            border: 2px solid #ff007f;
+            box-shadow: 3px 3px 0px #181818;
+            transition: all 0.12s ease;
+            cursor: pointer;
+        }
+        .cyber-btn-pink:hover {
+            background-color: #ffffff;
+            color: #ff007f;
+        }
+
+        .coupon-box {
+            position: relative;
+            background: #141414;
+            border: 2px dashed rgba(255, 255, 255, 0.35);
+        }
+        .coupon-notch-left::before, .coupon-notch-right::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .coupon-notch-left::before {
+            left: -9px;
+            border-right: 2px solid rgba(255, 255, 255, 0.35);
+        }
+        .coupon-notch-right::after {
+            right: -9px;
+            border-left: 2px solid rgba(255, 255, 255, 0.35);
+        }
     </style>
 </head>
 <body class="font-sans transition-colors duration-300">
@@ -414,6 +505,81 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
+
+        // =========================================================
+        // ГРАФІЧНИЙ ШАР ДЛЯ ТЕМИ CYBER QUIZ (cyber_quiz_coupon_landing_page.html)
+        // =========================================================
+        const CyberQuizGlobalLayer = () => (
+            <>
+                {/* Фонова сітка та великі неонові гліфи на тлі */}
+                <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none" aria-hidden="true">
+                    {/* М'яке неонове підсвічування зверху */}
+                    <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[620px] h-[260px] bg-[#00ff66]/10 blur-3xl rounded-full"></div>
+                    <div className="absolute bottom-0 right-10 w-[340px] h-[220px] bg-[#ff007f]/10 blur-3xl rounded-full"></div>
+
+                    {/* Плаваючі гліфи з cyber_quiz_coupon_landing_page.html */}
+                    <span className="absolute top-20 left-4 sm:left-8 text-[#00ff66] text-3xl sm:text-4xl font-bold opacity-55">{'{'}</span>
+                    <span className="absolute top-24 right-4 sm:right-10 text-[#00ff66] text-2xl sm:text-3xl font-bold opacity-55">&gt;&gt;</span>
+                    <span className="absolute top-1/3 left-3 sm:left-6 text-[#ff007f] text-3xl font-bold opacity-60">$</span>
+                    <span className="absolute top-1/2 right-3 sm:right-6 text-[#00ff66] text-2xl sm:text-3xl font-bold opacity-55">&lt;&gt;</span>
+                    <span className="absolute bottom-14 left-4 sm:left-8 text-[#00ff66] text-3xl sm:text-4xl font-bold opacity-55">{'}'}</span>
+                    <span className="absolute bottom-12 right-6 sm:right-12 text-[#ff007f] text-2xl font-bold opacity-60">&gt;&gt;</span>
+                    <span className="hidden md:block absolute top-28 left-1/4 text-white/35 text-2xl font-bold">[]</span>
+                    <span className="hidden md:block absolute bottom-20 right-1/4 text-[#00ff66]/50 text-3xl font-bold">?</span>
+                </div>
+
+                {/* Оверлей-декор поверх країв (не заважає клікам) */}
+                <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden select-none" aria-hidden="true">
+                    {/* Верхній рядок статусу системи */}
+                    <div className="w-full px-4 sm:px-8 pt-1 flex justify-between items-center text-[10px] tracking-widest text-[#888888]">
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 bg-[#00ff66] inline-block"></span>
+                            <span>SYSTEM.VER.2.0.1</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="hidden sm:inline">SECURE_CONNECTION</span>
+                            <span className="text-[#00ff66]">● ONLINE</span>
+                        </div>
+                    </div>
+
+                    {/* Неонові кутові маркери та бейджі події по краях */}
+                    <div className="hidden sm:flex items-center gap-2 fixed bottom-3 left-4 bg-[#141414] border border-[#00ff66] px-2.5 py-1 text-[10px] text-[#00ff66] shadow-[3px_3px_0_#00ff66]">
+                        <span>[ 1ST QUIZ ]</span>
+                        <span className="text-white">ENGSPACE PROMO</span>
+                    </div>
+
+                    <div className="hidden sm:flex items-center gap-2 fixed bottom-3 right-4 bg-[#ff007f] text-white px-3 py-1 text-[10px] font-bold shadow-[3px_3px_0_#181818]">
+                        <span>EVENT 01 &gt;&gt; 100% FOCUS</span>
+                    </div>
+                </div>
+            </>
+        );
+
+        // Внутрішній фоновий декор усередині панелей Cyber Quiz
+        const CyberQuizPanelDecor = () => (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none" aria-hidden="true">
+                {/* Зелені кутові рамки всередині панелі */}
+                <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#00ff66]"></div>
+                <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#00ff66]"></div>
+                <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#00ff66]"></div>
+                <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#00ff66]"></div>
+
+                {/* Напівпрозорий водяний знак купона праворуч знизу панелі */}
+                <div className="coupon-box coupon-notch-left coupon-notch-right opacity-25 px-5 py-3 text-center fixed md:absolute bottom-5 right-6 transform -rotate-3">
+                    <div className="text-[9px] tracking-widest text-[#888888]">VOCABULARY</div>
+                    <div className="text-2xl font-black text-white">100<span className="text-[#00ff66]">%</span></div>
+                    <div className="text-[9px] text-[#00ff66]">CYBER PASS</div>
+                </div>
+
+                {/* Кібер-символи та підпис внизу панелі */}
+                <span className="absolute top-1/3 right-8 text-[#00ff66]/15 text-5xl font-bold">&lt;/&gt;</span>
+                <span className="absolute bottom-14 left-8 text-[#ff007f]/15 text-4xl font-bold">$$$</span>
+
+                <div className="absolute bottom-2.5 left-5 text-[10px] tracking-[0.2em] text-[#00ff66]/45 uppercase">
+                    ▶ QUIZ_COUPON // CYBER_SPACE_MODE
+                </div>
+            </div>
+        );
 
         // =========================================================
         // ГРАФІЧНИЙ ШАР ДЛЯ ТЕМИ DOLLHOUSE 98 (Видимі наліпки по краях і поверх вікон)
@@ -484,11 +650,9 @@
         // Внутрішній напівпрозорий декор усередині панелей Dollhouse 98 (водяні знаки Y2K)
         const DollhousePanelDecor = () => (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-                {/* М'який градієнтний відблиск всередині вікна */}
                 <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-[#ffb6e1]/20 blur-2xl"></div>
                 <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-[#a4c2f4]/25 blur-2xl"></div>
 
-                {/* Напівпрозора хмаринка + зірочки + котик на фоні панелі */}
                 <svg className="absolute bottom-4 right-6 w-44 h-44 opacity-25" viewBox="0 0 120 120">
                     <circle cx="40" cy="40" r="22" fill="#ffb6e1"/>
                     <circle cx="65" cy="36" r="26" fill="#a4c2f4"/>
@@ -935,6 +1099,32 @@
                 globalLayer: <DollhouseGlobalLayer />,
                 decorHtml: <DollhousePanelDecor />
             },
+            cyberQuiz: {
+                id: "cyberQuiz",
+                name: "Cyber Quiz",
+                bg: "cyber-quiz-bg",
+                text: "text-white",
+                mutedText: "text-[#888888]",
+                subtleText: "text-[#00ff66]/70",
+                cardBg: "cyber-window !rounded-none relative overflow-hidden",
+                subCardBg: "cyber-subcard !rounded-none",
+                border: "border-white/30",
+                primary: "cyber-btn-green !rounded-none",
+                secondaryBtn: "cyber-btn-pink !rounded-none",
+                primaryLight: "bg-[#00ff66]/15 text-[#00ff66] border-[#00ff66] font-bold",
+                accentText: "text-[#00ff66] font-bold",
+                navBg: "bg-[#121212] border-2 border-[#00ff66] !rounded-none shadow-[0_0_15px_rgba(0,255,102,0.18)]",
+                navInactive: "text-gray-300 hover:text-[#00ff66] hover:bg-white/5 !rounded-none",
+                iconBtn: "text-gray-300 hover:text-[#00ff66] !rounded-none",
+                trashBtn: "text-[#888888] hover:text-[#ff007f] hover:bg-[#ff007f]/10 !rounded-none",
+                inputBg: "bg-black border-2 border-[#888888]/60 text-white placeholder:text-[#888888] focus:border-[#00ff66] !rounded-none",
+                badgeBg: "bg-[#ff007f] text-white border-[#ff007f] text-[10px] font-bold",
+                shadow: "shadow-[8px_8px_0_#181818]",
+                toastBg: "bg-[#121212] border-2 border-[#00ff66] text-white shadow-[6px_6px_0_#00ff66] !rounded-none",
+                toastIcon: "text-[#00ff66]",
+                globalLayer: <CyberQuizGlobalLayer />,
+                decorHtml: <CyberQuizPanelDecor />
+            },
             abyssOcean: {
                 id: "abyssOcean",
                 name: "Abyss Ocean",
@@ -1047,9 +1237,11 @@
             });
             const t = themes[currentTheme];
             const isDollhouse = currentTheme === 'dollhouse';
+            const isCyberQuiz = currentTheme === 'cyberQuiz';
+            const isBoxedWindow = isDollhouse || isCyberQuiz;
 
             const toggleTheme = () => {
-                const order = ['default', 'y2k', 'dollhouse', 'abyssOcean', 'deepOcean'];
+                const order = ['default', 'y2k', 'dollhouse', 'cyberQuiz', 'abyssOcean', 'deepOcean'];
                 const next = order[(order.indexOf(currentTheme) + 1) % order.length];
                 setCurrentTheme(next);
                 localStorage.setItem('engspace_theme', next);
@@ -1166,12 +1358,22 @@
                                         <div className="dollhouse-logo text-4xl transform -rotate-2">eng<br/>space</div>
                                         <MiniTamagotchi />
                                     </div>
+                                ) : isCyberQuiz ? (
+                                    <div className="mb-6">
+                                        <div className="text-[#00ff66] text-xs font-bold tracking-widest mb-2">[ 1ST QUIZ ]</div>
+                                        <h2 className="pixel-title text-4xl font-black tracking-widest text-white uppercase mb-4">ENG<br/>SPACE</h2>
+                                        <div className="coupon-box coupon-notch-left coupon-notch-right max-w-[230px] mx-auto py-3 px-4">
+                                            <div className="text-[10px] text-[#888888]">PAIR STUDY PASS</div>
+                                            <div className="text-2xl font-black text-white">100<span className="text-[#00ff66]">%</span></div>
+                                            <div className="text-[10px] text-[#00ff66]">FREE CLOUD SYNC</div>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg mx-auto mb-6">E</div>
                                 )}
                                 <h1 className={`text-2xl font-bold ${t.text} mb-2 ${isDollhouse ? 'font-pixel text-lg' : ''}`}>Ласкаво просимо до EngSpace</h1>
                                 <p className={`${t.mutedText} mb-8 text-sm`}>Парний хмарний простір для вивчення англійської мови</p>
-                                <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${t.subCardBg} border ${t.border} hover:opacity-90 ${t.text} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
+                                <button onClick={loginWithGoogle} className={`w-full flex items-center justify-center gap-3 ${isCyberQuiz ? t.primary : `${t.subCardBg} border ${t.border} hover:opacity-90 ${t.text}`} py-3.5 px-4 rounded-2xl font-medium transition-all shadow-md`}>
                                     <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
                                     Увійти через Google
                                 </button>
@@ -1187,7 +1389,7 @@
             }
 
             return (
-                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative ${isDollhouse ? 'pb-11' : ''}`}>
+                <div className={`flex flex-col h-screen overflow-hidden ${t.bg} relative ${isDollhouse ? 'pb-11' : (isCyberQuiz ? 'pt-5 pb-6' : '')}`}>
                     {t.globalLayer}
                     <header className={`flex-none flex items-center justify-between px-6 py-4 ${t.cardBg} border-b ${t.border} ${t.shadow} z-10`}>
                         <div className="flex items-center gap-2.5 relative z-10">
@@ -1195,6 +1397,12 @@
                                 <div className="flex items-center gap-2 select-none">
                                     <span className="dollhouse-logo text-2xl tracking-tight transform -rotate-2">engspace</span>
                                     <span className="text-xs text-[#ff4db8]">✦</span>
+                                </div>
+                            ) : isCyberQuiz ? (
+                                <div className="flex items-center gap-2.5 select-none">
+                                    <span className="bg-[#00ff66] text-black font-black px-2 py-0.5 text-sm">▶</span>
+                                    <span className="pixel-title font-black text-lg tracking-widest text-white">ENGSPACE</span>
+                                    <span className="hidden sm:inline bg-white text-black text-[10px] font-bold px-2 py-0.5">QUIZ</span>
                                 </div>
                             ) : (
                                 <>
@@ -1232,7 +1440,7 @@
                         </div>
                     </header>
 
-                    <main className={`flex-1 overflow-hidden ${isDollhouse ? 'px-5 sm:px-10 py-5 max-w-6xl w-full mx-auto' : 'p-4 sm:p-6'} relative z-10`}>
+                    <main className={`flex-1 overflow-hidden ${isBoxedWindow ? 'px-5 sm:px-10 py-5 max-w-6xl w-full mx-auto' : 'p-4 sm:p-6'} relative z-10`}>
                         <div className="flex flex-col lg:flex-row gap-6 h-full">
                             <div className={`flex-1 flex-col ${t.cardBg} rounded-3xl ${t.shadow} border ${t.border} overflow-hidden ${(activeTab === 'dictionary' || isSplitScreen) ? 'flex' : 'hidden'}`}>
                                 {isDollhouse && <Win98WindowBar title="vocabulary.exe — shared dictionary" variant="titlebar-cyan" icon="★" />}
@@ -1281,9 +1489,9 @@
         }
 
         const NavBtn = ({ icon, label, active, onClick, t }) => {
-            const isDollhouse = t.id === 'dollhouse';
+            const isSharp = t.id === 'dollhouse' || t.id === 'cyberQuiz';
             return (
-                <button onClick={onClick} className={`flex items-center gap-2 px-3.5 py-2 ${isDollhouse ? 'rounded-none' : 'rounded-xl'} transition-all ${active ? `${t.subCardBg} ${t.accentText} shadow-md font-bold ${isDollhouse ? '' : 'scale-105'} border ${t.border}` : t.navInactive}`}>
+                <button onClick={onClick} className={`flex items-center gap-2 px-3.5 py-2 ${isSharp ? 'rounded-none' : 'rounded-xl'} transition-all ${active ? `${t.subCardBg} ${t.accentText} shadow-md font-bold ${isSharp ? '' : 'scale-105'} border ${t.border}` : t.navInactive}`}>
                     {icon}
                     <span className="hidden md:block text-sm">{label}</span>
                 </button>
@@ -1294,6 +1502,7 @@
             const [joinCode, setJoinCode] = useState('');
             const [loading, setLoading] = useState(false);
             const isDollhouse = t.id === 'dollhouse';
+            const isCyberQuiz = t.id === 'cyberQuiz';
 
             const handleCreate = async () => {
                 setLoading(true);
@@ -1352,6 +1561,10 @@
                             <div className="flex justify-center mb-6">
                                 {isDollhouse ? (
                                     <div className="dollhouse-logo text-3xl transform -rotate-2">engspace</div>
+                                ) : isCyberQuiz ? (
+                                    <div className="bg-white text-black font-bold text-xs py-1.5 px-4 tracking-wide border border-black shadow-[4px_4px_0_#00ff66]">
+                                        EVENT 01 &gt;&gt; WORKSPACE SETUP
+                                    </div>
                                 ) : (
                                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">E</div>
                                 )}
@@ -1640,8 +1853,9 @@
                 }
             };
 
-            const isDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
+            const isOceanDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
             const isDollhouse = t.id === 'dollhouse';
+            const isCyberQuiz = t.id === 'cyberQuiz';
 
             return (
                 <div className={`flex flex-col flex-1 min-h-0 relative p-6 bg-transparent`}>
@@ -1663,10 +1877,10 @@
                                     <div className={`border-t ${t.border} pt-8 animate-in fade-in`}>
                                         <h3 className={`text-3xl font-bold ${t.accentText} mb-6`}>{currentWord.uk}</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <button onClick={() => handleRating(0)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-red-950/70 text-red-300 border-red-900/60 hover:bg-red-900/60' : (!isDollhouse ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Забув/ла</button>
-                                            <button onClick={() => handleRating(3)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ffe66d] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : '')}`}>Важко</button>
-                                            <button onClick={() => handleRating(4)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#b8d4ff] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' : '')}`}>Добре</button>
-                                            <button onClick={() => handleRating(5)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#a7f3d0] text-[#1f1b24]' : 'rounded-2xl'} font-semibold transition-colors shadow-sm border ${isDark ? 'bg-sky-500/25 text-sky-100 border-sky-300/50 hover:bg-sky-500/35' : (!isDollhouse ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : '')}`}>Легко</button>
+                                            <button onClick={() => handleRating(0)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : (isCyberQuiz ? 'rounded-none bg-[#ff007f] text-white border-[#ff007f] hover:opacity-85' : 'rounded-2xl')} font-semibold transition-colors shadow-sm border ${isOceanDark ? 'bg-red-950/70 text-red-300 border-red-900/60 hover:bg-red-900/60' : (!isDollhouse && !isCyberQuiz ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Забув/ла</button>
+                                            <button onClick={() => handleRating(3)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ffe66d] text-[#1f1b24]' : (isCyberQuiz ? 'rounded-none bg-[#181818] text-yellow-300 border-yellow-400/70 hover:bg-yellow-400/10' : 'rounded-2xl')} font-semibold transition-colors shadow-sm border ${isOceanDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse && !isCyberQuiz ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : '')}`}>Важко</button>
+                                            <button onClick={() => handleRating(4)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#b8d4ff] text-[#1f1b24]' : (isCyberQuiz ? 'rounded-none bg-[#181818] text-white border-white/60 hover:bg-white/10' : 'rounded-2xl')} font-semibold transition-colors shadow-sm border ${isOceanDark ? 'bg-sky-950/60 text-sky-200 border-sky-300/30 hover:bg-sky-900/50' : (!isDollhouse && !isCyberQuiz ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' : '')}`}>Добре</button>
+                                            <button onClick={() => handleRating(5)} className={`py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#a7f3d0] text-[#1f1b24]' : (isCyberQuiz ? 'rounded-none bg-[#00ff66] text-black border-[#00ff66] hover:bg-[#00cc52]' : 'rounded-2xl')} font-semibold transition-colors shadow-sm border ${isOceanDark ? 'bg-sky-500/25 text-sky-100 border-sky-300/50 hover:bg-sky-500/35' : (!isDollhouse && !isCyberQuiz ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : '')}`}>Легко</button>
                                         </div>
                                     </div>
                                 )}
@@ -1691,8 +1905,9 @@
                 }
             };
 
-            const isDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
+            const isOceanDark = t.id === 'abyssOcean' || t.id === 'deepOcean';
             const isDollhouse = t.id === 'dollhouse';
+            const isCyberQuiz = t.id === 'cyberQuiz';
 
             return (
                 <div className={`max-w-2xl mx-auto w-full space-y-6 relative`}>
@@ -1724,7 +1939,7 @@
                             <h3 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${t.text}`}><Icon name="users" className={t.accentText} /> Код запрошення для партнера</h3>
                             <p className={`text-sm ${t.mutedText} mb-4`}>Поділіться цим кодом, щоб підключити другу людину до вашого словника та спільних нотаток у реальному часі.</p>
                             <div className={`flex items-center gap-4 ${t.navBg} p-4 rounded-2xl border ${t.border}`}>
-                                <div className={`text-3xl font-mono font-bold tracking-widest ${t.accentText} ${t.subCardBg} px-6 py-2.5 rounded-xl border ${t.border} shadow-sm`}>{workspace.inviteCode}</div>
+                                <div className={`${isCyberQuiz ? 'coupon-box coupon-notch-left coupon-notch-right' : `${t.subCardBg} border ${t.border}`} text-3xl font-mono font-bold tracking-widest ${t.accentText} px-6 py-2.5 rounded-xl shadow-sm`}>{workspace.inviteCode}</div>
                                 <span className={`text-sm font-bold ${t.primaryLight} px-4 py-1.5 rounded-xl ml-auto border`}>Учасників: {workspace.members?.length || 0}/2</span>
                             </div>
                         </div>
@@ -1740,9 +1955,9 @@
                         </div>
 
                         <div className={`${t.subCardBg} border ${t.border} rounded-3xl p-6 shadow-md`}>
-                            <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Небезпечна зона</h3>
+                            <h3 className={`text-lg font-semibold mb-2 ${isOceanDark ? 'text-red-400' : (isCyberQuiz ? 'text-[#ff007f]' : 'text-red-600')}`}>Небезпечна зона</h3>
                             <p className={`text-sm ${t.mutedText} mb-4`}>Вихід з простору збереже ваші особисті нотатки, але ви втратите доступ до спільного словника до повторного входу за кодом.</p>
-                            <button onClick={handleLeave} className={`px-5 py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : 'rounded-2xl'} border transition-colors font-semibold shadow-sm ${isDark ? 'bg-red-950/60 text-red-300 border-red-900/80 hover:bg-red-900/50' : (!isDollhouse ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Покинути простір</button>
+                            <button onClick={handleLeave} className={`px-5 py-3 ${isDollhouse ? 'y2k-btn rounded-none bg-[#ff94d2] text-[#1f1b24]' : (isCyberQuiz ? 'cyber-btn-pink rounded-none' : 'rounded-2xl')} border transition-colors font-semibold shadow-sm ${isOceanDark ? 'bg-red-950/60 text-red-300 border-red-900/80 hover:bg-red-900/50' : (!isDollhouse && !isCyberQuiz ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : '')}`}>Покинути простір</button>
                         </div>
                     </div>
                 </div>
